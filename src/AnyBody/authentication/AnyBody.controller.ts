@@ -9,6 +9,8 @@ import { Authentication } from '../interfaces/authentication.interface';
 import HttpException from '../../exceptions/HttpException';
 import { setTokenLifeTime, getCurrentTime } from '../../utils/current-time-UTC';
 import { Registration } from '../interfaces/registration.interface';
+import { body, validationResult, check } from 'express-validator';
+import { errorFormatter } from '../../middleware/errorFormater.middleware';
 
 export default class AnyBodyController implements Controller {
     public path = '/auth';
@@ -21,9 +23,37 @@ export default class AnyBodyController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.post(`${this.path}/login`, this.loggingIn);
+        this.router.post(`${this.path}/login`, this.loginValidation, (req, res, next) => {
+            const result = validationResult(req).formatWith(errorFormatter);
+            if (!result.isEmpty()) {
+                return res.status(422).json({
+                    code: 422,
+                    status: "Erorr",
+                    message: "Unprocessable Entity",
+                    result: result.array()
+                });
+            }
+        }, this.loggingIn);
+
         this.router.post(`${this.path}/register`, this.registering);
 
+    }
+
+    private loginValidation = async (req, res, next) => {
+        check('username').exists({ checkFalsy: true }).withMessage("can not be blank.")
+        const result = await validationResult(req).formatWith(errorFormatter);
+        console.log('error');
+
+        if (!result.isEmpty()) {
+            res.status(422).json({
+                code: 422,
+                status: "Erorr",
+                message: "Unprocessable Entity",
+                result: result.array()
+            });
+        }
+        next();
+        // return [check('username').exists({ checkFalsy: true }).withMessage("can not be blank.")];
     }
 
     private loggingIn = async (request: express.Request, response: express.Response, next: express.NextFunction) => {

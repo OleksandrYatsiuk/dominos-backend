@@ -37,9 +37,6 @@ class App {
         this.app.use(bodyParser.json());
     }
 
-    public expressValidator(){
-        
-    }
 
     public listen() {
         this.app.listen(process.env.PORT, () => {
@@ -48,6 +45,7 @@ class App {
     }
 
     private initializeMiddlewares() {
+        // this.app.use(expressValidator.);
         this.app.use(bodyParser.json());
     }
 
