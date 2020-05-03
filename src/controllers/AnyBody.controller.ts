@@ -1,4 +1,5 @@
 import * as express from 'express';
+import { Model } from 'mongoose';
 import Controller from '../interfaces/controller.interface';
 import userModel from '../models/user.model';
 import authModel, { loginSchema } from '../models/authToken.model';
@@ -36,39 +37,64 @@ export default class AnyBodyController implements Controller {
                 this.userHelper.isTokenExpired(authToken.expiredAt) ? hash = this.userHelper.newToken(username, password) : hash = authToken.token;
                 this.userHelper.updateTokenTable(authToken._id, user._id, hash, response)
             } else {
-                next(new UnprocessableEntityException([
+                next(new UnprocessableEntityException(
                     { field: 'username', message: "Username or Password is invalid." }
-                ]));
+                ));
             }
         } else {
-            next(new UnprocessableEntityException([
+            next(new UnprocessableEntityException(
                 { field: 'username', message: "Username or Password is invalid." }
-            ]));
+            ));
         }
     }
 
     private registering = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const registerData: Registration = request.body;
-        console.log(request.body)
+        console.log(this.find(this.user, { username: registerData.username }, next))
+
+        // this.user.findOne({ email: registerData.email }).then(e => {
+        //     if (e) {
+        //         next(
+        //             new UnprocessableEntityException({ field: 'email', message: `Email "${registerData.email}" has already been taken.` })
+        //         )
+        //     }
+        // })
+        // this.user.findOne({ username: registerData.username }).then(e => {
+        //     if (e) {
+        //         next(
+        //             new UnprocessableEntityException({ field: 'username', message: `Username "${registerData.username}" has already been taken.` })
+        //         )
+        //     }
+        // })
         const user = new this.user(registerData);
-        user.save()
-            .then(user => {
-                code201(response, {
-                    result: {
-                        id: user._id,
-                        username: user.username,
-                        fullName: user.fullName,
-                        email: user.email,
-                        role: user.role,
-                        location: user.location,
-                        birthday: user.birthday,
-                        phone: user.phone,
-                        createdAt: user.createdAt,
-                        updatedAt: user.updatedAt,
-                        deletedAt: user.deletedAt,
-                        deletedBy: user.deletedBy
-                    }
-                })
-            })
+        // user.save()
+        //     .then(user => {
+        //         code201(response, {
+        //             result: {
+        //                 id: user._id,
+        //                 username: user.username,
+        //                 fullName: user.fullName,
+        //                 email: user.email,
+        //                 role: user.role,
+        //                 location: user.location,
+        //                 birthday: user.birthday,
+        //                 phone: user.phone,
+        //                 createdAt: user.createdAt,
+        //                 updatedAt: user.updatedAt,
+        //                 deletedAt: user.deletedAt,
+        //                 deletedBy: user.deletedBy
+        //             }
+        //         })
+        //     })
     }
+
+    private find(module: Model<any>, fields, fn: Function): void {
+        module.find(fields).then(resp => {
+            if (resp.length > 0) {
+                fn(new UnprocessableEntityException({ field: "username", message: "pass" }))
+            } else {
+                return true;
+            }
+        });
+    };
 }

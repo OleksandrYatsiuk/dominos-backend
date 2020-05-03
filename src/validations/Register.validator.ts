@@ -23,7 +23,6 @@ export const registerSchema = Joi.object({
         'string.empty': "can not be blank.",
     }),
     password: Joi.string().required().label("Password").messages({
-        "string.base": "must be a string.",
         'any.required': "can not be blank.",
         'string.empty': "can not be blank."
     }),
