@@ -1,11 +1,13 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
-import errorMiddleware from './middleware/error.middleware';
 import * as mongoose from 'mongoose';
+import { createValidator } from 'express-joi-validation';
+import errorMiddleware from './middleware/UnprocessableEntityException.middleware';
 
 class App {
     public app: express.Application;
     public port: number;
+    public validator = createValidator({ statusCode: 422, passError: true })
 
     constructor(controllers, port) {
         this.app = express();
@@ -45,11 +47,11 @@ class App {
     }
 
     private initializeMiddlewares() {
-        // this.app.use(expressValidator.);
         this.app.use(bodyParser.json());
     }
 
     private initializeErrorHandling() {
+        this.app.use(createValidator);
         this.app.use(errorMiddleware);
     }
 

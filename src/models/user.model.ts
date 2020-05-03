@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
-import User from './user.interface';
- 
+import User from '../interfaces/user.interface';
+import * as Joi from '@hapi/joi';
+
 const userSchema = new mongoose.Schema({
     id: mongoose.Schema.Types.ObjectId,
     fullName: { type: String },
@@ -27,5 +28,5 @@ const userSchema = new mongoose.Schema({
         type: Number, default: null
     }
 }, { versionKey: false });
- 
+
 export default mongoose.model<User & mongoose.Document>('users', userSchema);

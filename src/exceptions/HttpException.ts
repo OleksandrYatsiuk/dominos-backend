@@ -1,11 +1,12 @@
-class HttpException extends Error {
-    status: number;
-    message: string;
-    constructor(status: number, message: string) {
-      super(message);
-      this.status = status;
-      this.message = message;
-    }
+import { Errors } from "middleware/base.response";
+
+export default class HttpException extends Error {
+  code: number;
+  result: string | Errors[];
+  constructor(code: number, result: any) {
+    super(result);
+    this.code = code;
+    this.result = result;
   }
-   
-  export default HttpException;
+}
+
