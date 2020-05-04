@@ -48,53 +48,36 @@ export default class AnyBodyController implements Controller {
         }
     }
 
-    private registering = (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    private registering = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const registerData: Registration = request.body;
-        console.log(this.find(this.user, { username: registerData.username }, next))
 
-        // this.user.findOne({ email: registerData.email }).then(e => {
-        //     if (e) {
-        //         next(
-        //             new UnprocessableEntityException({ field: 'email', message: `Email "${registerData.email}" has already been taken.` })
-        //         )
-        //     }
-        // })
-        // this.user.findOne({ username: registerData.username }).then(e => {
-        //     if (e) {
-        //         next(
-        //             new UnprocessableEntityException({ field: 'username', message: `Username "${registerData.username}" has already been taken.` })
-        //         )
-        //     }
-        // })
-        const user = new this.user(registerData);
-        // user.save()
-        //     .then(user => {
-        //         code201(response, {
-        //             result: {
-        //                 id: user._id,
-        //                 username: user.username,
-        //                 fullName: user.fullName,
-        //                 email: user.email,
-        //                 role: user.role,
-        //                 location: user.location,
-        //                 birthday: user.birthday,
-        //                 phone: user.phone,
-        //                 createdAt: user.createdAt,
-        //                 updatedAt: user.updatedAt,
-        //                 deletedAt: user.deletedAt,
-        //                 deletedBy: user.deletedBy
-        //             }
-        //         })
-        //     })
+        const emailExist = await this.user.findOne({ email: registerData.email })
+        const usernameExist = await this.user.findOne({ email: registerData.username })
+        if (emailExist) {
+            next(new UnprocessableEntityException({ field: 'email', message: `Email "${registerData.email}" has already been taken.` }))
+        } else if (usernameExist) {
+            next(new UnprocessableEntityException({ field: 'email', message: `Username "${registerData.username}" has already been taken.` }))
+        } else {
+            const user = new this.user(registerData);
+            user.save()
+                .then(user => {
+                    code201(response, {
+                        result: {
+                            id: user._id,
+                            username: user.username,
+                            fullName: user.fullName,
+                            email: user.email,
+                            role: user.role,
+                            location: user.location,
+                            birthday: user.birthday,
+                            phone: user.phone,
+                            createdAt: user.createdAt,
+                            updatedAt: user.updatedAt,
+                            deletedAt: user.deletedAt,
+                            deletedBy: user.deletedBy
+                        }
+                    })
+                })
+        }
     }
-
-    private find(module: Model<any>, fields, fn: Function): void {
-        module.find(fields).then(resp => {
-            if (resp.length > 0) {
-                fn(new UnprocessableEntityException({ field: "username", message: "pass" }))
-            } else {
-                return true;
-            }
-        });
-    };
 }

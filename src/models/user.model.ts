@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
+import * as  mongoosePaginate from 'mongoose-paginate';
 import User from '../interfaces/user.interface';
-import * as Joi from '@hapi/joi';
 
 const userSchema = new mongoose.Schema({
     id: mongoose.Schema.Types.ObjectId,
@@ -28,5 +28,7 @@ const userSchema = new mongoose.Schema({
         type: Number, default: null
     }
 }, { versionKey: false });
+
+userSchema.plugin(mongoosePaginate);
 
 export default mongoose.model<User & mongoose.Document>('users', userSchema);

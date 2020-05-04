@@ -1,9 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import * as express from 'express';
-import { Authentication } from "../../../interfaces/authentication.interface";
 import { getCurrentTime, setTokenLifeTime } from "../../../utils/current-time-UTC";
 import { code200 } from "../../../middleware/base.response";
-import UnprocessableEntityException from "../../../exceptions/UnprocessableEntityException";
 import userModel from '../../../models/user.model';
 import authToken from '../../../models/authToken.model';
 
@@ -28,7 +26,7 @@ export class LoginHelper {
     public isTokenExpired(time: number): boolean {
         return time < getCurrentTime();
     }
-    public updateTokenTable(tokenId, userId, token, response: express.Response) {
+    public updateTokenTable(tokenId: string, userId: string, token: string, response: express.Response) {
         this.authToken.findByIdAndUpdate(tokenId, {
             userId: userId,
             token: token,
@@ -42,23 +40,5 @@ export class LoginHelper {
                     }
                 })
             })
-    }
-
-    private login = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
-
-        // if (this.isPasswordCorrect(password, user.passwordHash)) {
-        //     const authToken = await this.authToken.findOne({ userId: user._id })
-        //     this.isTokenExpired(authToken.expiredAt) ? hash = this.newToken(username, password) : hash = authToken.token;
-        //     this.updateTokenTable(authToken._id, user._id, hash, response)
-        // } else {
-        //     next(new UnprocessableEntityException([
-        //         { field: 'username', message: "Username or Password is invalid." }
-        //     ]));
-        // }
-        // } else {
-        //     next(new UnprocessableEntityException([
-        //         { field: 'username', message: "Username or Password is invalid." }
-        //     ]));
-        // }
     }
 }

@@ -18,6 +18,7 @@
     "@types/joigoose": "^2.0.4",
     "@types/moment": "^2.13.0",
     "@types/mongoose": "^5.7.14",
+    "@types/mongoose-paginate": "^5.0.8",
     "@types/nodemon": "^1.19.0",
     "@types/properties-reader": "0.0.2",
     "bcrypt": "^4.0.1",
@@ -31,6 +32,7 @@
     "joigoose": "^7.0.0",
     "moment": "^2.25.1",
     "mongoose": "^5.9.11",
+    "mongoose-paginate": "^5.0.3",
     "reflect-metadata": "^0.1.13",
     "ts-node": "^8.9.1",
     "typescript": "^3.8.3"

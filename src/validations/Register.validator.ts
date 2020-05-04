@@ -1,9 +1,4 @@
-import user from "../models/user.model";
 import * as Joi from "@hapi/joi";
-import UnprocessableEntityException from "../exceptions/UnprocessableEntityException";
-
-
-
 
 export const registerSchema = Joi.object({
     username: Joi.string().required().label('Username').messages({
@@ -26,9 +21,10 @@ export const registerSchema = Joi.object({
         'any.required': "can not be blank.",
         'string.empty': "can not be blank."
     }),
-    confirmPassword: Joi.string().required().label("Confirm Password").messages({
-        "string.base": "must be a string.",
-        'any.required': "can not be blank.",
-        'string.empty': "can not be blank."
-    })
+    confirmPassword: Joi.string().required()
+        .label("Confirm Password")
+        .valid(Joi.ref('password')).messages({
+            'any.required': "can not be blank.",
+            'any.only': 'should be equal to "Password"'
+        })
 })
