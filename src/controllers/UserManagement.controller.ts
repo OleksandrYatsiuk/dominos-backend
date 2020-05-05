@@ -7,17 +7,10 @@ import { pagination } from '../validations/Pagination.validator';
 import NotFoundException from '../exceptions/NotFoundException';
 import { getCurrentTime } from '../utils/current-time-UTC';
 import { updateRole } from '../validations/UserManagement.validator';
+import checkAuth from '../middleware/auth.middleware';
+import checkRoles from '../middleware/roles.middleware';
+import { Roles } from '../interfaces/roles.interface';
 
-export interface Pagination {
-    total: number
-    limit: number,
-    page: number,
-    pages: number,
-}
-
-export interface UserList extends Pagination {
-    sort: number
-}
 
 export default class UserManagementController implements Controller {
     public path = '/user-management';
@@ -29,9 +22,9 @@ export default class UserManagementController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.get(`${this.path}`, validate(pagination, 'query'), this.getList);
-        this.router.delete(`${this.path}/:id`, this.remove);
-        this.router.put(`${this.path}/:id/role`, validate(updateRole), this.updateRole);
+        this.router.get(`${this.path}`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(pagination, 'query'), this.getList);
+        this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), this.remove);
+        this.router.put(`${this.path}/:id/role`, checkAuth, checkRoles([Roles.techadmin]), validate(updateRole), this.updateRole);
 
     }
 

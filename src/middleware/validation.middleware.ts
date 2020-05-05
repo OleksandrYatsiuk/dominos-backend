@@ -1,4 +1,3 @@
-import * as Joi from "@hapi/joi";
 import { Request, Response, NextFunction } from "express";
 import { code422 } from "./base.response";
 

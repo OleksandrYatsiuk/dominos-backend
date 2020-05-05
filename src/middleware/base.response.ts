@@ -1,11 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-import { Pagination } from "controllers/UserManagement.controller";
 
 export interface Errors {
     field: string,
     message: string
 }
-
+export interface Pagination {
+    total: number
+    limit: number,
+    page: number,
+    pages: number,
+}
 
 export function code422(response: Response, errors: any) {
     response.status(422).json({
@@ -31,6 +35,15 @@ export function code401(response: Response) {
         status: "Error",
         message: 'Unauthorized',
         result: "Your request was made with invalid credentials."
+    })
+}
+
+export function code403(response: Response) {
+    response.status(403).json({
+        code: 403,
+        status: "Error",
+        message: 'Forbidden',
+        result: "You are not allowed to perform this action."
     })
 }
 

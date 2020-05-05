@@ -6,6 +6,7 @@ import { code200, code404, code204, code401 } from '../middleware/base.response'
 import validate from '../middleware/validation.middleware';
 import { update, updateLocation } from '../validations/UserManagement.validator';
 import { getCurrentTime } from '../utils/current-time-UTC';
+import checkAuth from '../middleware/auth.middleware';
 
 export default class UserController implements Controller {
     public path = '/user';
@@ -18,10 +19,10 @@ export default class UserController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.patch(`${this.path}/:id`, validate(update), this.update);
-        this.router.put(`${this.path}/location`, validate(updateLocation), this.updateLocation);
-        this.router.get(`${this.path}/current`, this.current);
-        this.router.post(`${this.path}/logout`, this.logout);
+        this.router.patch(`${this.path}/:id`, checkAuth, validate(update), this.update);
+        this.router.put(`${this.path}/location`, checkAuth, validate(updateLocation), this.updateLocation);
+        this.router.get(`${this.path}/current`, checkAuth, this.current);
+        this.router.post(`${this.path}/logout`, checkAuth, this.logout);
     }
 
     private update = (request: express.Request, response: express.Response, next: express.NextFunction) => {
