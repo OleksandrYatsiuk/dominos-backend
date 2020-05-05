@@ -3,15 +3,18 @@ import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
 import { createValidator } from 'express-joi-validation';
 import errorMiddleware from './middleware/UnprocessableEntityException.middleware';
+import { code404 } from './middleware/base.response';
 
 class App {
     public app: express.Application;
     public port: number;
+    public version: string;
     public validator = createValidator({ statusCode: 422, passError: true })
 
-    constructor(controllers, port) {
+    constructor(controllers, port: number, version: string) {
         this.app = express();
         this.port = port;
+        this.version = version;
         this.setBodyParser();
         this.setCords();
         this.connectToTheDatabase();
@@ -57,8 +60,11 @@ class App {
 
     private initializeControllers(controllers) {
         controllers.forEach((controller) => {
-            this.app.use('/', controller.router);
+            this.app.use(`/api${this.version}`, controller.router);
         });
+        this.app.use((request: express.Request, response: express.Response, next: express.NextFunction) => {
+            next(code404(response, 'Page not found!'))
+        })
     }
 
     private connectToTheDatabase() {

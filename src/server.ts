@@ -12,6 +12,6 @@ const app = new App(
         new UserManagementController(),
         new PostsController()
     ],
-    5000,
+    5000, '/v1'
 );
 app.listen();
