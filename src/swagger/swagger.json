@@ -1,0 +1,1216 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "description": "Dominos Test API",
+        "version": "1.0.0",
+        "title": "Dominos Web App API",
+        "termsOfService": "https://dominos-app.herokuapp.com/rest/swagger"
+    },
+    "servers": [
+        {
+            "url": "/api/v1"
+        }
+    ],
+    "security": [
+        {
+            "Bearer": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "AnyBody"
+        },
+        {
+            "name": "User"
+        },
+        {
+            "name": "UserManagement"
+        },
+        {
+            "name": "Pizza"
+        },
+        {
+            "name": "Delivery"
+        },
+        {
+            "name": "Shops"
+        }
+    ],
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "security": [],
+                "summary": "Create access token for APP",
+                "tags": [
+                    "AnyBody"
+                ],
+                "operationId": "userCreateAccessToken",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status200"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "$ref": "#/components/schemas/token"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status422"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/login"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "security": [],
+                "summary": "Create new user",
+                "tags": [
+                    "AnyBody"
+                ],
+                "operationId": "userRegistration",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status201"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "$ref": "#/components/schemas/user"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status422"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/register"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/current": {
+            "get": {
+                "summary": "Get Current User",
+                "tags": [
+                    "User"
+                ],
+                "operationId": "userOverview",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status200"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "$ref": "#/components/schemas/user"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{userId}": {
+            "patch": {
+                "summary": "Update user profile",
+                "tags": [
+                    "User"
+                ],
+                "operationId": "userUpdate",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "userId",
+                        "description": "User id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "5e8b2adb9e2aeb0024bf7627"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status200"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "$ref": "#/components/schemas/user"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status403"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status404"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status422"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/update"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/location": {
+            "post": {
+                "summary": "Update user Location",
+                "tags": [
+                    "User"
+                ],
+                "operationId": "updateLocation",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status200"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "$ref": "#/components/schemas/user"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status422"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/location"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/logout": {
+            "post": {
+                "summary": "Remove access token for APP",
+                "tags": [
+                    "User"
+                ],
+                "operationId": "userLogout",
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status204"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user-management": {
+            "get": {
+                "summary": "Show User List",
+                "tags": [
+                    "UserManagement"
+                ],
+                "operationId": "userList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status200"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/user"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user-management/{id}": {
+            "delete": {
+                "summary": "Remove User",
+                "tags": [
+                    "UserManagement"
+                ],
+                "operationId": "removeUser",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "User id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "5e8b2adb9e2aeb0024bf7627"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status204"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status403"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status404"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user-management/{id}/role": {
+            "put": {
+                "summary": "Update User Role",
+                "tags": [
+                    "UserManagement"
+                ],
+                "operationId": "updateRole",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "User id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "5e8b2adb9e2aeb0024bf7627"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status200"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status403"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status404"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "Bearer": {
+                "description": "",
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": ""
+            }
+        },
+        "schemas": {
+            "responseModel": {
+                "type": "object",
+                "required": [
+                    "code",
+                    "status",
+                    "message"
+                ],
+                "properties": {
+                    "code": {
+                        "type": "integer"
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "success"
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "result": {
+                        "type": "object"
+                    }
+                }
+            },
+            "status200": {
+                "title": "200 OK",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/responseModel"
+                    }
+                ],
+                "properties": {
+                    "code": {
+                        "example": 200
+                    },
+                    "status": {
+                        "example": "success"
+                    },
+                    "message": {
+                        "example": "OK"
+                    },
+                    "result": {
+                        "type": "object"
+                    }
+                }
+            },
+            "status200DataProvider": {
+                "title": "200 Data Provider",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/status200"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "_meta": {
+                                "type": "object",
+                                "properties": {
+                                    "pagination": {
+                                        "type": "object",
+                                        "properties": {
+                                            "totalCount": {
+                                                "type": "integer",
+                                                "example": 10
+                                            },
+                                            "pageCount": {
+                                                "type": "integer",
+                                                "example": 10
+                                            },
+                                            "currentPage": {
+                                                "type": "integer",
+                                                "example": 3
+                                            },
+                                            "perPage": {
+                                                "type": "integer",
+                                                "example": 20
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "status201": {
+                "title": "201 Created",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/responseModel"
+                    }
+                ],
+                "properties": {
+                    "code": {
+                        "example": 201
+                    },
+                    "status": {
+                        "example": "success"
+                    },
+                    "message": {
+                        "example": "Created"
+                    },
+                    "result": {
+                        "type": "object"
+                    }
+                }
+            },
+            "status204": {
+                "allOf": [
+                    {
+                        "title": "204 No Content"
+                    }
+                ]
+            },
+            "status404": {
+                "title": "404 Not Found",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/responseModel"
+                    }
+                ],
+                "properties": {
+                    "code": {
+                        "example": 404
+                    },
+                    "status": {
+                        "example": "error"
+                    },
+                    "message": {
+                        "example": "Not Found"
+                    },
+                    "result": {
+                        "type": "object"
+                    }
+                }
+            },
+            "status401": {
+                "title": "401 Unauthorized",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/responseModel"
+                    },
+                    {
+                        "properties": {
+                            "code": {
+                                "example": 401
+                            },
+                            "status": {
+                                "example": "error"
+                            },
+                            "message": {
+                                "example": "Unauthorized"
+                            },
+                            "result": {
+                                "example": "Your request was made with invalid credentials."
+                            }
+                        }
+                    }
+                ]
+            },
+            "status403": {
+                "title": "403 Forbidden",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/responseModel"
+                    }
+                ],
+                "properties": {
+                    "code": {
+                        "example": 403
+                    },
+                    "status": {
+                        "example": "error"
+                    },
+                    "message": {
+                        "example": "Forbidden"
+                    },
+                    "result": {
+                        "type": "string",
+                        "example": "You are not allowed to perform this action."
+                    }
+                }
+            },
+            "status422": {
+                "title": "422 Unprocessable Entity",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/responseModel"
+                    }
+                ],
+                "properties": {
+                    "code": {
+                        "example": 422
+                    },
+                    "status": {
+                        "example": "error"
+                    },
+                    "message": {
+                        "example": "Unprocessable Entity"
+                    },
+                    "result": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "field": {
+                                    "type": "string",
+                                    "example": "userId"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "User Id must be an integer."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "token": {
+                "type": "object",
+                "required": [
+                    "token",
+                    "expiredAt"
+                ],
+                "properties": {
+                    "token": {
+                        "type": "string",
+                        "example": "2b056Eqc8ePf9L4hJuirnz7yiudT09RNF485jc0sQcu51Bk1VVVGG6NK2b05p7kDf1LWAug4S3Xv2etGcOXcpnPnMuW6ZbeXJWYGX4boUeLWj9K2"
+                    },
+                    "expiredAt": {
+                        "type": "integer",
+                        "example": 1586365947
+                    }
+                }
+            },
+            "login": {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "example": "string123",
+                        "description": "Username minimum 3, maximum 15 characters"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "String123!",
+                        "description": "Minimum 8, maximum 255 characters"
+                    }
+                }
+            },
+            "user": {
+                "allOf": [
+                    {
+                        "type": "object",
+                        "required": [
+                            "id",
+                            "fullName",
+                            "username",
+                            "email"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "example": "5e8b2adb9e2aeb0024bf7627"
+                            },
+                            "username": {
+                                "type": "string",
+                                "example": "username"
+                            },
+                            "fullName": {
+                                "type": "string",
+                                "example": "anonimus"
+                            },
+                            "email": {
+                                "type": "string",
+                                "example": "test@test.com"
+                            },
+                            "role": {
+                                "type": "string",
+                                "enum": [
+                                    "public",
+                                    "projectManager",
+                                    "administrator"
+                                ],
+                                "example": "administrator"
+                            },
+                            "location": {
+                                "$ref": "#/components/schemas/location"
+                            },
+                            "birthday": {
+                                "type": "string",
+                                "example": "2020-04-11"
+                            },
+                            "phone": {
+                                "type": "integer",
+                                "example": 38098999999
+                            },
+                            "createdAt": {
+                                "type": "integer",
+                                "example": 1586365947
+                            },
+                            "updatedAt": {
+                                "type": "integer",
+                                "example": 1586365947
+                            },
+                            "deletedBy": {
+                                "type": "string",
+                                "example": "5e8b2adb9e2aeb0024bf7627"
+                            },
+                            "deletedAt": {
+                                "type": "integer",
+                                "example": 1586365947
+                            }
+                        }
+                    }
+                ]
+            },
+            "location": {
+                "type": "object",
+                "properties": {
+                    "lat": {
+                        "type": "number",
+                        "example": 50.545644
+                    },
+                    "lng": {
+                        "type": "number",
+                        "example": 30.545644
+                    }
+                }
+            },
+            "changePassword": {
+                "type": "object",
+                "properties": {
+                    "currentPassword": {
+                        "type": "string",
+                        "example": "pass123!"
+                    },
+                    "newPassword": {
+                        "type": "string",
+                        "example": "pass123!"
+                    },
+                    "confirmPassword": {
+                        "type": "string",
+                        "example": "pass123!"
+                    }
+                }
+            },
+            "register": {
+                "type": "object",
+                "required": [
+                    "fullName",
+                    "username",
+                    "email",
+                    "password",
+                    "confirmPassword"
+                ],
+                "properties": {
+                    "fullName": {
+                        "type": "string",
+                        "example": "anonimus"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "username"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "test@test.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "example": "String123!"
+                    },
+                    "confirmPassword": {
+                        "type": "string",
+                        "example": "String123!"
+                    }
+                }
+            },
+            "update": {
+                "type": "object",
+                "required": [
+                    "fullName",
+                    "username",
+                    "email"
+                ],
+                "properties": {
+                    "fullName": {
+                        "type": "string",
+                        "example": "anonimus"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "username"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "test@test.com"
+                    },
+                    "birthday": {
+                        "type": "integer",
+                        "example": 1586365947
+                    },
+                    "phone": {
+                        "type": "integer",
+                        "example": 9379992
+                    }
+                }
+            },
+            "delivery": {
+                "type": "object",
+                "required": [
+                    "firstName",
+                    "phone",
+                    "email",
+                    "amount",
+                    "payment",
+                    "pizzaIds"
+                ],
+                "properties": {
+                    "firstName": {
+                        "type": "string",
+                        "example": "Oleksandr"
+                    },
+                    "phone": {
+                        "type": "integer",
+                        "example": 380989379992
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "test@test.com"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "example": "5e8b2adb9e2aeb0024bf7627"
+                    },
+                    "shop": {
+                        "type": "string",
+                        "example": "5e4d6f4ad219a81e87b87d34"
+                    },
+                    "pizzaIds": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "5e4d6f4ad219a81e87b87d34"
+                        }
+                    },
+                    "payment": {
+                        "type": "object",
+                        "properties": {
+                            "coupon": {
+                                "type": "string",
+                                "example": "asd231"
+                            },
+                            "remainder": {
+                                "type": "string",
+                                "example": "250"
+                            },
+                            "type": {
+                                "type": "string",
+                                "example": "card",
+                                "enum": [
+                                    "card",
+                                    "cash"
+                                ]
+                            }
+                        }
+                    },
+                    "amount": {
+                        "type": "integer",
+                        "example": 100500
+                    },
+                    "date": {
+                        "type": "object",
+                        "required": [
+                            "date",
+                            "time"
+                        ],
+                        "properties": {
+                            "date": {
+                                "type": "string",
+                                "example": "2020-04-11"
+                            },
+                            "time": {
+                                "type": "number",
+                                "example": "21:30"
+                            }
+                        }
+                    },
+                    "address": {
+                        "type": "object",
+                        "properties": {
+                            "street": {
+                                "type": "string",
+                                "example": "Street"
+                            },
+                            "house": {
+                                "type": "number",
+                                "example": 14
+                            },
+                            "flat": {
+                                "type": "number",
+                                "example": 1
+                            },
+                            "entrance": {
+                                "type": "string",
+                                "example": "1A"
+                            },
+                            "code": {
+                                "type": "number",
+                                "example": 1111
+                            },
+                            "floor": {
+                                "type": "number",
+                                "example": 5
+                            }
+                        }
+                    },
+                    "comment": {
+                        "type": "string",
+                        "example": "Some comment"
+                    }
+                }
+            },
+            "pizza": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "5e4d6f4ad219a81e87b87d34"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Пепероні Блюз"
+                    },
+                    "category": {
+                        "type": "string",
+                        "example": "Класичні",
+                        "enum": [
+                            "Краща ціна",
+                            "Класичні",
+                            "Фірмові",
+                            "Легенди",
+                            "Преміум"
+                        ]
+                    },
+                    "ingredients": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ingredients"
+                        }
+                    },
+                    "weight": {
+                        "type": "object",
+                        "properties": {
+                            "small": {
+                                "type": "number",
+                                "example": 342
+                            },
+                            "middle": {
+                                "type": "number",
+                                "example": 343
+                            },
+                            "big": {
+                                "type": "number",
+                                "example": 344
+                            }
+                        }
+                    },
+                    "price": {
+                        "type": "object",
+                        "properties": {
+                            "low": {
+                                "type": "number",
+                                "example": 99.99
+                            },
+                            "medium": {
+                                "type": "number",
+                                "example": 129.99
+                            },
+                            "high": {
+                                "type": "number",
+                                "example": 200.99
+                            }
+                        }
+                    },
+                    "image": {
+                        "type": "string",
+                        "example": "https://example.com/image.png",
+                        "description": "Can be null"
+                    }
+                }
+            },
+            "ingredients": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "5e4d6f4ad219a81e87b87d34"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Моцарела"
+                    }
+                }
+            },
+            "shops": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "5e4d6f4ad219a81e87b87d34"
+                    },
+                    "address": {
+                        "type": "string",
+                        "example": "Danyla Shcherbakivskoho St, 4, Kyiv, Ukraine, 03190"
+                    },
+                    "lat": {
+                        "type": "number",
+                        "example": 30.456548
+                    },
+                    "lng": {
+                        "type": "number",
+                        "example": 50.545644
+                    },
+                    "label": {
+                        "type": "string",
+                        "example": "Domino`s Pizza"
+                    },
+                    "draggable": {
+                        "type": "boolean",
+                        "example": false
+                    }
+                }
+            },
+            "timeAt": {
+                "type": "object",
+                "properties": {
+                    "createdAt": {
+                        "type": "integer",
+                        "example": 1586365947
+                    },
+                    "updatedAt": {
+                        "type": "integer",
+                        "example": 1586365947
+                    },
+                    "deletedBy": {
+                        "type": "string",
+                        "example": "5e8b2adb9e2aeb0024bf7627"
+                    },
+                    "deletedAt": {
+                        "type": "integer",
+                        "example": 1586365947
+                    }
+                }
+            }
+        }
+    }
+}

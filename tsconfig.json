@@ -2,6 +2,8 @@
     "compilerOptions": {
         "moduleResolution": "node",
         "experimentalDecorators": true,
+        "resolveJsonModule": true,
+        "esModuleInterop":false,
         "sourceMap": true,
         "target": "es2017",
         "outDir": "./dist",
