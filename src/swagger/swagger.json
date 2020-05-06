@@ -191,25 +191,13 @@
                 }
             }
         },
-        "/user/{userId}": {
+        "/user/profile": {
             "patch": {
                 "summary": "Update user profile",
                 "tags": [
                     "User"
                 ],
                 "operationId": "userUpdate",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "userId",
-                        "description": "User id",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "example": "5e8b2adb9e2aeb0024bf7627"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
