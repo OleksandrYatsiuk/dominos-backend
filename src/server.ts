@@ -5,6 +5,7 @@ import AnyBodyController from './controllers/AnyBody.controller';
 import UserManagementController from './controllers/Pizza.controller';
 import UserController from './controllers/User.controller';
 import PizzaController from './controllers/Pizza.controller';
+import DeliveryController from './controllers/Delivery.controller';
 
 const app = new App(
     [
@@ -12,6 +13,7 @@ const app = new App(
         new AnyBodyController(),
         new UserManagementController(),
         new PizzaController(),
+        new DeliveryController(),
         new PostsController()
     ],
     5000, '/v1'

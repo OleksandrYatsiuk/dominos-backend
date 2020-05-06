@@ -78,7 +78,6 @@ export default class PizzaController implements Controller {
         pizza.save()
             .then(pizza => code200(response, pizza))
             .catch(err => {
-                console.log(err);
                 code404(response, "Pizza was not found.")
             })
     }

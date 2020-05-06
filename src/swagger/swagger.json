@@ -897,6 +897,194 @@
                     }
                 }
             }
+        },
+        "/delivery": {
+            "get": {
+                "summary": "Show List of Deliveries",
+                "security": [],
+                "tags": [
+                    "Delivery"
+                ],
+                "operationId": "deliveryList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status200"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "allOf": [
+                                                            {
+                                                                "$ref": "#/components/schemas/delivery"
+                                                            },
+                                                            {
+                                                                "$ref": "#/components/schemas/timeAt"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/delivery/create": {
+            "post": {
+                "summary": "Create Delivery",
+                "tags": [
+                    "Delivery"
+                ],
+                "operationId": "createDelivery",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status201"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/delivery"
+                                                        },
+                                                        {
+                                                            "$ref": "#/components/schemas/timeAt"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status422"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/delivery"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/delivery/{id}": {
+            "delete": {
+                "summary": "Remove Delivery",
+                "tags": [
+                    "Delivery"
+                ],
+                "operationId": "removeDelivery",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "Delivery Id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "5e8b2adb9e2aeb0024bf7627"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status204"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status403"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status404"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
