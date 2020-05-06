@@ -33,7 +33,10 @@
             "name": "Delivery"
         },
         {
-            "name": "Shops"
+            "name": "Shop"
+        },
+        {
+            "name": "Ingredient"
         }
     ],
     "paths": {
@@ -1079,6 +1082,59 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/status404"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/shops": {
+            "get": {
+                "summary": "Show List of Shops",
+                "security": [],
+                "tags": [
+                    "Shop"
+                ],
+                "operationId": "shopsList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status200"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "allOf": [
+                                                            {
+                                                                "$ref": "#/components/schemas/shops"
+                                                            },
+                                                            {
+                                                                "$ref": "#/components/schemas/timeAt"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
                                 }
                             }
                         }
