@@ -6,9 +6,8 @@ import errorMiddleware from './middleware/UnprocessableEntityException.middlewar
 import { code404 } from './middleware/base.response';
 import * as swaggerUi from 'swagger-ui-express';
 import * as doc from './swagger/swagger.json'
-// const config = require ( "../config.json" );
-const swaggerDocument = require('./swagger/swagger.json');
-// import * as swaggerDocument from '.swagger/swagger.json';
+
+
 class App {
     public app: express.Application;
     public port: number;
@@ -53,7 +52,7 @@ class App {
                 explorer: true
             }
         }
-        this.app.use('/rest/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+        this.app.use('/rest/swagger', swaggerUi.serve, swaggerUi.setup(doc, options));
     }
 
 
@@ -74,7 +73,7 @@ class App {
     }
 
     private initializeControllers(controllers) {
-        this.app.use('/rest/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+        this.app.use('/rest/swagger', swaggerUi.serve, swaggerUi.setup(doc));
         controllers.forEach((controller) => {
             this.app.use(`/api${this.version}`, controller.router);
         });

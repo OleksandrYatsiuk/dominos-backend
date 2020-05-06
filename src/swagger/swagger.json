@@ -114,7 +114,14 @@
                                         {
                                             "properties": {
                                                 "result": {
-                                                    "$ref": "#/components/schemas/user"
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/user"
+                                                        },
+                                                        {
+                                                            "$ref": "#/components/schemas/timeAt"
+                                                        }
+                                                    ]
                                                 }
                                             }
                                         }
@@ -169,7 +176,14 @@
                                         {
                                             "properties": {
                                                 "result": {
-                                                    "$ref": "#/components/schemas/user"
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/user"
+                                                        },
+                                                        {
+                                                            "$ref": "#/components/schemas/timeAt"
+                                                        }
+                                                    ]
                                                 }
                                             }
                                         }
@@ -211,7 +225,14 @@
                                         {
                                             "properties": {
                                                 "result": {
-                                                    "$ref": "#/components/schemas/user"
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/user"
+                                                        },
+                                                        {
+                                                            "$ref": "#/components/schemas/timeAt"
+                                                        }
+                                                    ]
                                                 }
                                             }
                                         }
@@ -236,16 +257,6 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/status403"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/status404"
                                 }
                             }
                         }
@@ -296,11 +307,38 @@
                                         {
                                             "properties": {
                                                 "result": {
-                                                    "$ref": "#/components/schemas/user"
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/user"
+                                                        },
+                                                        {
+                                                            "$ref": "#/components/schemas/timeAt"
+                                                        }
+                                                    ]
                                                 }
                                             }
                                         }
                                     ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status403"
                                 }
                             }
                         }
@@ -527,6 +565,333 @@
                                 "schema": {
                                     "$ref": "#/components/schemas/status404"
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pizza": {
+            "get": {
+                "summary": "Show Pizzas List",
+                "security": [],
+                "tags": [
+                    "Pizza"
+                ],
+                "operationId": "pizzaList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status200"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "allOf": [
+                                                            {
+                                                                "$ref": "#/components/schemas/pizza"
+                                                            },
+                                                            {
+                                                                "$ref": "#/components/schemas/timeAt"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pizza/{id}": {
+            "get": {
+                "summary": "Pizza Overview",
+                "security": [],
+                "tags": [
+                    "Pizza"
+                ],
+                "operationId": "pizzaOverview",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "Pizza id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "5e8b2adb9e2aeb0024bf7627"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status200"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "allOf": [
+                                                            {
+                                                                "$ref": "#/components/schemas/pizza"
+                                                            },
+                                                            {
+                                                                "$ref": "#/components/schemas/timeAt"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status404"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pizza/{pizzaId}": {
+            "delete": {
+                "summary": "Remove Pizza",
+                "tags": [
+                    "Pizza"
+                ],
+                "operationId": "removePizza",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "pizzaId",
+                        "description": "Pizza id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "5e8b2adb9e2aeb0024bf7627"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status204"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status403"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status404"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pizza/create": {
+            "post": {
+                "summary": "Create Pizza",
+                "tags": [
+                    "Pizza"
+                ],
+                "operationId": "createPizza",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status201"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/pizza"
+                                                        },
+                                                        {
+                                                            "$ref": "#/components/schemas/timeAt"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status422"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/pizza"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pizza/{Id}": {
+            "put": {
+                "summary": "Edit Pizza",
+                "tags": [
+                    "Pizza"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "Id",
+                        "description": "Pizza id",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "5e8b2adb9e2aeb0024bf7627"
+                        }
+                    }
+                ],
+                "operationId": "editPizza",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status200"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/pizza"
+                                                        },
+                                                        {
+                                                            "$ref": "#/components/schemas/timeAt"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status422"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/pizza"
                             }
                         }
                     }
