@@ -36,7 +36,7 @@
             "name": "Shop"
         },
         {
-            "name": "Ingredient"
+            "name": "Ingredients"
         }
     ],
     "paths": {
@@ -119,6 +119,9 @@
                                                 "result": {
                                                     "allOf": [
                                                         {
+                                                            "$ref": "#/components/schemas/id"
+                                                        },
+                                                        {
                                                             "$ref": "#/components/schemas/user"
                                                         },
                                                         {
@@ -181,6 +184,9 @@
                                                 "result": {
                                                     "allOf": [
                                                         {
+                                                            "$ref": "#/components/schemas/id"
+                                                        },
+                                                        {
                                                             "$ref": "#/components/schemas/user"
                                                         },
                                                         {
@@ -229,6 +235,9 @@
                                             "properties": {
                                                 "result": {
                                                     "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/id"
+                                                        },
                                                         {
                                                             "$ref": "#/components/schemas/user"
                                                         },
@@ -291,7 +300,7 @@
             }
         },
         "/user/location": {
-            "post": {
+            "put": {
                 "summary": "Update user Location",
                 "tags": [
                     "User"
@@ -311,6 +320,9 @@
                                             "properties": {
                                                 "result": {
                                                     "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/id"
+                                                        },
                                                         {
                                                             "$ref": "#/components/schemas/user"
                                                         },
@@ -403,9 +415,50 @@
                 }
             }
         },
+        "/user/change-password": {
+            "post": {
+                "summary": "Change Password",
+                "tags": [
+                    "User"
+                ],
+                "operationId": "changePassword",
+                "responses": {
+                    "204": {
+                        "description": "No Content",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status204"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    }
+                },
+                 "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/changePassword"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/user-management": {
             "get": {
                 "summary": "Show User List",
+                "description": "Allowed roles: Administrator, Project Manager",
                 "tags": [
                     "UserManagement"
                 ],
@@ -425,7 +478,17 @@
                                                 "result": {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "#/components/schemas/user"
+                                                        "allOf": [
+                                                            {
+                                                                "$ref": "#/components/schemas/id"
+                                                            },
+                                                            {
+                                                                "$ref": "#/components/schemas/user"
+                                                            },
+                                                            {
+                                                                "$ref": "#/components/schemas/timeAt"
+                                                            }
+                                                        ]
                                                     }
                                                 }
                                             }
@@ -451,6 +514,7 @@
         "/user-management/{id}": {
             "delete": {
                 "summary": "Remove User",
+                "description": "Allowed roles: Administrator",
                 "tags": [
                     "UserManagement"
                 ],
@@ -514,6 +578,7 @@
         "/user-management/{id}/role": {
             "put": {
                 "summary": "Update User Role",
+                "description": "Allowed roles: Administrator",
                 "tags": [
                     "UserManagement"
                 ],
@@ -598,6 +663,9 @@
                                                     "type": "array",
                                                     "items": {
                                                         "allOf": [
+                                                            {
+                                                                "$ref": "#/components/schemas/id"
+                                                            },
                                                             {
                                                                 "$ref": "#/components/schemas/pizza"
                                                             },
@@ -705,6 +773,7 @@
         "/pizza/{pizzaId}": {
             "delete": {
                 "summary": "Remove Pizza",
+                "description": "Allowed roles: Administrator",
                 "tags": [
                     "Pizza"
                 ],
@@ -768,6 +837,7 @@
         "/pizza/create": {
             "post": {
                 "summary": "Create Pizza",
+                "description": "Allowed roles: Administrator, Project Manager",
                 "tags": [
                     "Pizza"
                 ],
@@ -786,6 +856,9 @@
                                             "properties": {
                                                 "result": {
                                                     "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/id"
+                                                        },
                                                         {
                                                             "$ref": "#/components/schemas/pizza"
                                                         },
@@ -830,6 +903,7 @@
         "/pizza/{Id}": {
             "put": {
                 "summary": "Edit Pizza",
+                "description": "Allowed roles: Administrator, Project Manager",
                 "tags": [
                     "Pizza"
                 ],
@@ -860,6 +934,9 @@
                                             "properties": {
                                                 "result": {
                                                     "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/id"
+                                                        },
                                                         {
                                                             "$ref": "#/components/schemas/pizza"
                                                         },
@@ -904,6 +981,7 @@
         "/delivery": {
             "get": {
                 "summary": "Show List of Deliveries",
+                "description": "Allowed roles: Administrator, Project Manager, Public*",
                 "security": [],
                 "tags": [
                     "Delivery"
@@ -957,6 +1035,7 @@
         "/delivery/create": {
             "post": {
                 "summary": "Create Delivery",
+                "description": "Allowed roles: Administrator, Project Manager, Public",
                 "tags": [
                     "Delivery"
                 ],
@@ -975,6 +1054,9 @@
                                             "properties": {
                                                 "result": {
                                                     "allOf": [
+                                                        {
+                                                            "$ref": "#/components/schemas/id"
+                                                        },
                                                         {
                                                             "$ref": "#/components/schemas/delivery"
                                                         },
@@ -1029,6 +1111,7 @@
         "/delivery/{id}": {
             "delete": {
                 "summary": "Remove Delivery",
+                "description": "Allowed roles: Administrator",
                 "tags": [
                     "Delivery"
                 ],
@@ -1114,7 +1197,66 @@
                                                     "items": {
                                                         "allOf": [
                                                             {
+                                                                "$ref": "#/components/schemas/id"
+                                                            },
+                                                            {
                                                                 "$ref": "#/components/schemas/shops"
+                                                            },
+                                                            {
+                                                                "$ref": "#/components/schemas/timeAt"
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/status401"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ingredients": {
+            "get": {
+                "summary": "Show List of Ingredients",
+                "security": [],
+                "tags": [
+                    "Ingredients"
+                ],
+                "operationId": "ingredientList",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/status200"
+                                        },
+                                        {
+                                            "properties": {
+                                                "result": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "allOf": [
+                                                            {
+                                                                "$ref": "#/components/schemas/id"
+                                                            },
+                                                            {
+                                                                "$ref": "#/components/schemas/ingredients"
                                                             },
                                                             {
                                                                 "$ref": "#/components/schemas/timeAt"
@@ -1407,23 +1549,18 @@
                     {
                         "type": "object",
                         "required": [
-                            "id",
                             "fullName",
                             "username",
                             "email"
                         ],
                         "properties": {
-                            "id": {
-                                "type": "string",
-                                "example": "5e8b2adb9e2aeb0024bf7627"
-                            },
                             "username": {
                                 "type": "string",
                                 "example": "username"
                             },
                             "fullName": {
                                 "type": "string",
-                                "example": "anonimus"
+                                "example": "Full Name"
                             },
                             "email": {
                                 "type": "string",
@@ -1448,26 +1585,19 @@
                             "phone": {
                                 "type": "integer",
                                 "example": 38098999999
-                            },
-                            "createdAt": {
-                                "type": "integer",
-                                "example": 1586365947
-                            },
-                            "updatedAt": {
-                                "type": "integer",
-                                "example": 1586365947
-                            },
-                            "deletedBy": {
-                                "type": "string",
-                                "example": "5e8b2adb9e2aeb0024bf7627"
-                            },
-                            "deletedAt": {
-                                "type": "integer",
-                                "example": 1586365947
                             }
                         }
                     }
                 ]
+            },
+            "id": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "5e8b2adb9e2aeb0024bf7627"
+                    }
+                }
             },
             "location": {
                 "type": "object",
@@ -1541,7 +1671,7 @@
                 "properties": {
                     "fullName": {
                         "type": "string",
-                        "example": "anonimus"
+                        "example": "Full Name"
                     },
                     "username": {
                         "type": "string",
@@ -1679,10 +1809,6 @@
             "pizza": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "string",
-                        "example": "5e4d6f4ad219a81e87b87d34"
-                    },
                     "name": {
                         "type": "string",
                         "example": "Пепероні Блюз"
@@ -1701,7 +1827,8 @@
                     "ingredients": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/ingredients"
+                            "type": "string",
+                            "example": "5e8b2adb9e2aeb0024bf7627"
                         }
                     },
                     "weight": {
@@ -1748,10 +1875,6 @@
             "ingredients": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "string",
-                        "example": "5e4d6f4ad219a81e87b87d34"
-                    },
                     "name": {
                         "type": "string",
                         "example": "Моцарела"
@@ -1761,10 +1884,6 @@
             "shops": {
                 "type": "object",
                 "properties": {
-                    "id": {
-                        "type": "string",
-                        "example": "5e4d6f4ad219a81e87b87d34"
-                    },
                     "address": {
                         "type": "string",
                         "example": "Danyla Shcherbakivskoho St, 4, Kyiv, Ukraine, 03190"

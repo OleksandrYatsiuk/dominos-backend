@@ -8,6 +8,9 @@ import { update, updateLocation } from '../validations/UserManagement.validator'
 import { getCurrentTime } from '../utils/current-time-UTC';
 import checkAuth from '../middleware/auth.middleware';
 import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
+import * as bcrypt from 'bcrypt';
+import { changePassword } from '../validations/Register.validator';
+
 
 export default class UserController implements Controller {
     public path = '/user';
@@ -24,6 +27,7 @@ export default class UserController implements Controller {
         this.router.put(`${this.path}/location`, checkAuth, validate(updateLocation), this.updateLocation);
         this.router.get(`${this.path}/current`, checkAuth, this.current);
         this.router.post(`${this.path}/logout`, checkAuth, this.logout);
+        this.router.post(`${this.path}/change-password`, checkAuth, validate(changePassword), this.changePassword);
     }
 
     private update = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -117,6 +121,25 @@ export default class UserController implements Controller {
         this.authToken.findOneAndDelete({ token: request.headers.authorization.split(' ')[1] })
             .then(result => {
                 result ? code204(response) : code401(response);
+            })
+    }
+    private changePassword = (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        const { currentPassword, newPassword } = request.body;
+
+        this.authToken.findOne({ token: request.headers.authorization.split(' ')[1] })
+            .then(doc => {
+                this.user.findById(doc.userId).then(user => {
+                    if (!bcrypt.compareSync(currentPassword, user.passwordHash)) {
+                        next(new UnprocessableEntityException({ field: "currentPassword", "message": "Current Password is invalid." }))
+                    } else {
+                        const hash = bcrypt.hashSync(newPassword, 10)
+                        this.user.findByIdAndUpdate({ _id: user._id }, { $set: { passwordHash: hash } })
+                            .then(result => {
+                                code204(response);
+                            })
+                    }
+                }
+                )
             })
     }
 }

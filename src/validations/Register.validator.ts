@@ -33,3 +33,21 @@ export const registerSchema = Joi.object({
             'any.only': 'should be equal to "Password".'
         })
 })
+
+export const changePassword = Joi.object({
+    currentPassword: Joi.string().required().label("Current Password").messages({
+        'any.required': "can not be blank.",
+        'string.empty': "can not be blank."
+    }),
+    newPassword: Joi.string().required().label("New Password").messages({
+        'any.required': "can not be blank.",
+        'string.empty': "can not be blank."
+    }),
+    confirmPassword: Joi.string().required()
+        .label("Confirm Password")
+        .valid(Joi.ref('newPassword')).messages({
+            'any.required': "can not be blank.",
+            'any.only': 'should be equal to "New Password".'
+        })
+})
+

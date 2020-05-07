@@ -25,9 +25,9 @@ export default class PizzaController implements Controller {
     private initializeRoutes() {
         this.router.get(`${this.path}`, validate(pagination, 'query'), this.getList);
         this.router.get(`${this.path}/:id`, this.overview);
-        this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), this.remove);
+        this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), this.remove);
         this.router.post(`${this.path}/create`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(pizza), this.create);
-        this.router.put(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), validate(pizza), this.update);
+        this.router.put(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(pizza), this.update);
     }
 
     private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
