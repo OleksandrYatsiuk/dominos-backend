@@ -5,6 +5,7 @@ import { createValidator } from 'express-joi-validation';
 import errorMiddleware from './middleware/UnprocessableEntityException.middleware';
 import { code404 } from './middleware/base.response';
 import * as swaggerUi from 'swagger-ui-express';
+import * as swaggerJsDoc from 'swagger-jsdoc';
 import * as doc from './swagger/swagger.json'
 
 
@@ -47,11 +48,11 @@ class App {
     }
     private setSwagger() {
         var options = {
-            swaggerOptions: {
-                validatorUrl: null,
-                explorer: true
-            }
-        }
+            explorer: true,
+            host: 'http://localhost:5000/rest/swagger',
+            basePath: "/"
+        };
+
         this.app.use('/rest/swagger', swaggerUi.serve, swaggerUi.setup(doc, options));
     }
 

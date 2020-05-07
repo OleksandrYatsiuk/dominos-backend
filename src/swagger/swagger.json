@@ -61,7 +61,7 @@
                                         {
                                             "properties": {
                                                 "result": {
-                                                    "$ref": "#/components/schemas/token"
+                                                    "$ref": "token.json"
                                                 }
                                             }
                                         }
@@ -2130,7 +2130,7 @@
                 "properties": {
                     "name": {
                         "type": "string",
-                        "example": "Моцарела"
+                        "example": "Соус"
                     }
                 }
             },
