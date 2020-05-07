@@ -10,7 +10,7 @@
         "baseUrl": "./src",
     },
     "include": [
-        "src/**/*.ts", "src/swagger/*.json"
+        "src/**/*.ts"
     ],
     "exclude": [
         "node_modules"
