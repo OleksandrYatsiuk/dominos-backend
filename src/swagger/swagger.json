@@ -982,7 +982,6 @@
             "get": {
                 "summary": "Show List of Deliveries",
                 "description": "Allowed roles: Administrator, Project Manager, Public*",
-                "security": [],
                 "tags": [
                     "Delivery"
                 ],
