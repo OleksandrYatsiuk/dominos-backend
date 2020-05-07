@@ -22,8 +22,8 @@ const shopsSchema = new mongoose.Schema({
     lng: { type: Number, required: true },
     label: { type: String, required: true },
     draggable: { type: Boolean, required: true, default: false },
-    createdAt: { type: Number, default: getCurrentTime() },
-    updatedAt: { type: Number, default: getCurrentTime() },
+    createdAt: { type: Number, default: Math.round(Date.now() / 1000) },
+    updatedAt: { type: Number, default: Math.round(Date.now() / 1000) },
     deletedAt: { type: Number, default: null },
     deletedBy: { type: Number, default: null }
 }, { versionKey: false });

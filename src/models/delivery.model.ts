@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
-import { getCurrentTime, setTokenLifeTime } from '../utils/current-time-UTC';
-import * as Joi from '@hapi/joi';
+import { getCurrentTime } from '../utils/current-time-UTC';
 import * as  mongoosePaginate from 'mongoose-paginate';
+
 export interface Delivery {
     id: string,
     firstName: string,
@@ -61,8 +61,8 @@ const deliverySchema = new mongoose.Schema({
         type: { type: String, enum: ["cash", "card"] },
     },
     amount: { type: Number, required: true },
-    createdAt: { type: Number, default: getCurrentTime() },
-    updatedAt: { type: Number, default: getCurrentTime() },
+    createdAt: { type: Number, default: Math.round(Date.now() / 1000) },
+    updatedAt: { type: Number, default: Math.round(Date.now() / 1000) },
     deletedAt: { type: Number, default: null },
     deletedBy: { type: Number, default: null }
 }, { versionKey: false });

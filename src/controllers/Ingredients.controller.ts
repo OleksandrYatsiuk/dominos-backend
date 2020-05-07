@@ -21,9 +21,9 @@ export default class IngredientsController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.get(`${this.path}`, checkAuth, validate(pagination, 'query'), this.getList);
+        this.router.get(`${this.path}`, validate(pagination, 'query'), this.getList);
         this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), this.remove);
-        this.router.post(`${this.path}/create`, checkAuth, checkRoles([Roles.techadmin]), this.create);
+        this.router.post(`${this.path}`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), this.create);
 
     }
 
@@ -44,11 +44,7 @@ export default class IngredientsController implements Controller {
                 code200DataProvider(response, { total, limit, page, pages }, docs.map(item => {
                     return {
                         id: item._id,
-                        name: item.name,
-                        createdAt: item.createdAt,
-                        updatedAt: item.updatedAt,
-                        deletedAt: item.deletedAt,
-                        deletedBy: item.deletedBy
+                        name: item.name
                     }
                 }))
             })

@@ -15,12 +15,8 @@ const userSchema = new mongoose.Schema({
         lat: { type: Number, default: null },
         lng: { type: Number, default: null }
     },
-    createdAt: {
-        type: Number, default: Math.round(Date.now() / 1000)
-    },
-    updatedAt: {
-        type: Number, default: Math.round(Date.now() / 1000)
-    },
+    createdAt: { type: Number, default: Math.round(Date.now() / 1000) },
+    updatedAt: { type: Number, default: Math.round(Date.now() / 1000) },
     deletedAt: {
         type: Number, default: null
     },

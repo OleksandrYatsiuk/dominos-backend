@@ -22,9 +22,8 @@ export default class DeliveryController implements Controller {
 
     private initializeRoutes() {
         this.router.get(`${this.path}`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(pagination, 'query'), this.getList);
+        this.router.post(`${this.path}`, checkAuth, validate(delivery), this.create);
         this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), this.remove);
-        this.router.post(`${this.path}/create`, checkAuth, validate(delivery), this.create);
-
     }
 
     private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {

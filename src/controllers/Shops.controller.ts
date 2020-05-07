@@ -1,13 +1,8 @@
 import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
-import { code200, code200DataProvider, code204, code404 } from '../middleware/base.response';
+import {  code200DataProvider } from '../middleware/base.response';
 import validate from '../middleware/validation.middleware';
 import { pagination } from '../validations/Pagination.validator';
-import NotFoundException from '../exceptions/NotFoundException';
-import checkAuth from '../middleware/auth.middleware';
-import checkRoles from '../middleware/roles.middleware';
-import { Roles } from '../interfaces/roles.interface';
-import { delivery } from '../validations/Delivery.validator';
 import shopsModel from '../models/shops.model';
 
 
@@ -21,7 +16,7 @@ export default class ShopsController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.get(`${this.path}`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(pagination, 'query'), this.getList);
+        this.router.get(`${this.path}`, validate(pagination, 'query'), this.getList);
     }
 
     private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {

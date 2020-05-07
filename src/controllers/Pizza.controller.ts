@@ -24,9 +24,9 @@ export default class PizzaController implements Controller {
 
     private initializeRoutes() {
         this.router.get(`${this.path}`, validate(pagination, 'query'), this.getList);
+        this.router.post(`${this.path}`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(pizza), this.create);
         this.router.get(`${this.path}/:id`, this.overview);
         this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), this.remove);
-        this.router.post(`${this.path}/create`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(pizza), this.create);
         this.router.put(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(pizza), this.update);
     }
 
@@ -44,8 +44,6 @@ export default class PizzaController implements Controller {
         }
         this.pizza.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
             .then(({ docs, total, limit, page, pages }) => {
-                console.log(docs)
-
                 code200DataProvider(response, { total, limit, page, pages }, docs.map(pizza => {
                     return {
                         id: pizza._id,
