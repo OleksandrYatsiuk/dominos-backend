@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node ./src/server.ts",
-    "swagger": "swagger-ui-watcher ./src/swagger/swagger.json",
-    "start": "concurrently \"nodemon ./src/server.ts\" \"swagger-ui-watcher ./src/swagger/swagger.json -p $PORT_API -h 0.0.0.0\""
+    "start": "nodemon ./src/server.ts",
+    "dev": "ts-node ./src/server.ts"
   },
   "keywords": [],
   "author": "",
