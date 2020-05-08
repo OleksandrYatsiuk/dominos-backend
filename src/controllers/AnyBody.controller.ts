@@ -52,7 +52,7 @@ export default class AnyBodyController implements Controller {
         const registerData: Registration = request.body;
 
         const emailExist = await this.user.findOne({ email: registerData.email })
-        const usernameExist = await this.user.findOne({ email: registerData.username })
+        const usernameExist = await this.user.findOne({ username: registerData.username })
         if (emailExist) {
             next(new UnprocessableEntityException({ field: 'email', message: `Email "${registerData.email}" has already been taken.` }))
         } else if (usernameExist) {
