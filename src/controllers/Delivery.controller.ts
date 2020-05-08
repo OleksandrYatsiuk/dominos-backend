@@ -1,7 +1,7 @@
 import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
 import deliveryModel, { Delivery } from '../models/delivery.model';
-import { code200, code200DataProvider, code204, code404 } from '../middleware/base.response';
+import { code200, code200DataProvider, code204, code404, code500 } from '../middleware/base.response';
 import validate from '../middleware/validation.middleware';
 import { pagination } from '../validations/Pagination.validator';
 import NotFoundException from '../exceptions/NotFoundException';
@@ -72,11 +72,12 @@ export default class DeliveryController implements Controller {
     }
     private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const deliveryData: Delivery = request.body;
+        console.log(deliveryData);
         const delivery = new this.delivery(deliveryData);
         delivery.save()
             .then(pizza => code200(response, pizza))
             .catch(err => {
-                code404(response, "Delivery was not found.")
+                code500(response, err)
             })
     }
 

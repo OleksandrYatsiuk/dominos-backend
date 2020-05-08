@@ -35,7 +35,7 @@ export interface Delivery {
 }
 
 const deliverySchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
+    id: mongoose.Schema.Types.ObjectId,
     firstName: { type: String, required: true },
     phone: { type: Number, required: true },
     email: { type: String, required: true },

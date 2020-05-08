@@ -6,7 +6,7 @@ export const delivery = Joi.object({
         'any.required': "can not be blank.",
         'string.empty': "can not be blank."
     }),
-    phone: Joi.number().label("Phone").messages({
+    phone: Joi.number().required().label("Phone").messages({
         "string.base": "must be a string.",
         'any.required': "can not be blank.",
         'string.empty': "can not be blank."
@@ -37,13 +37,17 @@ export const delivery = Joi.object({
         'string.empty': "can not be blank."
     }),
     date: Joi.object().keys({
-
+        date: Joi.string().required(),
+        time: Joi.string().required()
     }).required().label("Date").messages({
         "string.base": "must be a string.",
         'any.required': "can not be blank.",
         'string.empty': "can not be blank."
     }),
     payment: Joi.object().keys({
+        coupon: Joi.string(),
+        remainder: Joi.string(),
+        type: Joi.string().required().valid('cash', 'card')
     })
         .required().label("Payment").messages({
             "string.base": "must be a string.",
@@ -55,7 +59,7 @@ export const delivery = Joi.object({
         'any.required': "can not be blank.",
         'string.empty': "can not be blank."
     }),
-    amount: Joi.number().label("Amount").messages({
+    amount: Joi.number().required().label("Amount").messages({
         "string.base": "must be a string.",
         'any.required': "can not be blank.",
         'string.empty': "can not be blank."
