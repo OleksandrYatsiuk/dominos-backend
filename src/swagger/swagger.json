@@ -8,7 +8,7 @@
     },
     "servers": [
         {
-            "url": "/api/v1"
+            "url": "https://dominos-backend.herokuapp.com/api/v1"
         }
     ],
     "security": [
@@ -61,7 +61,7 @@
                                         {
                                             "properties": {
                                                 "result": {
-                                                    "$ref": "#/components/schemas/token"
+                                                    "$ref": "token.json"
                                                 }
                                             }
                                         }
