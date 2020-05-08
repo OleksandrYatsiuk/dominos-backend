@@ -1,6 +1,6 @@
 import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
-import {  code200DataProvider } from '../middleware/base.response';
+import { code200DataProvider } from '../middleware/base.response';
 import validate from '../middleware/validation.middleware';
 import { pagination } from '../validations/Pagination.validator';
 import shopsModel from '../models/shops.model';
@@ -36,11 +36,10 @@ export default class ShopsController implements Controller {
                 code200DataProvider(response, { total, limit, page, pages }, docs.map(delivery => {
                     return {
                         id: delivery._id,
-                        firstName: delivery.address,
-                        phone: delivery.lat,
-                        email: delivery.lng,
-                        shop: delivery.label,
-                        pizzasIds: delivery.draggable,
+                        address: delivery.address,
+                        lat: delivery.lat,
+                        lng: delivery.lng,
+                        label: delivery.label,
                         createdAt: delivery.createdAt,
                         updatedAt: delivery.updatedAt,
                         deletedAt: delivery.deletedAt,
