@@ -32,19 +32,15 @@ export default class UserController implements Controller {
 
     private update = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const updatedData = Object.assign(request.body, { updatedAt: getCurrentTime() })
-
         this.authToken.findOne({ token: request.headers.authorization.split(' ')[1] })
             .then(async (doc) => {
-                const username = await this.user.findOne({ username: request.body.username })
-                const email = await this.user.findOne({ username: request.body.email })
-                if (username) {
-                    if (username._id != doc.userId && username.username == request.body.username) {
-                        next(new UnprocessableEntityException({ field: "username", message: `Username "${request.body.username}" has already been taken.` }));
-                    }
-                } else if (email) {
-                    if (email._id != doc.userId && email.email == request.body.email) {
-                        next(new UnprocessableEntityException({ field: "email", message: `Email "${request.body.email}" has already been taken.` }));
-                    }
+
+                const emailExist = await this.user.findOne({ email: request.body.email })
+                const usernameExist = await this.user.findOne({ username: request.body.username })
+                if (emailExist) {
+                    next(new UnprocessableEntityException({ field: 'email', message: `Email "${request.body.email}" has already been taken.` }))
+                } else if (usernameExist) {
+                    next(new UnprocessableEntityException({ field: 'email', message: `Username "${request.body.username}" has already been taken.` }))
                 } else {
                     this.user.findByIdAndUpdate(doc.userId, { $set: updatedData }, { new: true })
                         .then(user => {

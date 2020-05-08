@@ -34,8 +34,19 @@ export default class AnyBodyController implements Controller {
         if (user) {
             if (this.userHelper.isPasswordCorrect(password, user.passwordHash)) {
                 const authToken = await this.authToken.findOne({ userId: user._id })
-                this.userHelper.isTokenExpired(authToken.expiredAt) ? hash = this.userHelper.newToken(username, password) : hash = authToken.token;
-                this.userHelper.updateTokenTable(authToken._id, user._id, hash, response)
+                if (authToken) {
+                    this.userHelper.isTokenExpired(authToken.expiredAt) ? hash = this.userHelper.newToken(username, password) : hash = authToken.token;
+                    this.userHelper.updateTokenTable(authToken._id, user._id, hash, response)
+                } else {
+                    hash = this.userHelper.newToken(username, password)
+                    const token = new this.authToken({ userId: user._id, token: hash, expiredAt: Math.round(Date.now() / 1000) + 8 * 3600 })
+                    token.save().then(tokenData => {
+                        code200(response, {
+                            token: tokenData.token,
+                            expiredAt: tokenData.expiredAt,
+                        })
+                    })
+                }
             } else {
                 next(new UnprocessableEntityException(
                     { field: 'username', message: "Username or Password is invalid." }

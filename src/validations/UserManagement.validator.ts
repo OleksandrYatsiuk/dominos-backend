@@ -19,7 +19,7 @@ export const update = Joi.object({
         "string.empty": "cannot be blank.",
         "string.isoDate": "format is invalid.",
     }),
-    phone: Joi.number().optional().empty().label('Phone').multiple(12).messages({
+    phone: Joi.number().optional().empty().label('Phone').messages({
         "number.empty": "cannot be blank.",
     })
 })
