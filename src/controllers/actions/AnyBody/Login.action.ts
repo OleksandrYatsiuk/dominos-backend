@@ -34,10 +34,8 @@ export class LoginHelper {
         }, { new: true })
             .then(tokenData => {
                 code200(response, {
-                    result: {
-                        token: tokenData.token,
-                        expiredAt: setTokenLifeTime(),
-                    }
+                    token: tokenData.token,
+                    expiredAt: setTokenLifeTime(),
                 })
             })
     }
