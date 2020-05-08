@@ -72,8 +72,7 @@ export default class DeliveryController implements Controller {
     }
     private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const deliveryData: Delivery = request.body;
-        console.log(deliveryData);
-        const delivery = new this.delivery(deliveryData);
+            const delivery = new this.delivery(deliveryData);
         delivery.save()
             .then(pizza => code200(response, pizza))
             .catch(err => {

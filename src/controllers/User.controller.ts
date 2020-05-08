@@ -36,7 +36,7 @@ export default class UserController implements Controller {
         this.authToken.findOne({ token: request.headers.authorization.split(' ')[1] })
             .then(async (doc) => {
                 const username = await this.user.findOne({ username: request.body.username })
-                const email = await this.user.findOne({ email: request.body.email })
+                const email = await this.user.findOne({ username: request.body.email })
                 if (username) {
                     if (username._id != doc.userId && username.username == request.body.username) {
                         next(new UnprocessableEntityException({ field: "username", message: `Username "${request.body.username}" has already been taken.` }));

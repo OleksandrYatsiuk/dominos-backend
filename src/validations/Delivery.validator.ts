@@ -39,7 +39,7 @@ export const delivery = Joi.object({
     date: Joi.object().keys({
         date: Joi.string().required(),
         time: Joi.string().required()
-    }).required().label("Date").messages({
+    }).label("Date").messages({
         "string.base": "must be a string.",
         'any.required': "can not be blank.",
         'string.empty': "can not be blank."
@@ -48,12 +48,11 @@ export const delivery = Joi.object({
         coupon: Joi.string(),
         remainder: Joi.string(),
         type: Joi.string().required().valid('cash', 'card')
-    })
-        .required().label("Payment").messages({
-            "string.base": "must be a string.",
-            'any.required': "can not be blank.",
-            'string.empty': "can not be blank."
-        }),
+    }).label("Payment").messages({
+        "string.base": "must be a string.",
+        'any.required': "can not be blank.",
+        'string.empty': "can not be blank."
+    }),
     image: Joi.string().label("Image").messages({
         "string.base": "must be a string.",
         'any.required': "can not be blank.",
