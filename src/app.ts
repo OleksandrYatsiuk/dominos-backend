@@ -34,7 +34,7 @@ class App {
             res.header('Access-Control-Allow-Origin', '*');
             if (req.method == "OPTIONS") {
                 res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-                res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+                res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin');
                 return res.status(200).json({});
             }
             next();
