@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node ./src/server.ts",
     "swagger": "swagger-ui-watcher ./src/swagger/swagger.json",
-    "start": "concurrently \"nodemon ./src/server.ts\" \"swagger-ui-watcher ./src/swagger/swagger.json -p $PORT -h 0.0.0.0\""
+    "start": "concurrently \"nodemon ./src/server.ts\" \"swagger-ui-watcher ./src/swagger/swagger.json -p $PORT_API -h 0.0.0.0\""
   },
   "keywords": [],
   "author": "",
