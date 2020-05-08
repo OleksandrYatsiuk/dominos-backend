@@ -21,8 +21,6 @@ export const update = Joi.object({
     }),
     phone: Joi.number().optional().empty().label('Phone').multiple(12).messages({
         "number.empty": "cannot be blank.",
-        "number.multiple": "should contains 12 digit",
-        "number.unsafe": "should contains 12 digit"
     })
 })
 
