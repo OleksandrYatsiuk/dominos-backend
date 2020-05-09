@@ -1,5 +1,11 @@
 import * as Joi from "@hapi/joi";
 
+const phoneEqual = (value, helpers) => {
+    if (value.toString().length != 12) {
+        return helpers.error('number.invalid')
+    }
+}
+
 export const update = Joi.object({
     username: Joi.string().optional().empty().label('Username').min(3).max(15).messages({
         "string.empty": "cannot be blank.",
@@ -17,10 +23,12 @@ export const update = Joi.object({
     }),
     birthday: Joi.string().optional().empty().label('Birthday').isoDate().messages({
         "string.empty": "cannot be blank.",
-        "string.isoDate": "format is invalid.",
+        "string.isoDate": "must be in iso format.",
     }),
-    phone: Joi.number().optional().empty().label('Phone').messages({
+    phone: Joi.number().optional().empty().custom(phoneEqual, 'phone count').label('Phone').messages({
         "number.empty": "cannot be blank.",
+        "number.invalid": "must be include 12 digits.",
+        "number.base": "must be a number."
     })
 })
 

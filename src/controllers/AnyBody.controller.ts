@@ -67,7 +67,7 @@ export default class AnyBodyController implements Controller {
         if (emailExist) {
             next(new UnprocessableEntityException({ field: 'email', message: `Email "${registerData.email}" has already been taken.` }))
         } else if (usernameExist) {
-            next(new UnprocessableEntityException({ field: 'email', message: `Username "${registerData.username}" has already been taken.` }))
+            next(new UnprocessableEntityException({ field: 'username', message: `Username "${registerData.username}" has already been taken.` }))
         } else {
             const user = new this.user(registerData);
             user.save()

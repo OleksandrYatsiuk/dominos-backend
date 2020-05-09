@@ -2,7 +2,7 @@ import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
 import userModel from '../models/user.model';
 import authModel from '../models/authToken.model';
-import { code200, code404, code204, code401 } from '../middleware/base.response';
+import { code200, code404, code204, code401, code422, code500 } from '../middleware/base.response';
 import validate from '../middleware/validation.middleware';
 import { update, updateLocation } from '../validations/UserManagement.validator';
 import { getCurrentTime } from '../utils/current-time-UTC';
@@ -23,45 +23,43 @@ export default class UserController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.patch(`${this.path}/profile`, checkAuth, validate(update), this.update);
+        this.router.put(`${this.path}/profile`, checkAuth, validate(update), this.update);
         this.router.put(`${this.path}/location`, checkAuth, validate(updateLocation), this.updateLocation);
         this.router.get(`${this.path}/current`, checkAuth, this.current);
         this.router.post(`${this.path}/logout`, checkAuth, this.logout);
         this.router.post(`${this.path}/change-password`, checkAuth, validate(changePassword), this.changePassword);
     }
 
-    private update = (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    private update = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const updatedData = Object.assign(request.body, { updatedAt: getCurrentTime() })
-        this.authToken.findOne({ token: request.headers.authorization.split(' ')[1] })
-            .then(async (doc) => {
-
-                const emailExist = await this.user.findOne({ email: request.body.email })
-                const usernameExist = await this.user.findOne({ username: request.body.username })
-                if (emailExist) {
-                    next(new UnprocessableEntityException({ field: 'email', message: `Email "${request.body.email}" has already been taken.` }))
-                } else if (usernameExist) {
-                    next(new UnprocessableEntityException({ field: 'email', message: `Username "${request.body.username}" has already been taken.` }))
-                } else {
-                    this.user.findByIdAndUpdate(doc.userId, { $set: updatedData }, { new: true })
-                        .then(user => {
-                            code200(response, {
-                                id: user._id,
-                                username: user.username,
-                                fullName: user.fullName,
-                                email: user.email,
-                                role: user.role,
-                                location: user.location,
-                                birthday: user.birthday,
-                                phone: user.phone,
-                                createdAt: user.createdAt,
-                                updatedAt: user.updatedAt,
-                                deletedAt: user.deletedAt,
-                                deletedBy: user.deletedBy
-                            })
+        const user = await this.user.findOne({ username: updatedData.username });
+        if (user && user._id != response.locals && user.username == updatedData.username) {
+            next(new UnprocessableEntityException({ field: 'username', message: `Username"${updatedData.username}" has already been taken.` }))
+        } else {
+            const userEmail = await this.user.findOne({ email: updatedData.email })
+            if (userEmail && userEmail._id != response.locals && userEmail.email == updatedData.email) {
+                next(new UnprocessableEntityException({ field: 'email', message: `Email "${updatedData.email}" has already been taken.` }))
+            } else {
+                this.user.findByIdAndUpdate(response.locals, { $set: updatedData }, { new: true })
+                    .then(user => {
+                        code200(response, {
+                            id: user._id,
+                            username: user.username,
+                            fullName: user.fullName,
+                            email: user.email,
+                            role: user.role,
+                            location: user.location,
+                            birthday: user.birthday,
+                            phone: user.phone,
+                            createdAt: user.createdAt,
+                            updatedAt: user.updatedAt,
+                            deletedAt: user.deletedAt,
+                            deletedBy: user.deletedBy
                         })
-                        .catch(err => code404(response, "User was not found."))
-                }
-            })
+                    })
+                    .catch(err => code500(response, err))
+            }
+        }
     }
     private updateLocation = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -86,30 +84,27 @@ export default class UserController implements Controller {
                             deletedBy: user.deletedBy
                         })
                     })
-                    .catch(err => code404(response, "User was not found."))
+                    .catch(err => code500(response, err))
             })
     }
 
     private current = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-        this.authToken.findOne({ token: request.headers.authorization.split(' ')[1] })
-            .then(doc => {
-                this.user.findOne({ _id: doc.userId })
-                    .then(user => {
-                        code200(response, {
-                            id: user._id,
-                            username: user.username,
-                            fullName: user.fullName,
-                            email: user.email,
-                            role: user.role,
-                            location: user.location,
-                            birthday: user.birthday,
-                            phone: user.phone,
-                            createdAt: user.createdAt,
-                            updatedAt: user.updatedAt,
-                            deletedAt: user.deletedAt,
-                            deletedBy: user.deletedBy
-                        })
-                    })
+        this.user.findOne({ _id: response.locals })
+            .then(user => {
+                code200(response, {
+                    id: user._id,
+                    username: user.username,
+                    fullName: user.fullName,
+                    email: user.email,
+                    role: user.role,
+                    location: user.location,
+                    birthday: user.birthday,
+                    phone: user.phone,
+                    createdAt: user.createdAt,
+                    updatedAt: user.updatedAt,
+                    deletedAt: user.deletedAt,
+                    deletedBy: user.deletedBy
+                })
             })
     }
 
@@ -122,20 +117,17 @@ export default class UserController implements Controller {
     private changePassword = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { currentPassword, newPassword } = request.body;
 
-        this.authToken.findOne({ token: request.headers.authorization.split(' ')[1] })
-            .then(doc => {
-                this.user.findById(doc.userId).then(user => {
-                    if (!bcrypt.compareSync(currentPassword, user.passwordHash)) {
-                        next(new UnprocessableEntityException({ field: "currentPassword", "message": "Current Password is invalid." }))
-                    } else {
-                        const hash = bcrypt.hashSync(newPassword, 10)
-                        this.user.findByIdAndUpdate({ _id: user._id }, { $set: { passwordHash: hash } })
-                            .then(result => {
-                                code204(response);
-                            })
-                    }
-                }
-                )
-            })
+        this.user.findById(response.locals).then(user => {
+            if (!bcrypt.compareSync(currentPassword, user.passwordHash)) {
+                next(new UnprocessableEntityException({ field: "currentPassword", "message": "Current Password is invalid." }))
+            } else {
+                const hash = bcrypt.hashSync(newPassword, 10)
+                this.user.findByIdAndUpdate({ _id: user._id }, { $set: { passwordHash: hash } })
+                    .then(result => {
+                        code204(response);
+                    })
+            }
+        }
+        )
     }
 }
