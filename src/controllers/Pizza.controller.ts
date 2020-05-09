@@ -12,7 +12,9 @@ import { Roles } from '../interfaces/roles.interface';
 import { pizza } from '../validations/Pizza.validator';
 import { setSorting } from '../utils/sortingHelper';
 import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
-
+import AWS_S3 from '../services/AWS_S3';
+import * as multer from 'multer';
+const upload = multer();
 
 export default class PizzaController implements Controller {
     public path = '/pizza';
@@ -29,6 +31,7 @@ export default class PizzaController implements Controller {
         this.router.get(`${this.path}/:id`, this.overview);
         this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), this.remove);
         this.router.put(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(pizza), this.update);
+        this.router.post(`${this.path}/upload`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), upload.single('file'), this.upload);
     }
 
     private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -108,5 +111,17 @@ export default class PizzaController implements Controller {
                 deletedBy: pizza.deletedBy
             }))
             .catch(err => code404(response, "Pizza was not found."))
+    }
+
+    private upload = (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        AWS_S3.prototype.uploadFile(request.file)
+            .then(s3 => {
+                console.log(s3);
+                code200(response, { fileLink: s3['Location'] })
+            })
+            .catch(err => {
+                console.log(err);
+                code500(response, err)
+            })
     }
 }
