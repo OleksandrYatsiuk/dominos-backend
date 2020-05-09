@@ -1,15 +1,15 @@
 import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
 import ingredientsModel, { Ingredient } from '../models/ingredients.model';
-import { code200, code200DataProvider, code204, code404 } from '../middleware/base.response';
+import { code200, code200DataProvider, code204, code404, code500 } from '../middleware/base.response';
 import validate from '../middleware/validation.middleware';
 import { pagination } from '../validations/Pagination.validator';
 import NotFoundException from '../exceptions/NotFoundException';
 import checkAuth from '../middleware/auth.middleware';
 import checkRoles from '../middleware/roles.middleware';
 import { Roles } from '../interfaces/roles.interface';
-import { delivery } from '../validations/Delivery.validator';
 import { setSorting } from '../utils/sortingHelper';
+import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
 
 
 export default class IngredientsController implements Controller {
@@ -25,7 +25,6 @@ export default class IngredientsController implements Controller {
         this.router.get(`${this.path}`, validate(pagination, 'query'), this.getList);
         this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), this.remove);
         this.router.post(`${this.path}`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), this.create);
-
     }
 
     private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -50,13 +49,20 @@ export default class IngredientsController implements Controller {
             .catch(err => code404(response, "Ingredient Id is invalid."))
     }
     private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-        const deliveryData: Ingredient = request.body;
-        const delivery = new this.ingredient(deliveryData);
-        delivery.save()
-            .then(pizza => code200(response, pizza))
-            .catch(err => {
-                code404(response, "Delivery was not found.")
+        const { name }: Ingredient = request.body;
+        this.ingredient.findOne({ name })
+            .then(item => {
+                console.log(item);
+                if (item && item.name !== name) {
+                    const delivery = new this.ingredient(name);
+                    delivery.save()
+                        .then(pizza => code200(response, pizza))
+                        .catch(err => code500(response, err))
+                } else {
+                    next(new UnprocessableEntityException({ field: 'name', message: `Name "${name}" has already been taken.` }))
+                }
             })
+
     }
 
 }

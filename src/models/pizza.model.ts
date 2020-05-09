@@ -1,20 +1,18 @@
 import * as mongoose from 'mongoose';
-import { getCurrentTime, setTokenLifeTime } from '../utils/current-time-UTC';
-import * as Joi from '@hapi/joi';
 import * as  mongoosePaginate from 'mongoose-paginate';
 export interface Pizza {
     id: string,
     name: string,
     ingredients: string[],
     weight: {
-        small: number,
-        middle: number,
-        big: number,
+        low: number,
+        medium: number,
+        high: number
     },
     price: {
         low: number,
         medium: number,
-        high: number,
+        high: number
     },
     category: string,
     image: string | null,
@@ -29,9 +27,9 @@ const pizzaModel = new mongoose.Schema({
     name: { type: String, required: true },
     ingredients: { type: Array, required: true },
     weight: {
-        small: { type: Number, required: true },
-        middle: { type: Number, required: true },
-        big: { type: Number, required: true },
+        low: { type: Number, required: true },
+        medium: { type: Number, required: true },
+        high: { type: Number, required: true },
     },
     price: {
         low: { type: Number, required: true },

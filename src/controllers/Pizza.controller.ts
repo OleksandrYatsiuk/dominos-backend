@@ -1,17 +1,17 @@
 import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
 import pizzaModel, { Pizza } from '../models/pizza.model';
-import { code200, code200DataProvider, code204, code404 } from '../middleware/base.response';
+import { code200, code200DataProvider, code204, code404, code500 } from '../middleware/base.response';
 import validate from '../middleware/validation.middleware';
 import { pagination } from '../validations/Pagination.validator';
 import NotFoundException from '../exceptions/NotFoundException';
 import { getCurrentTime } from '../utils/current-time-UTC';
-import { updateRole } from '../validations/UserManagement.validator';
 import checkAuth from '../middleware/auth.middleware';
 import checkRoles from '../middleware/roles.middleware';
 import { Roles } from '../interfaces/roles.interface';
 import { pizza } from '../validations/Pizza.validator';
 import { setSorting } from '../utils/sortingHelper';
+import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
 
 
 export default class PizzaController implements Controller {
@@ -64,12 +64,23 @@ export default class PizzaController implements Controller {
 
     private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const pizzaData: Pizza = request.body;
-        const pizza = new this.pizza(pizzaData);
-        pizza.save()
-            .then(pizza => code200(response, pizza))
-            .catch(err => {
-                code404(response, "Pizza was not found.")
+        this.pizza.findOne({ name: pizzaData.name })
+            .then(pizza => {
+                if (pizza && pizza.name == pizzaData.name) {
+                    next(new UnprocessableEntityException({
+                        field: "name",
+                        message: `Name "${pizzaData.name}" has already been taken.`
+                    }))
+                } else {
+                    const pizza = new this.pizza(pizzaData);
+                    pizza.save()
+                        .then(pizza => code200(response, pizza))
+                        .catch(err => {
+                            code500(response, err)
+                        })
+                }
             })
+
     }
 
 

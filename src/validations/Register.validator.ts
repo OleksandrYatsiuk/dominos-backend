@@ -1,5 +1,4 @@
 import * as Joi from "@hapi/joi";
-import { min } from "moment";
 
 export const registerSchema = Joi.object({
     username: Joi.string().required().label('Username').max(15).min(3).messages({
@@ -47,6 +46,7 @@ export const changePassword = Joi.object({
         .label("Confirm Password")
         .valid(Joi.ref('newPassword')).messages({
             'any.required': "can not be blank.",
+            'any.empty': "can not be blank.",
             'any.only': 'should be equal to "New Password".'
         })
 })

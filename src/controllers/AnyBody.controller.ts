@@ -1,5 +1,4 @@
 import * as express from 'express';
-import { Model } from 'mongoose';
 import Controller from '../interfaces/controller.interface';
 import userModel from '../models/user.model';
 import authModel, { loginSchema } from '../models/authToken.model';

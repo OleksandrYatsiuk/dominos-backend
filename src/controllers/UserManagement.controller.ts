@@ -11,6 +11,7 @@ import checkAuth from '../middleware/auth.middleware';
 import checkRoles from '../middleware/roles.middleware';
 import { Roles } from '../interfaces/roles.interface';
 import { setSorting } from '../utils/sortingHelper';
+import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
 
 
 export default class UserManagementController implements Controller {
@@ -54,6 +55,12 @@ export default class UserManagementController implements Controller {
     }
 
     private remove = (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        if (request.params.id === response.locals) {
+            next(new UnprocessableEntityException({
+                field: "id",
+                message: "You cannot delete himself!"
+            }))
+        }
         this.user.findByIdAndDelete(request.params.id)
             .then(result => {
                 result ? code204(response) : next(new NotFoundException("User"));
@@ -64,6 +71,7 @@ export default class UserManagementController implements Controller {
 
     private updateRole = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { role } = request.body;
+
         this.user.findByIdAndUpdate(request.params.id, { $set: { role: role, updatedAt: getCurrentTime() } }, { new: true })
             .then(user => code200(response, null))
             .catch(err => code404(response, "User was not found."))

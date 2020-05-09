@@ -30,20 +30,17 @@ export const pizza = Joi.object({
         'any.required': "can not be blank.",
     }),
     price: Joi.object({
-        low: Joi.number().required().label("Price Low").messages({
+        small: Joi.number().required().label("Weight Small").messages({
             "number.empty": "cannot be blank.",
             'any.required': "can not be blank.",
-            'string.empty': "can not be blank."
         }),
-        medium: Joi.number().required().label("Price Medium").messages({
+        middle: Joi.number().required().label("Weight Middle").messages({
             "number.empty": "cannot be blank.",
             'any.required': "can not be blank.",
-            'string.empty': "can not be blank."
         }),
-        high: Joi.number().required().label("Price High").messages({
+        big: Joi.number().required().label("Weight Big").messages({
             "number.empty": "cannot be blank.",
             'any.required': "can not be blank.",
-            'string.empty': "can not be blank."
         })
     }).required().label('Price').messages({
         'any.required': "can not be blank.",
