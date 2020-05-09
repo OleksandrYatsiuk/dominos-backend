@@ -52,7 +52,6 @@ export default class IngredientsController implements Controller {
         const { name }: Ingredient = request.body;
         this.ingredient.findOne({ name })
             .then(item => {
-                console.log(item);
                 if (item && item.name !== name) {
                     const delivery = new this.ingredient(name);
                     delivery.save()
