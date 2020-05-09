@@ -7,6 +7,6 @@ export interface Errors {
 
 export default class UnprocessableEntityException extends HttpException {
   constructor(error: Errors) {
-    super(422, error);
+    super(422, [error]);
   }
 }
