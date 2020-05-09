@@ -4,7 +4,6 @@ import * as mongoose from 'mongoose';
 import { createValidator } from 'express-joi-validation';
 import errorMiddleware from './middleware/UnprocessableEntityException.middleware';
 import { code404 } from './middleware/base.response';
-import * as swaggerUi from 'swagger-ui-express';
 import * as doc from './swagger/swagger.json'
 
 
@@ -23,7 +22,6 @@ class App {
         this.connectToTheDatabase();
         this.initializeMiddlewares();
         this.initializeControllers(controllers);
-        this.setSwagger()
         this.initializeErrorHandling();
     }
     /**
@@ -45,16 +43,6 @@ class App {
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(bodyParser.json());
     }
-    private setSwagger() {
-        var options = {
-            swaggerOptions: {
-                validatorUrl: null,
-                explorer: true
-            }
-        }
-        this.app.use('/rest/swagger', swaggerUi.serve, swaggerUi.setup(doc, options));
-    }
-
 
     public listen() {
 
@@ -73,7 +61,6 @@ class App {
     }
 
     private initializeControllers(controllers) {
-        this.app.use('/rest/swagger', swaggerUi.serve, swaggerUi.setup(doc));
         controllers.forEach((controller) => {
             this.app.use(`/api${this.version}`, controller.router);
         });

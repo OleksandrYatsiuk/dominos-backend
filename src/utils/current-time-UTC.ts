@@ -1,4 +1,3 @@
-import * as moment from 'moment';
 export function getCurrentTime() {
     return Math.round(Date.now() / 1000)
 }
