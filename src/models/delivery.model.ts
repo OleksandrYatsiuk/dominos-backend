@@ -7,7 +7,7 @@ export interface Delivery {
     firstName: string,
     phone: number,
     email: string,
-    pizzasIds: string[],
+    pizzaIds: string[],
     shop: string,
     address?: {
         street: string,
@@ -41,7 +41,7 @@ const deliverySchema = new mongoose.Schema({
     email: { type: String, required: true },
     userId: { type: String },
     shop: { type: String },
-    pizzasIds: { type: Array },
+    pizzaIds: { type: Array },
     address: {
         street: { type: String },
         house: { type: Number },

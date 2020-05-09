@@ -39,7 +39,7 @@ export default class DeliveryController implements Controller {
                         phone: delivery.phone,
                         email: delivery.email,
                         shop: delivery.shop,
-                        pizzasIds: delivery.pizzasIds,
+                        pizzasIds: delivery.pizzaIds,
                         address: delivery.address,
                         comment: delivery.comment,
                         date: delivery.date,

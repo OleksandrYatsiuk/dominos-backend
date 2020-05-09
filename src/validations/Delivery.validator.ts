@@ -16,11 +16,13 @@ export const delivery = Joi.object({
         'any.required': "can not be blank.",
         'string.empty': "can not be blank."
     }),
-    pizzasIds: Joi.array().items(Joi.string()).required().label("Pizza Ids").messages({
-        "string.base": "must be a string.",
-        'any.required': "can not be blank.",
-        'string.empty': "can not be blank."
-    }),
+    pizzasIds: Joi.array().items(Joi.string())
+        .required().label("Pizza Ids").messages({
+            "string.base": "must be a string.",
+            'any.required': "can not be blank.",
+            'string.empty': "can not be blank."
+        }),
+    userId: Joi.string(),
     shop: Joi.string().label("Shop").messages({
         "string.base": "must be a string.",
         'any.required': "can not be blank.",
