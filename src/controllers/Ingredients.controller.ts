@@ -9,6 +9,7 @@ import checkAuth from '../middleware/auth.middleware';
 import checkRoles from '../middleware/roles.middleware';
 import { Roles } from '../interfaces/roles.interface';
 import { delivery } from '../validations/Delivery.validator';
+import { setSorting } from '../utils/sortingHelper';
 
 
 export default class IngredientsController implements Controller {
@@ -29,16 +30,7 @@ export default class IngredientsController implements Controller {
 
     private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { page, limit, sort } = request.query;
-        let condition = {};
-        if (sort) {
-            if (sort.toString().includes('-')) {
-                condition[`${sort.toString().substring(1)}`] = -1
-            } else {
-                condition[`${sort.toString().substring(1)}`] = 1
-            }
-        } else {
-            condition['createdAt'] = 1
-        }
+        const condition = setSorting(sort);
         this.ingredient.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
             .then(({ docs, total, limit, page, pages }) => {
                 code200DataProvider(response, { total, limit, page, pages }, docs.map(item => {

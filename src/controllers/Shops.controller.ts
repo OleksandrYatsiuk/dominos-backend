@@ -4,6 +4,7 @@ import { code200DataProvider } from '../middleware/base.response';
 import validate from '../middleware/validation.middleware';
 import { pagination } from '../validations/Pagination.validator';
 import shopsModel from '../models/shops.model';
+import { setSorting } from '../utils/sortingHelper';
 
 
 export default class ShopsController implements Controller {
@@ -21,16 +22,7 @@ export default class ShopsController implements Controller {
 
     private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { page, limit, sort } = request.query;
-        let condition = {};
-        if (sort) {
-            if (sort.toString().includes('-')) {
-                condition[`${sort.toString().substring(1)}`] = -1
-            } else {
-                condition[`${sort.toString().substring(1)}`] = 1
-            }
-        } else {
-            condition['createdAt'] = 1
-        }
+        const condition = setSorting(sort);
         this.shop.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
             .then(({ docs, total, limit, page, pages }) => {
                 code200DataProvider(response, { total, limit, page, pages }, docs.map(delivery => {
