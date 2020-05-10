@@ -32,7 +32,7 @@ export default class PizzaController implements Controller {
         this.router.get(`${this.path}/:id`, this.overview);
         this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), this.remove);
         this.router.put(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(pizza), this.update);
-        this.router.post(`${this.path}/upload`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), upload.single('file'), this.upload);
+        this.router.post(`${this.path}/:id/upload`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), upload.single('file'), this.upload);
     }
 
     private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -115,9 +115,26 @@ export default class PizzaController implements Controller {
     }
 
     private upload = (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        const { id } = request.params;
         AWS_S3.prototype.uploadFile(request.file)
             .then(s3 => {
-                code200(response, s3["Location"])
+                this.pizza.findByIdAndUpdate(id, { $set: { image: s3["Location"] } }, { new: true })
+                    .then(pizza => {
+                        code200(response, {
+                            id: pizza._id,
+                            name: pizza.name,
+                            ingredients: pizza.ingredients,
+                            weight: pizza.weight,
+                            price: pizza.price,
+                            category: pizza.category,
+                            image: pizza.image,
+                            createdAt: pizza.createdAt,
+                            updatedAt: pizza.updatedAt,
+                            deletedAt: pizza.deletedAt,
+                            deletedBy: pizza.deletedBy
+                        })
+                    })
+                    .catch(err => code500(response, err))
             })
             .catch(err => {
                 code500(response, err)
