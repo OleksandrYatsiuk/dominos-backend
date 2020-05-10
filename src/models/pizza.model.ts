@@ -5,14 +5,14 @@ export interface Pizza {
     name: string,
     ingredients: string[],
     weight: {
-        low: number,
-        medium: number,
-        high: number
+        small: number,
+        middle: number,
+        big: number
     },
     price: {
-        low: number,
-        medium: number,
-        high: number
+        small: number,
+        middle: number,
+        big: number
     },
     category: string,
     image: string | null,
@@ -27,14 +27,14 @@ const pizzaModel = new mongoose.Schema({
     name: { type: String, required: true },
     ingredients: { type: Array, required: true },
     weight: {
-        low: { type: Number, required: true },
-        medium: { type: Number, required: true },
-        high: { type: Number, required: true },
+        small: { type: Number, required: true },
+        middle: { type: Number, required: true },
+        big: { type: Number, required: true },
     },
     price: {
-        low: { type: Number, required: true },
-        medium: { type: Number, required: true },
-        high: { type: Number, required: true },
+        small: { type: Number, required: true },
+        middle: { type: Number, required: true },
+        big: { type: Number, required: true },
     },
     category: { type: String, required: true },
     image: { type: String, default: null },
