@@ -72,20 +72,18 @@ export default class AnyBodyController implements Controller {
             user.save()
                 .then(user => {
                     code201(response, {
-                        result: {
-                            id: user._id,
-                            username: user.username,
-                            fullName: user.fullName,
-                            email: user.email,
-                            role: user.role,
-                            location: user.location,
-                            birthday: user.birthday,
-                            phone: user.phone,
-                            createdAt: user.createdAt,
-                            updatedAt: user.updatedAt,
-                            deletedAt: user.deletedAt,
-                            deletedBy: user.deletedBy
-                        }
+                        id: user._id,
+                        username: user.username,
+                        fullName: user.fullName,
+                        email: user.email,
+                        role: user.role,
+                        location: user.location,
+                        birthday: user.birthday,
+                        phone: user.phone,
+                        createdAt: user.createdAt,
+                        updatedAt: user.updatedAt,
+                        deletedAt: user.deletedAt,
+                        deletedBy: user.deletedBy
                     })
                 })
         }
