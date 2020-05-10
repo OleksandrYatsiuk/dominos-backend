@@ -1,7 +1,7 @@
 import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
 import pizzaModel, { Pizza } from '../models/pizza.model';
-import { code200, code200DataProvider, code204, code404, code500, code422 } from '../middleware/base.response';
+import { code200, code200DataProvider, code204, code404, code500, code422, code201 } from '../middleware/base.response';
 import validate from '../middleware/validation.middleware';
 import { pagination } from '../validations/Pagination.validator';
 import NotFoundException from '../exceptions/NotFoundException';
@@ -78,7 +78,7 @@ export default class PizzaController implements Controller {
                 } else {
                     const pizza = new this.pizza(pizzaData);
                     pizza.save()
-                        .then(pizza => code200(response, pizza))
+                        .then(pizza => code201(response, pizza))
                         .catch(err => {
                             code500(response, err)
                         })
