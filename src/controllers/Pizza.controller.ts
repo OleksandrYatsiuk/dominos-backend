@@ -9,7 +9,7 @@ import { getCurrentTime } from '../utils/current-time-UTC';
 import checkAuth from '../middleware/auth.middleware';
 import checkRoles from '../middleware/roles.middleware';
 import { Roles } from '../interfaces/roles.interface';
-import { pizza, image } from '../validations/Pizza.validator';
+import { pizza } from '../validations/Pizza.validator';
 import { setSorting } from '../utils/sortingHelper';
 import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
 import AWS_S3 from '../services/AWS_S3';
