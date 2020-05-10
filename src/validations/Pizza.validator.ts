@@ -55,4 +55,12 @@ export const pizza = Joi.object({
         'any.required': "can not be blank.",
         'string.empty': "can not be blank."
     })
+
+
+
+})
+export const image = Joi.object({
+    file: Joi.binary().required().label("File").messages({
+        'any.required': "can not be blank.",
+    })
 })

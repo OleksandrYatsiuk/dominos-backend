@@ -1,7 +1,7 @@
 import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
 import pizzaModel, { Pizza } from '../models/pizza.model';
-import { code200, code200DataProvider, code204, code404, code500 } from '../middleware/base.response';
+import { code200, code200DataProvider, code204, code404, code500, code422 } from '../middleware/base.response';
 import validate from '../middleware/validation.middleware';
 import { pagination } from '../validations/Pagination.validator';
 import NotFoundException from '../exceptions/NotFoundException';
@@ -9,7 +9,7 @@ import { getCurrentTime } from '../utils/current-time-UTC';
 import checkAuth from '../middleware/auth.middleware';
 import checkRoles from '../middleware/roles.middleware';
 import { Roles } from '../interfaces/roles.interface';
-import { pizza } from '../validations/Pizza.validator';
+import { pizza, image } from '../validations/Pizza.validator';
 import { setSorting } from '../utils/sortingHelper';
 import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
 import AWS_S3 from '../services/AWS_S3';
@@ -116,6 +116,27 @@ export default class PizzaController implements Controller {
 
     private upload = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { id } = request.params;
+
+        if (!request.file) {
+            code422(response, {
+                field: "file",
+                message: `File can not be blank.`
+            })
+        }
+        const { mimetype, size, originalname } = request.file;
+
+        if (!mimetype.includes('image')) {
+            code422(response, {
+                field: "file",
+                message: `File "${originalname}" should be image.`
+            })
+        }
+        if (size > 10 * 1024 * 1024) {
+            code422(response, {
+                field: "file",
+                message: `File ${originalname} should be less than 10Mib.`
+            })
+        }
         AWS_S3.prototype.uploadFile(request.file)
             .then(s3 => {
                 this.pizza.findByIdAndUpdate(id, { $set: { image: s3["Location"] } }, { new: true })
