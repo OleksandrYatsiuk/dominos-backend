@@ -4,7 +4,6 @@ import * as mongoose from 'mongoose';
 import { createValidator } from 'express-joi-validation';
 import errorMiddleware from './middleware/UnprocessableEntityException.middleware';
 import { code404 } from './middleware/base.response';
-import * as doc from './swagger/swagger.json'
 
 
 class App {

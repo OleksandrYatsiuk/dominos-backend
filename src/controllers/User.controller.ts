@@ -10,7 +10,10 @@ import checkAuth from '../middleware/auth.middleware';
 import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
 import * as bcrypt from 'bcrypt';
 import { changePassword } from '../validations/Register.validator';
+import AWS_S3 from '../services/AWS_S3';
+import * as multer from 'multer';
 
+const upload = multer();
 
 export default class UserController implements Controller {
     public path = '/user';
@@ -28,6 +31,7 @@ export default class UserController implements Controller {
         this.router.get(`${this.path}/current`, checkAuth, this.current);
         this.router.post(`${this.path}/logout`, checkAuth, this.logout);
         this.router.post(`${this.path}/change-password`, checkAuth, validate(changePassword), this.changePassword);
+        this.router.post(`${this.path}/upload`, checkAuth, upload.single('file'), this.upload);
     }
 
     private update = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -129,5 +133,54 @@ export default class UserController implements Controller {
             }
         }
         )
+    }
+    private upload = (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        const id = response.locals;
+        console.log(id);
+        if (!request.file) {
+            code422(response, {
+                field: "file",
+                message: `File can not be blank.`
+            })
+        }
+        const { mimetype, size, originalname } = request.file;
+
+        if (!mimetype.includes('image')) {
+            code422(response, {
+                field: "file",
+                message: `File "${originalname}" should be image.`
+            })
+        }
+        if (size > 10 * 1024 * 1024) {
+            code422(response, {
+                field: "file",
+                message: `File ${originalname} should be less than 10Mib.`
+            })
+        }
+        AWS_S3.prototype.uploadFile(request.file)
+            .then(s3 => {
+                this.user.findByIdAndUpdate(id, { $set: { image: s3["Location"] } }, { new: true })
+                    .then(user => {
+                        code200(response, {
+                            id: user._id,
+                            username: user.username,
+                            fullName: user.fullName,
+                            email: user.email,
+                            role: user.role,
+                            location: user.location,
+                            birthday: user.birthday,
+                            phone: user.phone,
+                            image: user.image,
+                            createdAt: user.createdAt,
+                            updatedAt: user.updatedAt,
+                            deletedAt: user.deletedAt,
+                            deletedBy: user.deletedBy
+                        })
+                    })
+                    .catch(err => code500(response, err))
+            })
+            .catch(err => {
+                code500(response, err)
+            })
     }
 }

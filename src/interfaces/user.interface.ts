@@ -11,6 +11,7 @@ export default interface User {
         lat: number,
         lng: number
     },
+    image?: string | null,
     createdAt: number,
     updatedAt: number,
     deletedAt: number,

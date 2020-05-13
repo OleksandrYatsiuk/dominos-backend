@@ -1,7 +1,7 @@
 import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
 import deliveryModel, { Delivery } from '../models/delivery.model';
-import { code200, code200DataProvider, code204, code404, code500 } from '../middleware/base.response';
+import { code200DataProvider, code204, code404, code500, code201 } from '../middleware/base.response';
 import validate from '../middleware/validation.middleware';
 import { pagination } from '../validations/Pagination.validator';
 import NotFoundException from '../exceptions/NotFoundException';
@@ -66,7 +66,7 @@ export default class DeliveryController implements Controller {
         const deliveryData: Delivery = request.body;
         const delivery = new this.delivery(deliveryData);
         delivery.save()
-            .then(pizza => code200(response, pizza))
+            .then(pizza => code201(response, pizza))
             .catch(err => {
                 code500(response, err)
             })
