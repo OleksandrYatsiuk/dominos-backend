@@ -14,6 +14,7 @@ import { setSorting } from '../utils/sortingHelper';
 import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
 import AWS_S3 from '../services/AWS_S3';
 import * as multer from 'multer';
+import checkFiles from '../validations/Files.validator';
 
 const upload = multer();
 
@@ -32,7 +33,7 @@ export default class PizzaController implements Controller {
         this.router.get(`${this.path}/:id`, this.overview);
         this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), this.remove);
         this.router.put(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(pizza), this.update);
-        this.router.post(`${this.path}/:id/upload`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), upload.single('file'), this.upload);
+        this.router.post(`${this.path}/:id/upload`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), upload.single('file'), checkFiles(), this.upload);
     }
 
     private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -116,44 +117,28 @@ export default class PizzaController implements Controller {
 
     private upload = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { id } = request.params;
-
-        if (!request.file) {
-            code422(response, {
-                field: "file",
-                message: `File can not be blank.`
-            })
-        }
-        const { mimetype, size, originalname } = request.file;
-
-        if (!mimetype.includes('image')) {
-            code422(response, {
-                field: "file",
-                message: `File "${originalname}" should be image.`
-            })
-        }
-        if (size > 10 * 1024 * 1024) {
-            code422(response, {
-                field: "file",
-                message: `File ${originalname} should be less than 10Mib.`
-            })
-        }
         AWS_S3.prototype.uploadFile(request.file)
             .then(s3 => {
-                this.pizza.findByIdAndUpdate(id, { $set: { image: s3["Location"] } }, { new: true })
+                this.pizza.findByIdAndUpdate(id, { image: s3["Location"] }, { new: true })
                     .then(pizza => {
-                        code200(response, {
-                            id: pizza._id,
-                            name: pizza.name,
-                            ingredients: pizza.ingredients,
-                            weight: pizza.weight,
-                            price: pizza.price,
-                            category: pizza.category,
-                            image: pizza.image,
-                            createdAt: pizza.createdAt,
-                            updatedAt: pizza.updatedAt,
-                            deletedAt: pizza.deletedAt,
-                            deletedBy: pizza.deletedBy
-                        })
+                        if (pizza) {
+                            code200(response, {
+                                id: pizza._id,
+                                name: pizza.name,
+                                ingredients: pizza.ingredients,
+                                weight: pizza.weight,
+                                price: pizza.price,
+                                category: pizza.category,
+                                image: pizza.image,
+                                createdAt: pizza.createdAt,
+                                updatedAt: pizza.updatedAt,
+                                deletedAt: pizza.deletedAt,
+                                deletedBy: pizza.deletedBy
+                            })
+                        } else {
+                            code404(response, "Pizza not found!")
+                        }
+
                     })
                     .catch(err => code500(response, err))
             })
