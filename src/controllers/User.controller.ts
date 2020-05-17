@@ -105,6 +105,7 @@ export default class UserController implements Controller {
                     location: user.location,
                     birthday: user.birthday,
                     phone: user.phone,
+                    image: user.image,
                     createdAt: user.createdAt,
                     updatedAt: user.updatedAt,
                     deletedAt: user.deletedAt,
