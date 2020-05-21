@@ -1,10 +1,10 @@
 import * as express from 'express';
-import Controller from '../interfaces/controller.interface';
-import { code200DataProvider } from '../middleware/base.response';
-import validate from '../middleware/validation.middleware';
-import { pagination } from '../validations/Pagination.validator';
-import shopsModel from '../models/shops.model';
-import { setSorting } from '../utils/sortingHelper';
+import Controller from '../../interfaces/controller.interface';
+import { code200DataProvider } from '../../middleware/base.response';
+import validate from '../../middleware/validation.middleware';
+import { pagination } from '../../validations/Pagination.validator';
+import shopsModel from './shops.model';
+import { setSorting } from '../../utils/sortingHelper';
 
 
 export default class ShopsController implements Controller {

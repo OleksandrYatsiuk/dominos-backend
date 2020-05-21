@@ -1,6 +1,6 @@
 import * as express from 'express';
 import Controller from '../interfaces/controller.interface';
-import ingredientsModel, { Ingredient } from '../models/ingredients.model';
+import ingredientsModel from './ingredients.model';
 import { code200, code200DataProvider, code204, code404, code500 } from '../middleware/base.response';
 import validate from '../middleware/validation.middleware';
 import { pagination } from '../validations/Pagination.validator';
@@ -10,6 +10,7 @@ import checkRoles from '../middleware/roles.middleware';
 import { Roles } from '../interfaces/roles.interface';
 import { setSorting } from '../utils/sortingHelper';
 import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
+import { Ingredient } from './ingredients.interface';
 
 
 export default class IngredientsController implements Controller {

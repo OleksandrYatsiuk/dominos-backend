@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as  mongoosePaginate from 'mongoose-paginate';
-import User from '../interfaces/user.interface';
+import User from './user.interface';
 
 const userSchema = new mongoose.Schema({
     id: mongoose.Schema.Types.ObjectId,

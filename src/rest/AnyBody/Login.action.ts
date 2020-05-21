@@ -1,9 +1,9 @@
 import * as bcrypt from 'bcrypt';
 import * as express from 'express';
-import { getCurrentTime, setTokenLifeTime } from "../../../utils/current-time-UTC";
-import { code200 } from "../../../middleware/base.response";
-import userModel from '../../../models/user.model';
-import authToken from '../../../models/authToken.model';
+import { getCurrentTime, setTokenLifeTime } from "../../utils/current-time-UTC";
+import { code200 } from "../../middleware/base.response";
+import userModel from '../User/user.model';
+import authToken from './authToken.model';
 
 export class LoginHelper {
     constructor() { }

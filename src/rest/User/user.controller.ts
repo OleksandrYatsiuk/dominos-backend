@@ -1,18 +1,18 @@
 import * as express from 'express';
-import Controller from '../interfaces/controller.interface';
-import userModel from '../models/user.model';
-import authModel from '../models/authToken.model';
-import { code200, code404, code204, code401, code422, code500 } from '../middleware/base.response';
-import validate from '../middleware/validation.middleware';
-import { update, updateLocation } from '../validations/UserManagement.validator';
-import { getCurrentTime } from '../utils/current-time-UTC';
-import checkAuth from '../middleware/auth.middleware';
-import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
+import Controller from '../../interfaces/controller.interface';
+import userModel from './user.model';
+import authModel from '../AnyBody/authToken.model';
+import { code200, code404, code204, code401, code422, code500 } from '../../middleware/base.response';
+import validate from '../../middleware/validation.middleware';
+import { update, updateLocation } from '../UserManagement/UserManagement.validator';
+import { getCurrentTime } from '../../utils/current-time-UTC';
+import checkAuth from '../../middleware/auth.middleware';
+import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 import * as bcrypt from 'bcrypt';
-import { changePassword } from '../validations/Register.validator';
-import AWS_S3 from '../services/AWS_S3';
+import { changePassword } from '../AnyBody/Register.validator';
+import AWS_S3 from '../../services/AWS_S3';
 import * as multer from 'multer';
-import checkFiles from '../validations/Files.validator';
+import checkFiles from '../../validations/Files.validator';
 
 const upload = multer();
 

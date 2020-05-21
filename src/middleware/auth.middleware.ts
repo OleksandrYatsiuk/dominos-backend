@@ -1,5 +1,5 @@
 import { Request, NextFunction, Response } from 'express';
-import authToken from '../models/authToken.model'
+import authToken from '../rest/AnyBody/authToken.model'
 import { code401 } from './base.response';
 
 export default async function checkAuth(request: Request, response: Response, next: NextFunction) {

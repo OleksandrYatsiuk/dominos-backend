@@ -1,20 +1,21 @@
 import * as express from 'express';
-import Controller from '../interfaces/controller.interface';
-import pizzaModel, { Pizza } from '../models/pizza.model';
-import { code200, code200DataProvider, code204, code404, code500, code422, code201 } from '../middleware/base.response';
-import validate from '../middleware/validation.middleware';
-import { pagination } from '../validations/Pagination.validator';
-import NotFoundException from '../exceptions/NotFoundException';
-import { getCurrentTime } from '../utils/current-time-UTC';
-import checkAuth from '../middleware/auth.middleware';
-import checkRoles from '../middleware/roles.middleware';
-import { Roles } from '../interfaces/roles.interface';
-import { pizza } from '../validations/Pizza.validator';
-import { setSorting } from '../utils/sortingHelper';
-import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
-import AWS_S3 from '../services/AWS_S3';
+import Controller from '../../interfaces/controller.interface';
+import pizzaModel from './pizza.model';
+import { code200, code200DataProvider, code204, code404, code500, code422, code201 } from '../../middleware/base.response';
+import validate from '../../middleware/validation.middleware';
+import { pagination } from '../../validations/Pagination.validator';
+import NotFoundException from '../../exceptions/NotFoundException';
+import { getCurrentTime } from '../../utils/current-time-UTC';
+import checkAuth from '../../middleware/auth.middleware';
+import checkRoles from '../../middleware/roles.middleware';
+import { Roles } from '../../interfaces/roles.interface';
+import { pizza } from './Pizza.validator';
+import { setSorting } from '../../utils/sortingHelper';
+import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
+import AWS_S3 from '../../services/AWS_S3';
 import * as multer from 'multer';
-import checkFiles from '../validations/Files.validator';
+import checkFiles from '../../validations/Files.validator';
+import { Pizza } from './pizza.interface';
 
 const upload = multer();
 

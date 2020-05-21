@@ -1,14 +1,14 @@
 import * as express from 'express';
-import Controller from '../interfaces/controller.interface';
-import userModel from '../models/user.model';
-import authModel, { loginSchema } from '../models/authToken.model';
-import { Authentication } from '../interfaces/authentication.interface';
-import { Registration } from '../interfaces/registration.interface';
-import { code200, code201 } from '../middleware/base.response';
-import validate from '../middleware/validation.middleware';
-import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
-import { LoginHelper } from './actions/AnyBody/Login.action';
-import { registerSchema } from '../validations/Register.validator';
+import Controller from '../../interfaces/controller.interface';
+import userModel from '../User/user.model';
+import authModel, { loginSchema } from './authToken.model';
+import { Authentication } from '../../interfaces/authentication.interface';
+import { Registration } from '../../interfaces/registration.interface';
+import { code200, code201 } from '../../middleware/base.response';
+import validate from '../../middleware/validation.middleware';
+import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
+import { LoginHelper } from './Login.action';
+import { registerSchema } from './Register.validator';
 
 export default class AnyBodyController implements Controller {
     public path = '/auth';

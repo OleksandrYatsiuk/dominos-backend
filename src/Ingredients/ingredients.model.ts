@@ -1,9 +1,7 @@
 import * as mongoose from 'mongoose';
 import * as  mongoosePaginate from 'mongoose-paginate';
-export interface Ingredient {
-    id: string,
-    name: string
-}
+import { Ingredient } from './ingredients.interface';
+
 
 const ingredientsModel = new mongoose.Schema({
     id: mongoose.Schema.Types.ObjectId,

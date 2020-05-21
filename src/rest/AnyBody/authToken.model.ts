@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { getCurrentTime, setTokenLifeTime } from '../utils/current-time-UTC';
+import { getCurrentTime, setTokenLifeTime } from '../../utils/current-time-UTC';
 import * as Joi from '@hapi/joi';
 /**
  * converting

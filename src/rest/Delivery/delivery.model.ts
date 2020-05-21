@@ -1,38 +1,9 @@
 import * as mongoose from 'mongoose';
-import { getCurrentTime } from '../utils/current-time-UTC';
+import { getCurrentTime } from '../../utils/current-time-UTC';
 import * as  mongoosePaginate from 'mongoose-paginate';
+import { Delivery } from './delivery.interface';
 
-export interface Delivery {
-    id: string,
-    firstName: string,
-    phone: number,
-    email: string,
-    pizzaIds: string[],
-    shop: string,
-    address?: {
-        street: string,
-        house: number,
-        entrance?: string,
-        code?: number,
-        floor?: number,
-    },
-    comment: string,
-    date: {
-        date: string,
-        time: string
-    },
-    payment: {
-        coupon?: string,
-        remainder?: string
-        type: string
-    },
-    image: string | null,
-    amount: number,
-    createdAt: number,
-    updatedAt: number,
-    deletedAt: number | null,
-    deletedBy: string | null,
-}
+
 
 const deliverySchema = new mongoose.Schema({
     id: mongoose.Schema.Types.ObjectId,

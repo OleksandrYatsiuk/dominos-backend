@@ -1,13 +1,12 @@
 import App from './app';
-import PostsController from './posts/posts.controller';
 import 'dotenv/config';
-import AnyBodyController from './controllers/AnyBody.controller';
-import UserController from './controllers/User.controller';
-import PizzaController from './controllers/Pizza.controller';
-import DeliveryController from './controllers/Delivery.controller';
-import ShopsController from './controllers/Shops.controller';
-import IngredientsController from './controllers/Ingredients.controller';
-import UserManagementController from './controllers/UserManagement.controller';
+import AnyBodyController from './rest/AnyBody/anyBody.controller';
+import UserController from './rest/User/user.controller';
+import PizzaController from './rest/Pizza/pizza.controller';
+import DeliveryController from './rest/Delivery/delivery.controller';
+import ShopsController from './rest/Shops/shops.controller';
+import IngredientsController from './Ingredients/ingredients.controller';
+import UserManagementController from './rest/UserManagement/userManagement.controller';
 
 const app = new App(
     [
@@ -18,7 +17,6 @@ const app = new App(
         new DeliveryController(),
         new ShopsController(),
         new IngredientsController(),
-        new PostsController()
     ],
     5000, '/v1'
 );

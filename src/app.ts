@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
 import { createValidator } from 'express-joi-validation';
-import errorMiddleware from './middleware/UnprocessableEntityException.middleware';
+import errorMiddleware from './middleware/error.middleware';
 import { code404 } from './middleware/base.response';
 
 

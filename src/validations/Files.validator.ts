@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { code422 } from "../middleware/base.response";
-
+const maxFileSize = 10 * 1024 * 1024;
 
 export default function checkFiles() {
     return (request: Request, response: Response, next: NextFunction) => {
@@ -16,7 +16,7 @@ export default function checkFiles() {
                     field: "file",
                     message: `File "${originalname}" should be image.`
                 })
-                if (size > 10 * 1024 * 1024) {
+                if (size > maxFileSize) {
                     code422(response, {
                         field: "file",
                         message: `File ${originalname} should be less than 10Mib.`

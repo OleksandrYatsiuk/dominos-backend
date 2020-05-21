@@ -1,15 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-
-export interface Errors {
-    field: string,
-    message: string
-}
-export interface Pagination {
-    total: number
-    limit: number,
-    page: number,
-    pages: number,
-}
+import { Pagination } from "interfaces/pagination.interface";
 
 export function code422(response: Response, errors: any) {
     response.status(422).json({

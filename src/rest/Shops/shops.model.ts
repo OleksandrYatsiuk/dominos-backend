@@ -1,19 +1,9 @@
 import * as mongoose from 'mongoose';
-import { getCurrentTime, setTokenLifeTime } from '../utils/current-time-UTC';
+import { getCurrentTime, setTokenLifeTime } from '../../utils/current-time-UTC';
 import * as  mongoosePaginate from 'mongoose-paginate';
+import { Shop } from './shops.interface';
 
-export interface Shop {
-    id: string,
-    address: string,
-    lat: number,
-    lng: string,
-    label: string[],
-    draggable: string,
-    createdAt: number,
-    updatedAt: number,
-    deletedAt: number | null,
-    deletedBy: string | null,
-}
+
 
 const shopsSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
