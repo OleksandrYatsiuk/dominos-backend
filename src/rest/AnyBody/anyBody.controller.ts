@@ -9,6 +9,8 @@ import validate from '../../middleware/validation.middleware';
 import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 import { LoginHelper } from './Login.action';
 import { registerSchema } from './Register.validator';
+import NodeMailer from '../../services/nodemailer';
+// import * as html from '../../services/login.html';
 
 export default class AnyBodyController implements Controller {
     public path = '/auth';
@@ -16,7 +18,7 @@ export default class AnyBodyController implements Controller {
     private user = userModel;
     private userHelper = new LoginHelper();
     private authToken = authModel;
-
+    private mailer = new NodeMailer();
     constructor() {
         this.initializeRoutes();
     }
@@ -29,6 +31,7 @@ export default class AnyBodyController implements Controller {
     private login = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { username, password }: Authentication = request.body;
         let hash;
+        this.mailer.send('oleksandr.yatsiuk@gmail.com', 'Confirm Email', '');
         const user = await this.user.findOne({ username })
         if (user) {
             if (this.userHelper.isPasswordCorrect(password, user.passwordHash)) {
