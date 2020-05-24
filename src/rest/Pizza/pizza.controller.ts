@@ -12,7 +12,7 @@ import { Roles } from '../../interfaces/roles.interface';
 import { pizza } from './Pizza.validator';
 import { setSorting } from '../../utils/sortingHelper';
 import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
-import AWS_S3 from '../../services/AWS_S3';
+import AWS_S3 from '../../services/AmazoneService';
 import * as multer from 'multer';
 import checkFiles from '../../validations/Files.validator';
 import { Pizza } from './pizza.interface';

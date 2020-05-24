@@ -2,6 +2,7 @@ import * as express from 'express';
 import Controller from '../../interfaces/controller.interface';
 import userModel from '../User/user.model';
 import authModel, { loginSchema } from './authToken.model';
+import accessTable from './accessToken.model';
 import { Authentication } from '../../interfaces/authentication.interface';
 import { Registration } from '../../interfaces/registration.interface';
 import { code200, code201 } from '../../middleware/base.response';
@@ -9,8 +10,7 @@ import validate from '../../middleware/validation.middleware';
 import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 import { LoginHelper } from './Login.action';
 import { registerSchema } from './Register.validator';
-import NodeMailer from '../../services/nodemailer';
-// import * as html from '../../services/login.html';
+import EmailSenderService from '../../services/EmailSenderService';
 
 export default class AnyBodyController implements Controller {
     public path = '/auth';
@@ -18,7 +18,9 @@ export default class AnyBodyController implements Controller {
     private user = userModel;
     private userHelper = new LoginHelper();
     private authToken = authModel;
-    private mailer = new NodeMailer();
+    private access = accessTable;
+    private mailer = new EmailSenderService();
+    
     constructor() {
         this.initializeRoutes();
     }
@@ -31,7 +33,7 @@ export default class AnyBodyController implements Controller {
     private login = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { username, password }: Authentication = request.body;
         let hash;
-        this.mailer.send('oleksandr.yatsiuk@gmail.com', 'Confirm Email', '');
+
         const user = await this.user.findOne({ username })
         if (user) {
             if (this.userHelper.isPasswordCorrect(password, user.passwordHash)) {
@@ -74,21 +76,30 @@ export default class AnyBodyController implements Controller {
             const user = new this.user(registerData);
             user.save()
                 .then(user => {
-                    code201(response, {
-                        id: user._id,
-                        username: user.username,
-                        fullName: user.fullName,
-                        email: user.email,
-                        role: user.role,
-                        location: user.location,
-                        birthday: user.birthday,
-                        phone: user.phone,
-                        createdAt: user.createdAt,
-                        updatedAt: user.updatedAt,
-                        deletedAt: user.deletedAt,
-                        deletedBy: user.deletedBy
-                    })
+
+                    this.mailer.send(user.email, "Welcome to Dominos", 'register.pug', {
+                        title: 'Welcome',
+                        link: `https://dominos-app.herokuapp.com/${this.createAccessToken(user.email)}`
+                    }).then(() =>
+                        code201(response, {
+                            id: user._id,
+                            username: user.username,
+                            fullName: user.fullName,
+                            email: user.email,
+                            role: user.role,
+                            location: user.location,
+                            birthday: user.birthday,
+                            phone: user.phone,
+                            createdAt: user.createdAt,
+                            updatedAt: user.updatedAt,
+                            deletedAt: user.deletedAt,
+                            deletedBy: user.deletedBy
+                        })
+                    );
                 })
         }
+    }
+    private createAccessToken(email: string) {
+        return this.userHelper.newToken(email, Date.toString())
     }
 }
