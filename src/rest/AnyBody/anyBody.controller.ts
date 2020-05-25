@@ -6,7 +6,7 @@ import authModel, { loginSchema } from './authToken.model';
 import accessTable from './accessToken.model';
 import { Authentication } from '../../interfaces/authentication.interface';
 import { Registration } from '../../interfaces/registration.interface';
-import { code200, code201, code422 } from '../../middleware/base.response';
+import { code200, code201, code422, code204 } from '../../middleware/base.response';
 import validate from '../../middleware/validation.middleware';
 import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 import { LoginHelper } from './Login.action';
@@ -112,7 +112,7 @@ export default class AnyBodyController implements Controller {
         const { email } = request.body;
         this.accessToken.updateAccessToken(email)
             .then(result => {
-                code200(response, null)
+                code204(response)
             })
             .catch(errr => next(new UnprocessableEntityException({ field: "email", message: "Email is invalid." })))
     }
