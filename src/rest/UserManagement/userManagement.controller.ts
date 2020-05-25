@@ -1,11 +1,10 @@
 import * as express from 'express';
 import Controller from '../../interfaces/controller.interface';
-import userModel from '../User/user.model';
+import { UserHelper } from '../User/user.helper';
 import { code200, code200DataProvider, code204, code404 } from '../../middleware/base.response';
 import validate from '../../middleware/validation.middleware';
 import { pagination } from '../../validations/Pagination.validator';
 import NotFoundException from '../../exceptions/NotFoundException';
-import { getCurrentTime } from '../../utils/current-time-UTC';
 import { updateRole } from './UserManagement.validator';
 import checkAuth from '../../middleware/auth.middleware';
 import checkRoles from '../../middleware/roles.middleware';
@@ -15,9 +14,10 @@ import UnprocessableEntityException from '../../exceptions/UnprocessableEntityEx
 
 
 export default class UserManagementController implements Controller {
+    
     public path = '/user-management';
     public router = express.Router();
-    private user = userModel;
+    private helper = new UserHelper();
 
     constructor() {
         this.initializeRoutes();
@@ -33,24 +33,9 @@ export default class UserManagementController implements Controller {
     private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { page, limit, sort } = request.query;
         const condition = setSorting(sort);
-        this.user.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
+        this.helper.paginateUser(condition, +page, +limit)
             .then(({ docs, total, limit, page, pages }) => {
-                code200DataProvider(response, { total, limit, page, pages }, docs.map(user => {
-                    return {
-                        id: user._id,
-                        username: user.username,
-                        fullName: user.fullName,
-                        email: user.email,
-                        role: user.role,
-                        location: user.location,
-                        birthday: user.birthday,
-                        phone: user.phone,
-                        createdAt: user.createdAt,
-                        updatedAt: user.updatedAt,
-                        deletedAt: user.deletedAt,
-                        deletedBy: user.deletedBy
-                    }
-                }))
+                code200DataProvider(response, { total, limit, page, pages }, docs.map(user => { return this.helper.parseUserModel(user) }))
             })
     }
 
@@ -61,18 +46,16 @@ export default class UserManagementController implements Controller {
                 message: "You cannot delete himself!"
             }))
         }
-        this.user.findByIdAndDelete(request.params.id)
+        this.helper.removeUser(request.params.id)
             .then(result => {
                 result ? code204(response) : next(new NotFoundException("User"));
             })
             .catch(err => code404(response, "User Id is invalid."))
     }
 
-
     private updateRole = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { role } = request.body;
-
-        this.user.findByIdAndUpdate(request.params.id, { $set: { role: role, updatedAt: getCurrentTime() } }, { new: true })
+        this.helper.updateUserItem(request.params.id, { role })
             .then(user => code200(response, null))
             .catch(err => code404(response, "User was not found."))
     }

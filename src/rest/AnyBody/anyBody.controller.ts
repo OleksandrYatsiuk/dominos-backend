@@ -1,26 +1,31 @@
 import * as express from 'express';
 import Controller from '../../interfaces/controller.interface';
 import userModel from '../User/user.model';
+import { UserHelper } from '../User/user.helper';
 import authModel, { loginSchema } from './authToken.model';
 import accessTable from './accessToken.model';
 import { Authentication } from '../../interfaces/authentication.interface';
 import { Registration } from '../../interfaces/registration.interface';
-import { code200, code201 } from '../../middleware/base.response';
+import { code200, code201, code422 } from '../../middleware/base.response';
 import validate from '../../middleware/validation.middleware';
 import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 import { LoginHelper } from './Login.action';
 import { registerSchema } from './Register.validator';
 import EmailSenderService from '../../services/EmailSenderService';
+import { AccessTokenHelper } from './accessToken.helper';
+import NotFoundException from '../../exceptions/NotFoundException';
 
 export default class AnyBodyController implements Controller {
     public path = '/auth';
     public router = express.Router();
     private user = userModel;
     private userHelper = new LoginHelper();
+    private helper = new UserHelper();
+    private accessToken = new AccessTokenHelper();
     private authToken = authModel;
     private access = accessTable;
     private mailer = new EmailSenderService();
-    
+
     constructor() {
         this.initializeRoutes();
     }
@@ -28,13 +33,14 @@ export default class AnyBodyController implements Controller {
     private initializeRoutes() {
         this.router.post(`${this.path}/login`, validate(loginSchema), this.login);
         this.router.post(`${this.path}/register`, validate(registerSchema), this.registering);
+        this.router.get(`${this.path}/confirm/:token`, this.confirm);
+        this.router.post(`${this.path}/resend-verify-email`, this.resendVerifyEmail);
     }
 
     private login = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { username, password }: Authentication = request.body;
         let hash;
-
-        const user = await this.user.findOne({ username })
+        const user = await this.helper.getUser({ username });
         if (user) {
             if (this.userHelper.isPasswordCorrect(password, user.passwordHash)) {
                 const authToken = await this.authToken.findOne({ userId: user._id })
@@ -66,40 +72,48 @@ export default class AnyBodyController implements Controller {
     private registering = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const registerData: Registration = request.body;
 
-        const emailExist = await this.user.findOne({ email: registerData.email })
-        const usernameExist = await this.user.findOne({ username: registerData.username })
+        const emailExist = await this.helper.getUser({ email: registerData.email })
+        const usernameExist = await this.helper.getUser({ username: registerData.username })
         if (emailExist) {
             next(new UnprocessableEntityException({ field: 'email', message: `Email "${registerData.email}" has already been taken.` }))
         } else if (usernameExist) {
             next(new UnprocessableEntityException({ field: 'username', message: `Username "${registerData.username}" has already been taken.` }))
         } else {
-            const user = new this.user(registerData);
-            user.save()
+            this.helper.createUser(registerData)
                 .then(user => {
-
-                    this.mailer.send(user.email, "Welcome to Dominos", 'register.pug', {
-                        title: 'Welcome',
-                        link: `https://dominos-app.herokuapp.com/${this.createAccessToken(user.email)}`
-                    }).then(() =>
-                        code201(response, {
-                            id: user._id,
-                            username: user.username,
-                            fullName: user.fullName,
-                            email: user.email,
-                            role: user.role,
-                            location: user.location,
-                            birthday: user.birthday,
-                            phone: user.phone,
-                            createdAt: user.createdAt,
-                            updatedAt: user.updatedAt,
-                            deletedAt: user.deletedAt,
-                            deletedBy: user.deletedBy
+                    this.accessToken.saveAccessToken(user)
+                        .then(tokenData => {
+                            this.mailer.send(user.email, "Welcome to Dominos", 'register.pug', {
+                                title: 'Welcome',
+                                link: `https://dominos-app.herokuapp.com/${tokenData.token}`
+                            })
+                                .then(() => code201(response, this.helper.parseUserModel(user)));
                         })
-                    );
+
                 })
         }
     }
-    private createAccessToken(email: string) {
-        return this.userHelper.newToken(email, Date.toString())
+    private confirm = (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        const { token } = request.params;
+        this.accessToken.checkAccessTokenValid(token)
+            .then(result => {
+                switch (result) {
+                    case null:
+                        return next(new NotFoundException("Token"));
+                    case false:
+                        return next(new UnprocessableEntityException({ field: 'token', message: "Token is invalid." }));
+                    case true:
+                        return this.accessToken.confirmEmail(token)
+                            .then(res => code200(response, null))
+                }
+            })
+    }
+    private resendVerifyEmail = (request: express.Request, response: express.Response, next: express.NextFunction) => {
+        const { email } = request.body;
+        this.accessToken.updateAccessToken(email)
+            .then(result => {
+                code200(response, null)
+            })
+            .catch(errr => next(new UnprocessableEntityException({ field: "email", message: "Email is invalid." })))
     }
 }

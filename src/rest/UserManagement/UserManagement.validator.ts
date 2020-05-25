@@ -6,13 +6,19 @@ const phoneEqual = (value, helpers) => {
     }
 }
 
+export const usernameMinLength = 3;
+export const usernameMaxLength = 15;
+export const fullNameMinLength = 4;
+export const fullNameMaxLength = 20;
+
+
 export const update = Joi.object({
-    username: Joi.string().optional().empty().label('Username').min(3).max(15).messages({
+    username: Joi.string().optional().empty().label('Username').min(usernameMinLength).max(usernameMaxLength).messages({
         "string.empty": "cannot be blank.",
         "string.min": "must be no less than 3.",
         "string.max": "must be no greater than 15.",
     }),
-    fullName: Joi.string().optional().empty().label('Full Name').min(4).max(20).messages({
+    fullName: Joi.string().optional().empty().label('Full Name').min(fullNameMinLength).max(fullNameMaxLength).messages({
         "string.empty": "cannot be blank.",
         "string.min": "must be no less than 4.",
         "string.max": "must be no greater than 20.",
@@ -43,13 +49,14 @@ export const updateLocation = Joi.object({
     })
 })
 
+
 export enum Roles {
     techadmin = "administrator",
     projectManager = 'projectManager',
     public = 'public'
 }
 
-const checkRoles = (value, helpers) => {
+const checkRoles = (value: string, helpers) => {
     if (!Object.values(Roles).find(role => value === role)) {
         return helpers.error('any.invalid');
     }
@@ -63,4 +70,6 @@ export const updateRole = Joi.object({
         "any.invalid": "is invalid."
     }),
 })
+
+
 

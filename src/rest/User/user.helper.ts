@@ -14,8 +14,18 @@ export class UserHelper extends AuthorizeTokenHelper {
     public getUserById(id: string) {
         return this.user.findById(id).then(user => { return this.parseUserModel(user) });
     }
+
+    public getUserId(userProps: object) {
+        return this.user.findOne(userProps).then(user => user._id);
+    }
+
     public getUser(userProps: object) {
         return this.user.findOne(userProps);
+    }
+
+    public createUser(userProps: object) {
+        const user = new this.user(userProps);
+        return user.save();
     }
 
     public parseUserModel(user: User) {
@@ -48,6 +58,16 @@ export class UserHelper extends AuthorizeTokenHelper {
             .then(user => { return this.parseUserModel(user) })
             .catch(error => { return error; })
     }
+
+    public removeUser(id: string) {
+        return this.user.findByIdAndDelete(id);
+    }
+
+    public paginateUser(condition: object, page: number, limit: number) {
+        return this.user.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
+    }
+
+
     public clearAuthToken(id: string) {
         return super.removeItem(id);
     }
