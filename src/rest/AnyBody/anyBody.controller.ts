@@ -112,6 +112,10 @@ export default class AnyBodyController implements Controller {
         const { email } = request.body;
         this.accessToken.updateAccessToken(email)
             .then(result => {
+                this.mailer.send(email, "Welcome to Dominos", 'register.pug', {
+                    title: 'Welcome',
+                    link: `https://dominos-app.herokuapp.com/${result.token}`
+                })
                 code204(response)
             })
             .catch(errr => next(new UnprocessableEntityException({ field: "email", message: "Email is invalid." })))
