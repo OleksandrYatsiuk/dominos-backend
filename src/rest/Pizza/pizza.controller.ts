@@ -100,7 +100,6 @@ export default class PizzaController extends Controller {
     }
     private overview = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { id } = request.params
-        console.log(this.validator.addCustomError('email', this.list.UNIQUE_INVALID, [{ value: 'Email', }, { value: id }]));
         this.pizza.findById(id)
             .then(pizza => code200(response, {
                 id: pizza._id,

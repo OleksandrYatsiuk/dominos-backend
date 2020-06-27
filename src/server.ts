@@ -7,6 +7,7 @@ import DeliveryController from './rest/Delivery/delivery.controller';
 import ShopsController from './rest/Shops/shops.controller';
 import IngredientsController from './rest/Ingredients/ingredients.controller';
 import UserManagementController from './rest/UserManagement/userManagement.controller';
+import Promotions from './rest/Promotions/promotions.controller';
 
 const app = new App(
     [
@@ -17,6 +18,7 @@ const app = new App(
         new DeliveryController(),
         new ShopsController(),
         new IngredientsController(),
+        new Promotions()
     ],
     5000, '/v1'
 );
