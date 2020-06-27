@@ -1,25 +1,24 @@
 import * as express from 'express';
-import Controller from '../../interfaces/controller.interface';
+import Controller from '../Controller';
 import { UserHelper } from '../User/user.helper';
 import { code200, code200DataProvider, code204, code404 } from '../../middleware/base.response';
 import validate from '../../middleware/validation.middleware';
-import { pagination } from '../../validations/Pagination.validator';
+import { pagination } from '../../validation/Pagination.validator';
 import NotFoundException from '../../exceptions/NotFoundException';
 import { updateRole } from './UserManagement.validator';
 import checkAuth from '../../middleware/auth.middleware';
 import checkRoles from '../../middleware/roles.middleware';
 import { Roles } from '../../interfaces/roles.interface';
 import { setSorting } from '../../utils/sortingHelper';
-import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 
 
-export default class UserManagementController implements Controller {
+export default class UserManagementController extends Controller {
     
     public path = '/user-management';
-    public router = express.Router();
     private helper = new UserHelper();
 
     constructor() {
+        super();
         this.initializeRoutes();
     }
 
@@ -40,12 +39,6 @@ export default class UserManagementController implements Controller {
     }
 
     private remove = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-        if (request.params.id === response.locals) {
-            next(new UnprocessableEntityException({
-                field: "id",
-                message: "You cannot delete himself!"
-            }))
-        }
         this.helper.removeUser(request.params.id)
             .then(result => {
                 result ? code204(response) : next(new NotFoundException("User"));

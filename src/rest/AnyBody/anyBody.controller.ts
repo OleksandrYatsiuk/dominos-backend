@@ -1,5 +1,4 @@
 import * as express from 'express';
-import Controller from '../../interfaces/controller.interface';
 import userModel from '../User/user.model';
 import { UserHelper } from '../User/user.helper';
 import authModel, { loginSchema } from './authToken.model';
@@ -14,10 +13,10 @@ import { registerSchema } from './Register.validator';
 import EmailSenderService from '../../services/EmailSenderService';
 import { AccessTokenHelper } from './accessToken.helper';
 import NotFoundException from '../../exceptions/NotFoundException';
+import Controller from '../Controller';
 
-export default class AnyBodyController implements Controller {
+export default class AnyBodyController extends Controller {
     public path = '/auth';
-    public router = express.Router();
     private user = userModel;
     private userHelper = new LoginHelper();
     private helper = new UserHelper();
@@ -27,6 +26,7 @@ export default class AnyBodyController implements Controller {
     private mailer = new EmailSenderService();
 
     constructor() {
+        super()
         this.initializeRoutes();
     }
 
@@ -59,13 +59,11 @@ export default class AnyBodyController implements Controller {
                 }
             } else {
                 next(new UnprocessableEntityException(
-                    { field: 'username', message: "Username or Password is invalid." }
-                ));
+                    this.validator.addCustomError('username', this.list.CREDENTIALS_INVALID)));
             }
         } else {
             next(new UnprocessableEntityException(
-                { field: 'username', message: "Username or Password is invalid." }
-            ));
+                this.validator.addCustomError('username', this.list.CREDENTIALS_INVALID)));
         }
     }
 
@@ -75,9 +73,19 @@ export default class AnyBodyController implements Controller {
         const emailExist = await this.helper.getUser({ email: registerData.email })
         const usernameExist = await this.helper.getUser({ username: registerData.username })
         if (emailExist) {
-            next(new UnprocessableEntityException({ field: 'email', message: `Email "${registerData.email}" has already been taken.` }))
+            next(new UnprocessableEntityException(
+                this.validator.addCustomError(
+                    'email',
+                    this.list.UNIQUE_INVALID,
+                    [{ value: 'Email' }, { value: registerData.email }])
+            ));
         } else if (usernameExist) {
-            next(new UnprocessableEntityException({ field: 'username', message: `Username "${registerData.username}" has already been taken.` }))
+            next(new UnprocessableEntityException(
+                this.validator.addCustomError(
+                    'username',
+                    this.list.UNIQUE_INVALID,
+                    [{ value: 'Username' }, { value: registerData.username }])
+            ))
         } else {
             this.helper.createUser(registerData)
                 .then(user => {
@@ -101,7 +109,8 @@ export default class AnyBodyController implements Controller {
                     case null:
                         return next(new NotFoundException("Token"));
                     case false:
-                        return next(new UnprocessableEntityException({ field: 'token', message: "Token is invalid." }));
+                        return next(new UnprocessableEntityException(
+                            this.validator.addCustomError('token', this.list.EXIST_INVALID, [{ value: 'Token' }])))
                     case true:
                         return this.accessToken.confirmEmail(token)
                             .then(res => code200(response, null))
@@ -118,6 +127,8 @@ export default class AnyBodyController implements Controller {
                 })
                 code204(response)
             })
-            .catch(errr => next(new UnprocessableEntityException({ field: "email", message: "Email is invalid." })))
+            .catch(e => next(new UnprocessableEntityException(
+                this.validator.addCustomError('email', this.list.EMAIL_INVALID, [{ value: 'Email' }])))
+            );
     }
 }

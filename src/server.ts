@@ -5,7 +5,7 @@ import UserController from './rest/User/user.controller';
 import PizzaController from './rest/Pizza/pizza.controller';
 import DeliveryController from './rest/Delivery/delivery.controller';
 import ShopsController from './rest/Shops/shops.controller';
-import IngredientsController from './Ingredients/ingredients.controller';
+import IngredientsController from './rest/Ingredients/ingredients.controller';
 import UserManagementController from './rest/UserManagement/userManagement.controller';
 
 const app = new App(

@@ -1,18 +1,18 @@
 import * as express from 'express';
-import Controller from '../../interfaces/controller.interface';
+import Controller from '../Controller';
 import { code200DataProvider } from '../../middleware/base.response';
 import validate from '../../middleware/validation.middleware';
-import { pagination } from '../../validations/Pagination.validator';
+import { pagination } from '../../validation/Pagination.validator';
 import shopsModel from './shops.model';
 import { setSorting } from '../../utils/sortingHelper';
 
 
-export default class ShopsController implements Controller {
+export default class ShopsController extends Controller {
     public path = '/shops';
-    public router = express.Router();
     private shop = shopsModel;
 
     constructor() {
+        super();
         this.initializeRoutes();
     }
 

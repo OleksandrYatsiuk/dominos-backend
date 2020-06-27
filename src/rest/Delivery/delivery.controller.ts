@@ -1,9 +1,9 @@
 import * as express from 'express';
-import Controller from '../../interfaces/controller.interface';
+import Controller from '../Controller';
 import deliveryModel from './delivery.model';
 import { code200DataProvider, code204, code404, code500, code201 } from '../../middleware/base.response';
 import validate from '../../middleware/validation.middleware';
-import { pagination } from '../../validations/Pagination.validator';
+import { pagination } from '../../validation/Pagination.validator';
 import NotFoundException from '../../exceptions/NotFoundException';
 import checkAuth from '../../middleware/auth.middleware';
 import checkRoles from '../../middleware/roles.middleware';
@@ -13,12 +13,12 @@ import { setSorting } from '../../utils/sortingHelper';
 import { Delivery } from './delivery.interface';
 
 
-export default class DeliveryController implements Controller {
+export default class DeliveryController extends Controller {
     public path = '/delivery';
-    public router = express.Router();
     private delivery = deliveryModel;
 
     constructor() {
+        super();
         this.initializeRoutes();
     }
 

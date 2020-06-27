@@ -13,7 +13,7 @@ export default function validate(schema, config: string = 'body') {
         console.log(el)
         return {
           field: el.context.key,
-          message: `${el.context.label} ${el.message}`
+          message: el.message
         }
       })
       )

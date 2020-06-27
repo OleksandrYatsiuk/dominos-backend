@@ -1,9 +1,9 @@
 import * as express from 'express';
-import Controller from '../../interfaces/controller.interface';
+import Controller from '../Controller';;
 import pizzaModel from './pizza.model';
 import { code200, code200DataProvider, code204, code404, code500, code422, code201 } from '../../middleware/base.response';
 import validate from '../../middleware/validation.middleware';
-import { pagination } from '../../validations/Pagination.validator';
+import { pagination } from '../../validation/Pagination.validator';
 import NotFoundException from '../../exceptions/NotFoundException';
 import { getCurrentTime } from '../../utils/current-time-UTC';
 import checkAuth from '../../middleware/auth.middleware';
@@ -14,17 +14,17 @@ import { setSorting } from '../../utils/sortingHelper';
 import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 import AWS_S3 from '../../services/AmazoneService';
 import * as multer from 'multer';
-import checkFiles from '../../validations/Files.validator';
+import checkFiles from '../../validation/Files.validator';
 import { Pizza } from './pizza.interface';
 
 const upload = multer();
 
-export default class PizzaController implements Controller {
+export default class PizzaController extends Controller {
     public path = '/pizza';
-    public router = express.Router();
     private pizza = pizzaModel;
 
     constructor() {
+        super();
         this.initializeRoutes();
     }
 
@@ -73,10 +73,11 @@ export default class PizzaController implements Controller {
         this.pizza.findOne({ name: pizzaData.name })
             .then(pizza => {
                 if (pizza && pizza.name == pizzaData.name) {
-                    next(new UnprocessableEntityException({
-                        field: "name",
-                        message: `Name "${pizzaData.name}" has already been taken.`
-                    }))
+                    next(new UnprocessableEntityException(
+                        this.validator.addCustomError(
+                            'name',
+                            this.list.UNIQUE_INVALID,
+                            [{ value: 'Name', }, { value: pizzaData.name }])))
                 } else {
                     const pizza = new this.pizza(pizzaData);
                     pizza.save()
@@ -99,6 +100,7 @@ export default class PizzaController implements Controller {
     }
     private overview = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { id } = request.params
+        console.log(this.validator.addCustomError('email', this.list.UNIQUE_INVALID, [{ value: 'Email', }, { value: id }]));
         this.pizza.findById(id)
             .then(pizza => code200(response, {
                 id: pizza._id,

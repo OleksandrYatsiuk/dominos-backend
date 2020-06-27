@@ -1,5 +1,5 @@
 import * as express from 'express';
-import Controller from '../../interfaces/controller.interface';
+import Controller from '../Controller';
 import { code200, code204, code401, code500 } from '../../middleware/base.response';
 import validate from '../../middleware/validation.middleware';
 import { update, updateLocation } from '../UserManagement/UserManagement.validator';
@@ -7,18 +7,19 @@ import checkAuth from '../../middleware/auth.middleware';
 import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 import { changePassword } from '../AnyBody/Register.validator';
 import * as multer from 'multer';
-import checkFiles from '../../validations/Files.validator';
+import checkFiles from '../../validation/Files.validator';
 import AmazoneService from '../../services/AmazoneService';
 import { UserHelper } from './user.helper';
 
 const upload = multer();
 
-export default class UserController implements Controller {
+export default class UserController extends Controller {
     public path = '/user';
-    public router = express.Router();
     private helper = new UserHelper();
     private storage = new AmazoneService();
+
     constructor() {
+        super();
         this.initializeRoutes();
     }
 
@@ -35,11 +36,18 @@ export default class UserController implements Controller {
         const updatedData = request.body;
         this.helper.checkKeyForUpdating(response.locals, 'username', updatedData.username).then(result => {
             if (!result) {
-                next(new UnprocessableEntityException({ field: 'username', message: `Username"${updatedData.username}" has already been taken.` }));
+                next(new UnprocessableEntityException(
+                    this.validator.addCustomError('username',
+                        this.list.UNIQUE_INVALID,
+                        [{ value: 'Username' }, { value: updatedData.username }])))
             } else {
                 this.helper.checkKeyForUpdating(response.locals, 'email', updatedData.email).then(result => {
                     if (!result) {
-                        next(new UnprocessableEntityException({ field: 'email', message: `Email "${updatedData.email}" has already been taken.` }))
+                        next(new UnprocessableEntityException(
+                            this.validator.addCustomError(
+                                'email',
+                                this.list.UNIQUE_INVALID,
+                                [{ value: 'Email' }, { value: updatedData.email }])))
                     } else {
                         this.helper.updateUserItem(response.locals, updatedData)
                             .then(user => code200(response, user))
@@ -72,10 +80,12 @@ export default class UserController implements Controller {
         this.helper.checkPasswordValid(response.locals, currentPassword).then(result => {
             if (!result) {
                 next(
-                    new UnprocessableEntityException({
-                        field: "currentPassword",
-                        message: "Current Password is invalid."
-                    })
+                    new UnprocessableEntityException(
+                        this.validator.addCustomError(
+                            'currentPassword',
+                            this.list.EXIST_INVALID,
+                            [{ value: "Current Password" }]
+                        ))
                 )
             } else {
                 this.helper.updateUserItem(response.locals,

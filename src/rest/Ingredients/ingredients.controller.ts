@@ -1,24 +1,25 @@
 import * as express from 'express';
-import Controller from '../interfaces/controller.interface';
+import Controller from '../Controller';
 import ingredientsModel from './ingredients.model';
-import { code200, code200DataProvider, code204, code404, code500 } from '../middleware/base.response';
-import validate from '../middleware/validation.middleware';
-import { pagination } from '../validations/Pagination.validator';
-import NotFoundException from '../exceptions/NotFoundException';
-import checkAuth from '../middleware/auth.middleware';
-import checkRoles from '../middleware/roles.middleware';
-import { Roles } from '../interfaces/roles.interface';
-import { setSorting } from '../utils/sortingHelper';
-import UnprocessableEntityException from '../exceptions/UnprocessableEntityException';
+import { code200, code200DataProvider, code204, code404, code500 } from '../../middleware/base.response';
+import validate from '../../middleware/validation.middleware';
+import { pagination } from '../../validation/Pagination.validator';
+import NotFoundException from '../../exceptions/NotFoundException';
+import checkAuth from '../../middleware/auth.middleware';
+import checkRoles from '../../middleware/roles.middleware';
+import { Roles } from '../../interfaces/roles.interface';
+import { setSorting } from '../../utils/sortingHelper';
+import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 import { Ingredient } from './ingredients.interface';
 
 
-export default class IngredientsController implements Controller {
+export default class IngredientsController extends Controller {
     public path = '/ingredients';
     public router = express.Router();
     private ingredient = ingredientsModel;
 
     constructor() {
+        super();
         this.initializeRoutes();
     }
 
@@ -60,7 +61,8 @@ export default class IngredientsController implements Controller {
                         .then(pizza => code200(response, pizza))
                         .catch(err => code500(response, err))
                 } else {
-                    next(new UnprocessableEntityException({ field: 'name', message: `Name "${name}" has already been taken.` }))
+                    next(new UnprocessableEntityException(
+                        this.validator.addCustomError('name', this.list.UNIQUE_INVALID, [{ value: 'Name' }, { value: name }])))
                 }
             })
 
