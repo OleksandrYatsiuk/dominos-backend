@@ -41,16 +41,7 @@ export default class Promotions extends Controller {
         const condition = setSorting(sort);
         this.promo.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
             .then(({ docs, total, limit, page, pages }) => {
-                code200DataProvider(response, { total, limit, page, pages }, docs.map(promo => {
-                    return {
-                        id: promo._id,
-                        title: promo.title,
-                        context: promo.content,
-                        image: promo.image,
-                        createdAt: promo.createdAt,
-                        updatedAt: promo.updatedAt,
-                    }
-                }))
+                code200DataProvider(response, { total, limit, page, pages }, docs.map(promo =>this.parseFields(promo)))
             })
     };
     private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -89,7 +80,7 @@ export default class Promotions extends Controller {
     private update = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const updatedData = Object.assign(request.body, { updatedAt: getCurrentTime() })
         this.promo.findByIdAndUpdate(request.params.id, { $set: updatedData }, { new: true })
-            .then(pizza => code200(response, pizza))
+            .then(promo => code200(response, this.parseFields(promo)))
             .catch(err => code404(response, "Pizza was not found."))
     }
 
