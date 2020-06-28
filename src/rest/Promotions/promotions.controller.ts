@@ -31,7 +31,7 @@ export default class Promotions extends Controller {
         this.router.get(`${this.path}`, validate(pagination, 'query'), this.getList);
         this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), this.remove);
         this.router.post(`${this.path}`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(promotion), this.create);
-        this.router.post(`${this.path}/:id/upload`, checkAuth, upload.single('file'), checkFiles(), this.upload);
+        this.router.post(`${this.path}/:id`, checkAuth, upload.single('file'), checkFiles(), this.upload);
         this.router.put(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(promotion), this.update);
         this.router.get(`${this.path}/:id`, this.overview);
     }
