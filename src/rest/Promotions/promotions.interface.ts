@@ -4,7 +4,7 @@ export interface Promotion {
     content: string
     image: string,
     status: PromotionStatuses,
-    startedAt: number,
+    startedAt: Date,
     createdAt: number,
     updatedAt: number,
 }

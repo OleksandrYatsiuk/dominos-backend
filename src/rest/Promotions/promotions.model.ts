@@ -9,7 +9,7 @@ const promotionSchema = new mongoose.Schema({
     content: { type: String, required: true },
     image: { type: String, default: null },
     status: { type: Number, default: PromotionStatuses.New },
-    startedAt: { type: Number, default: getCurrentTime() },
+    startedAt: { type: Date, default: getCurrentTime() },
     createdAt: { type: Number, default: getCurrentTime() },
     updatedAt: { type: Number, default: getCurrentTime() },
 }, { versionKey: false });
