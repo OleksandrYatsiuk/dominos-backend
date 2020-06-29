@@ -5,7 +5,7 @@ import { code200DataProvider, code201, code500, code200, code404, code204 } from
 import promotionModel from './promotions.model';
 import validate from '../../middleware/validation.middleware';
 import { pagination } from '../../validation/Pagination.validator';
-import { Promotion } from './promotions.interface';
+import { Promotion, PromotionStatuses } from './promotions.interface';
 import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 import checkAuth from '../../middleware/auth.middleware';
 import checkRoles from '../../middleware/roles.middleware';
@@ -32,16 +32,22 @@ export default class Promotions extends Controller {
         this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin]), this.remove);
         this.router.post(`${this.path}`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(promotion), this.create);
         this.router.post(`${this.path}/:id`, checkAuth, upload.single('file'), checkFiles(), this.upload);
-        this.router.put(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(promotion), this.update);
+        this.router.patch(`${this.path}/:id`, checkAuth, checkRoles([Roles.techadmin, Roles.projectManager]), validate(promotion), this.update);
         this.router.get(`${this.path}/:id`, this.overview);
     }
 
     private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-        const { page, limit, sort } = request.query;
+        const { page = 1, limit = 20, sort, status } = request.query;
         const condition = setSorting(sort);
-        this.promo.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
+
+        let filter = {};
+        if (status) {
+            filter = { status: { $in: status } }
+        }
+
+        this.promo.paginate(filter, { page: +page || 1, limit: +limit || 20, sort: condition })
             .then(({ docs, total, limit, page, pages }) => {
-                code200DataProvider(response, { total, limit, page, pages }, docs.map(promo =>this.parseFields(promo)))
+                code200DataProvider(response, { total, limit, page, pages }, docs.map(promo => this.parseFields(promo)))
             })
     };
     private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -105,6 +111,8 @@ export default class Promotions extends Controller {
             title: promo.title,
             content: promo.content,
             image: promo.image,
+            status: promo.status,
+            // startAt: promo.startedAt,
             createdAt: promo.createdAt,
             updatedAt: promo.updatedAt
         }
