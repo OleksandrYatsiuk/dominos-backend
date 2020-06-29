@@ -112,7 +112,7 @@ export default class Promotions extends Controller {
             content: promo.content,
             image: promo.image,
             status: promo.status,
-            // startAt: promo.startedAt,
+            startedAt: promo.startedAt,
             createdAt: promo.createdAt,
             updatedAt: promo.updatedAt
         }
