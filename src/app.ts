@@ -46,7 +46,7 @@ class App {
     public listen() {
 
         this.app.listen(process.env.PORT, () => {
-            console.log(`App running on http://localhost:${process.env.PORT||5000}`);
+            console.log(`App running on http://localhost:${process.env.PORT || 5000}`);
         });
     }
 
@@ -70,7 +70,8 @@ class App {
 
     private connectToTheDatabase() {
         mongoose.connect(
-            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/test?retryWrites=true&w=majority`, {
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/test`, {
+            // `mongodb://localhost:27017/local`, {
             useNewUrlParser: true,
             useCreateIndex: true,
             useUnifiedTopology: true,
