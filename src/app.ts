@@ -16,9 +16,9 @@ class App {
         this.app = express();
         this.port = port;
         this.version = version;
+        this.connectToTheDatabase();
         this.setBodyParser();
         this.setCords();
-        this.connectToTheDatabase();
         this.initializeMiddlewares();
         this.initializeControllers(controllers);
         this.initializeErrorHandling();
