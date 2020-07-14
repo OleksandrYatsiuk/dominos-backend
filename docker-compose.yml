@@ -26,3 +26,18 @@ services:
       - MONGO_PATH=$MONGO_PATH
     volumes:
       - .:/home/db
+volumes:
+  data-volume:
+  # mysql:
+  #   image: mysql
+  #   ports:
+  #     - "3307:3306"
+  #   restart: always
+  #   volumes:
+  #       - .:/home/mysql
+  #   environment: 
+  #     - MYSQL_HOST=${MYSQL_HOST}
+  #     - MYSQL_DATABASE=${MYSQL_DATABASE}
+  #     - MYSQL_USER=${MYSQL_USER}
+  #     - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+  #   command: --default-authentication-plugin=mysql_native_password
