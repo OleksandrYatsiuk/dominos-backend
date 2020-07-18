@@ -12,6 +12,6 @@ export default function errorMiddleware(error: HttpException, request: Request, 
   } else if (code === 422) {
     code422(response, error.result);
   } else {
-    code500(response, error);
+    code500(response, error.result);
   }
 }

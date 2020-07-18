@@ -1,7 +1,7 @@
 
 import accessToken from './accessToken.model';
 import { getCurrentTime } from '../../utils/current-time-UTC';
-import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import User from '../../rest/User/user.interface';
 import { UserHelper } from '../../rest/User/user.helper';
 
@@ -48,7 +48,7 @@ export class AccessTokenHelper {
     }
 
     private createAccessToken(email: string) {
-        return bcrypt.hashSync(email, 5) + bcrypt.hashSync(Date.toString(), 5)
+        return crypto.randomBytes(50).toString('hex');
     }
 
     public confirmEmail(token: string) {

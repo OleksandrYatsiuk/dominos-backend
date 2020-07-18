@@ -1,41 +1,29 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
-import { createValidator } from 'express-joi-validation';
 import errorMiddleware from './middleware/error.middleware';
 import { code404 } from './middleware/base.response';
-import * as mysql from 'mysql';
+import Controller from 'rest/Controller';
 
-class App {
+export default class App {
 	public app: express.Application;
 	public port: number;
 	public version: string;
-	public validator = createValidator({ statusCode: 422, passError: true });
 
-	public connection = mysql.createConnection({
-        host: 'mongo',
-        port:27017,
-		user: 'root',
-		database: 'dominos',
-        password: 'root'
-	});
-
-	constructor(controllers, port: number, version: string) {
+	constructor(controllers: Controller[], port: number, version: string) {
 		this.app = express();
 		this.port = port;
 		this.version = version;
 		this.connectToTheDatabase();
 		this.setBodyParser();
-		this.setCords();
-		this.initializeMiddlewares();
+		this.setCors();
 		this.initializeControllers(controllers);
 		this.initializeErrorHandling();
-		this.connectToMySQL();
 	}
 	/**
- * Headers (CORS)
- */
-	public setCords() {
+    * Headers (CORS)
+    */
+	public setCors() {
 		this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
 			res.header('Access-Control-Allow-Origin', '*');
 			if (req.method == 'OPTIONS') {
@@ -53,21 +41,16 @@ class App {
 	}
 
 	public listen() {
-		this.app.listen(process.env.PORT, () => {
-			console.log(`App running on http://${process.env.DB_HOST}:${process.env.PORT || 5000}`);
+		this.app.listen(this.port, () => {
+			console.log(`App running on http://${process.env.API_URL}:${this.port || 5000}`);
 		});
 	}
 
-	private initializeMiddlewares() {
-		this.app.use(bodyParser.json());
-	}
-
 	private initializeErrorHandling() {
-		this.app.use(createValidator);
 		this.app.use(errorMiddleware);
 	}
 
-	private initializeControllers(controllers) {
+	private initializeControllers(controllers: Controller[]) {
 		controllers.forEach((controller) => {
 			this.app.use(`/api${this.version}`, controller.router);
 		});
@@ -77,30 +60,21 @@ class App {
 	}
 
 	private connectToTheDatabase() {
-		mongoose.connect(
-			// `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/test`,
-			// {
-				`mongodb://mongo:27017/local`, {
+		let uri: string;
+		if (process.env.PROD !== 'false') {
+			uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env
+				.MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/${process.env.DB_NAME}`;
+		} else {
+			uri = `mongodb://mongo:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+		}
+		mongoose
+			.connect(uri, {
 				useNewUrlParser: true,
 				useCreateIndex: true,
 				useUnifiedTopology: true,
 				useFindAndModify: false
-			}
-		);
-	}
-
-	private connectToMySQL() {
-		const sql = `create table if not exists users(
-            id int primary key auto_increment,
-            username varchar(255) not null,
-            email varchar(255) not null
-          )`;
-
-		this.connection.query(sql, function(err, results) {
-			if (err) console.log(err);
-			else console.log('Таблица создана');
-		});
+			})
+			.then(() => console.info('MongoDB connected successfully!'))
+			.catch((error) => console.error(`MongoDB error: ${error}`));
 	}
 }
-
-export default App;
