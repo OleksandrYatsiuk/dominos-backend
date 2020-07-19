@@ -1,12 +1,9 @@
 import HttpException from './HttpException';
-import * as Joi from '@hapi/joi';
-export interface Errors {
-	field: string;
-	message: string;
-}
+import { UnprocessableEntity } from './ErrorCodesList';
+import { Errors } from 'interfaces/errors.interface';
 
 export default class UnprocessableEntityException extends HttpException {
 	constructor(error: Errors) {
-		super(422, [ error ]);
+		super(UnprocessableEntity, [ error ]);
 	}
 }

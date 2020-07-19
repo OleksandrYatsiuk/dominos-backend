@@ -1,81 +1,99 @@
-import { Request, Response, NextFunction } from "express";
-import { Pagination } from "interfaces/pagination.interface";
+import { Response } from 'express';
+import { Pagination } from 'interfaces/pagination.interface';
+import {
+	UnprocessableEntity,
+	Unauthorized,
+	Forbidden,
+	NotFound,
+	BadRequest,
+	InternalServerError,
+	OK,
+	Created,
+	NoContent
+} from '../exceptions/ErrorCodesList';
 
 export function code422(response: Response, errors: any) {
-    response.status(422).json({
-        code: 422,
-        status: "Error",
-        message: 'Unprocessable Entity',
-        result: errors
-    })
+	response.status(UnprocessableEntity).json({
+		code: UnprocessableEntity,
+		status: 'Error',
+		message: 'Unprocessable Entity',
+		result: errors
+	});
 }
 
 export function code200(response: Response, data?: any | null) {
-    response.status(200).json({
-        code: 200,
-        status: "Success",
-        message: 'OK',
-        result: data
-    })
+	response.status(OK).json({
+		code: OK,
+		status: 'Success',
+		message: 'OK',
+		result: data
+	});
 }
 
 export function code401(response: Response) {
-    response.status(401).json({
-        code: 401,
-        status: "Error",
-        message: 'Unauthorized',
-        result: "Your request was made with invalid credentials."
-    })
+	response.status(Unauthorized).json({
+		code: Unauthorized,
+		status: 'Error',
+		message: 'Unauthorized',
+		result: 'Your request was made with invalid credentials.'
+	});
 }
 
 export function code403(response: Response) {
-    response.status(403).json({
-        code: 403,
-        status: "Error",
-        message: 'Forbidden',
-        result: "You are not allowed to perform this action."
-    })
+	response.status(Forbidden).json({
+		code: Forbidden,
+		status: 'Error',
+		message: 'Forbidden',
+		result: 'You are not allowed to perform this action.'
+	});
 }
 
 export function code200DataProvider(response: Response, pagination: Pagination, data?: any | null) {
-    response.status(200).json({
-        code: 200,
-        status: "Success",
-        message: 'OK',
-        result: data,
-        _meta: {
-            pagination: pagination
-        }
-
-    })
+	response.status(OK).json({
+		code: OK,
+		status: 'Success',
+		message: 'OK',
+		result: data,
+		_meta: {
+			pagination: pagination
+		}
+	});
 }
 export function code201(response: Response, data: any) {
-    response.status(201).json({
-        code: 201,
-        status: "Success",
-        message: 'Created',
-        result: data
-    })
+	response.status(Created).json({
+		code: Created,
+		status: 'Success',
+		message: 'Created',
+		result: data
+	});
 }
 
 export function code404(response: Response, data: any) {
-    response.status(404).json({
-        code: 404,
-        status: "Error",
-        message: 'Not Found',
-        result: data
-    })
+	response.status(NotFound).json({
+		code: NotFound,
+		status: 'Error',
+		message: 'Not Found',
+		result: data
+	});
+}
+export function code400(response: Response) {
+	response.status(BadRequest).json({
+		code: BadRequest,
+		status: 'Error',
+		message: 'Bad request',
+		result: 'JSON is not valid.'
+	});
 }
 
 export function code204(response: Response) {
-    response.status(204).json()
+	response.status(NoContent).json();
 }
 
 export function code500(response: Response, data?: any | null) {
-    response.status(500).json({
-        code: 500,
-        status: "Error",
-        message: 'Internal Server Error',
-        result: data
-    })
+	response.status(InternalServerError).json({
+		code: InternalServerError,
+		status: 'Error',
+		message: 'Internal Server Error',
+		result: data
+	});
 }

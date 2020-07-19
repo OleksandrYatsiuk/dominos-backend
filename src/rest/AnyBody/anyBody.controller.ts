@@ -14,6 +14,8 @@ import EmailSenderService from '../../services/EmailSenderService';
 import { AccessTokenHelper } from './accessToken.helper';
 import NotFoundException from '../../exceptions/NotFoundException';
 import Controller from '../Controller';
+import HttpException from '../../exceptions/HttpException';
+import { Error } from 'mongoose';
 
 export default class AnyBodyController extends Controller {
 	public path = '/auth';

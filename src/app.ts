@@ -48,14 +48,14 @@ export default class App {
 
 	private initializeErrorHandling() {
 		this.app.use(errorMiddleware);
+		this.app.use((request: express.Request, response: express.Response, next: express.NextFunction) => {
+			next(code404(response, 'Page not found!'));
+		});
 	}
 
 	private initializeControllers(controllers: Controller[]) {
 		controllers.forEach((controller) => {
 			this.app.use(`/api${this.version}`, controller.router);
-		});
-		this.app.use((request: express.Request, response: express.Response, next: express.NextFunction) => {
-			next(code404(response, 'Page not found!'));
 		});
 	}
 
