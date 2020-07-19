@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "required": [
+    "fullName",
+    "username",
+    "email"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "5e8b2adb9e2aeb0024bf7627"
+    },
+    "fullName": {
+      "type": "string",
+      "example": "Full Name",
+      "minLength": 4,
+      "maxLength": 20
+    },
+    "username": {
+      "type": "string",
+      "example": "username",
+      "minLength": 3,
+      "maxLength": 15
+    },
+    "email": {
+      "type": "string",
+      "example": "test@test.com"
+    },
+    "role": {
+      "$ref": "roles.json"
+    },
+    "location": {
+      "$ref": "location.json"
+    },
+    "birthday": {
+      "type": "string",
+      "example": "2020-04-11"
+    },
+    "phone": {
+      "type": "integer",
+      "example": 38098999999
+    },
+    "image": {
+      "type": "string",
+      "example": "https://example.com/image.png",
+      "nullable": true,
+      "readOnly": true
+    }
+  }
+}

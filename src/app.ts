@@ -4,6 +4,7 @@ import * as mongoose from 'mongoose';
 import errorMiddleware from './middleware/error.middleware';
 import { code404 } from './middleware/base.response';
 import Controller from 'rest/Controller';
+const swaggerDocument = require('./swagger/swagger.json');
 
 export default class App {
 	public app: express.Application;
@@ -57,6 +58,9 @@ export default class App {
 		controllers.forEach((controller) => {
 			this.app.use(`/api${this.version}`, controller.router);
 		});
+
+		this.app.use(express.static('src/swagger'));
+		this.app.use('/rest', (req: express.Request, res: express.Response) => res.send(swaggerDocument));
 	}
 
 	private connectToTheDatabase() {

@@ -1,0 +1,162 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "description": "Dominos Test API",
+    "version": "1.0.0",
+    "title": "Dominos Web App API"
+  },
+  "servers": [
+    {
+      "url": "https://dominos-backend.herokuapp.com/api/v1",
+      "description": "Live Production version"
+    },
+    {
+      "url": "http://localhost:5000/api/v1",
+      "description": "Localhost version"
+    }
+  ],
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "AnyBody"
+    },
+    {
+      "name": "User"
+    },
+    {
+      "name": "UserManagement"
+    },
+    {
+      "name": "Pizza"
+    },
+    {
+      "name": "Delivery"
+    },
+    {
+      "name": "Shop"
+    },
+    {
+      "name": "Ingredients"
+    },
+    {
+      "name": "Promotion"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "$ref": "./path/any-body/login-item.json"
+    },
+    "/auth/register": {
+      "$ref": "./path/any-body/register-item.json"
+    },
+    "/auth/resend-verify-email": {
+      "$ref": "./path/any-body/resend-verify-email.json"
+    },
+    "/auth/confirm/{token}": {
+      "$ref": "./path/any-body/confirm-email.json"
+    },
+    "/user/current": {
+      "$ref": "./path/user/current-item.json"
+    },
+    "/user/profile": {
+      "$ref": "./path/user/update-item.json"
+    },
+    "/user/location": {
+      "$ref": "./path/user/update-location-item.json"
+    },
+    "/user/logout": {
+      "$ref": "./path/user/logout-item.json"
+    },
+    "/user/change-password": {
+      "$ref": "./path/user/change-password-item.json"
+    },
+    "/user/upload": {
+      "$ref": "./path/user/update-image-item.json"
+    },
+    "/user-management": {
+      "$ref": "./path/userManagement/user-list-items.json"
+    },
+    "/user-management/{id}": {
+      "$ref": "./path/userManagement/delete-user-item.json"
+    },
+    "/user-management/{id}/role": {
+      "$ref": "./path/userManagement/update-role-item.json"
+    },
+    "/pizza": {
+      "$ref": "./path/pizza/pizza-item.json"
+    },
+    "/pizza/{id}": {
+      "$ref": "./path/pizza/pizza-action-item.json"
+    },
+    "/pizza/{id}/upload": {
+      "$ref": "./path/pizza/upload-photo-item.json"
+    },
+    "/delivery": {
+      "$ref": "./path/delivery/delivery-item.json"
+    },
+    "/delivery/{id}": {
+      "$ref": "./path/delivery/delete-delivery-item.json"
+    },
+    "/shops": {
+      "$ref": "./path/shop/shop-list-items.json"
+    },
+    "/ingredients": {
+      "$ref": "./path/ingredient/ingredient-item.json"
+    },
+    "/ingredients/{id}": {
+      "$ref": "./path/ingredient/delete-item.json"
+    }, 
+    "/promotion": {
+      "$ref": "./path/promotion/promotion-items.json"
+    },
+    "/promotion/{id}": {
+      "$ref": "./path/promotion/promotion-item.json"
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "description": "",
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": ""
+      }
+    },
+    "schemas": {
+      "responseModel": {
+        "$ref": "./schemas/responseModel.json"
+      },
+      "status200": {
+        "$ref": "./schemas/status200.json"
+      },
+      "status200DataProvider": {
+        "$ref": "./schemas/status200DataProvider.json"
+      },
+      "status201": {
+        "$ref": "./schemas/status201.json"
+      },
+      "status204": {
+        "$ref": "./schemas/status204.json"
+      },
+      "status401": {
+        "$ref": "./schemas/status401.json"
+      },
+      "status403": {
+        "$ref": "./schemas/status403.json"
+      },
+      "status404": {
+        "$ref": "./schemas/status404.json"
+      },
+      "status422": {
+        "$ref": "./schemas/status422.json"
+      },
+      "promotion": {
+        "$ref": "./schemas/promotion.json"
+      }
+    }
+  }
+}
