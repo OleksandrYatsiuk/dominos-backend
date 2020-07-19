@@ -1,7 +1,7 @@
 version: '3.3'
 
 services: 
-  backend-app:
+  web:
     build: ./
     image: nodejs
     ports:
@@ -33,6 +33,6 @@ services:
     environment: 
       - API_URL=http://localhost:5000/rest
     depends_on:
-      - backend-app
+      - web
 volumes:
   data-volume:
