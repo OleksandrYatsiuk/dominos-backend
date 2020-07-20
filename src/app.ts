@@ -66,10 +66,6 @@ export default class App {
 			swaggerOptions: {
 				urls: [
 					{
-						url: `http://${process.env.API_URL}:${this.port || 5000}/rest	`,
-						name: 'Localhost'
-					},
-					{
 						url: 'https://dominos-backend.herokuapp.com/rest',
 						name: 'Production'
 					}
@@ -81,7 +77,7 @@ export default class App {
 			(req, res, next) => {
 				swaggerDocument.host = req.get('host');
 				req['swaggerDoc'] = swaggerDocument;
-				console.log(swaggerDocument.host)
+				console.log(swaggerDocument.host);
 				next();
 			},
 			swaggerUi.serve,
