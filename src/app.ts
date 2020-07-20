@@ -4,6 +4,7 @@ import * as mongoose from 'mongoose';
 import errorMiddleware from './middleware/error.middleware';
 import { code404 } from './middleware/base.response';
 import Controller from 'rest/Controller';
+import * as swaggerUi from 'swagger-ui-express';
 const swaggerDocument = require('./swagger/swagger.json');
 
 export default class App {
@@ -61,6 +62,31 @@ export default class App {
 
 		this.app.use(express.static('src/swagger'));
 		this.app.use('/rest', (req: express.Request, res: express.Response) => res.send(swaggerDocument));
+		var options = {
+			swaggerOptions: {
+				urls: [
+					{
+						url: `http://${process.env.API_URL}:${this.port || 5000}/rest	`,
+						name: 'Localhost'
+					},
+					{
+						url: 'https://dominos-backend.herokuapp.com/rest',
+						name: 'Production'
+					}
+				]
+			}
+		};
+		this.app.use(
+			'/',
+			(req, res, next) => {
+				swaggerDocument.host = req.get('host');
+				req['swaggerDoc'] = swaggerDocument;
+				console.log(swaggerDocument.host)
+				next();
+			},
+			swaggerUi.serve,
+			swaggerUi.setup(null, options)
+		);
 	}
 
 	private connectToTheDatabase() {

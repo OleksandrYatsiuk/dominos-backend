@@ -7,12 +7,22 @@
   },
   "servers": [
     {
-      "url": "https://dominos-backend.herokuapp.com/api/v1",
-      "description": "Live Production version"
-    },
-    {
-      "url": "http://localhost:5000/api/v1",
-      "description": "Localhost version"
+      "url": "{certificate}://{api_url}/api/v1",
+      "variables": {
+        "certificate": {
+          "enum": [
+            "http",
+            "https"
+          ],
+          "default": "http"
+        },
+        "api_url": {
+          "enum": [
+            "localhost:5000", "dominos-backend.herokuapp.com"
+          ],
+          "default":"localhost:5000"
+        }
+      }
     }
   ],
   "security": [
@@ -109,7 +119,7 @@
     },
     "/ingredients/{id}": {
       "$ref": "./path/ingredient/delete-item.json"
-    }, 
+    },
     "/promotion": {
       "$ref": "./path/promotion/promotion-items.json"
     },
