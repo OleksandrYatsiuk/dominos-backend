@@ -11,14 +11,14 @@
       "variables": {
         "certificate": {
           "enum": [
-            "http",
-            "https"
+            "https",
+            "http"
           ],
           "default": "https"
         },
         "api_url": {
           "enum": [
-            "localhost:5000", "dominos-backend.herokuapp.com"
+            "dominos-backend.herokuapp.com", "localhost:5000"
           ],
           "default":"dominos-backend.herokuapp.com"
         }
