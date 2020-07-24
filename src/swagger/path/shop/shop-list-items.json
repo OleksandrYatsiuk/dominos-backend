@@ -1,6 +1,6 @@
 {
     "get": {
-        "summary": "Show List of Shops",
+        "summary": "Show List of Shop",
         "security": [],
         "tags": [
             "Shop"
