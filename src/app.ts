@@ -77,7 +77,6 @@ export default class App {
 			(req, res, next) => {
 				swaggerDocument.host = req.get('host');
 				req['swaggerDoc'] = swaggerDocument;
-				console.log(swaggerDocument.host);
 				next();
 			},
 			swaggerUi.serve,

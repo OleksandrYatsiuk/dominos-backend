@@ -89,5 +89,86 @@
                 }
             }
         }
-    }
+    },
+    "post": {
+        "summary": "Create Shop",
+        "description": "Allowed roles: Administrator, Project Manager",
+        "tags": [
+          "Shop"
+        ],
+        "operationId": "createShop",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "../../schemas/status201.json"
+                    },
+                    {
+                      "properties": {
+                        "result": {
+                          "allOf": [
+                            {
+                              "$ref": "../../schemas/shop.json"
+                            },
+                            {
+                              "$ref": "../../schemas/time.json"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../schemas/status401.json"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403 Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "../../schemas/status403.json"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "../../schemas/status422.json"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "../../schemas/shop.json"
+              }
+            }
+          }
+        }
+      }
 }
