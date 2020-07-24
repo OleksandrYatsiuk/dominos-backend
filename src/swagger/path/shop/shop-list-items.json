@@ -1,6 +1,6 @@
 {
     "get": {
-        "summary": "Show List of Shop",
+        "summary": "Show List of Shops",
         "security": [],
         "tags": [
             "Shop"
@@ -112,7 +112,7 @@
                         "result": {
                           "allOf": [
                             {
-                              "$ref": "../../schemas/shop.json"
+                              "$ref": "../../schemas/shops.json"
                             },
                             {
                               "$ref": "../../schemas/time.json"
@@ -165,7 +165,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "../../schemas/shop.json"
+                "$ref": "../../schemas/shops.json"
               }
             }
           }

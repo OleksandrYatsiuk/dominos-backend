@@ -68,7 +68,11 @@ export default class App {
 					{
 						url: 'https://dominos-backend.herokuapp.com/rest',
 						name: 'Production'
-					}
+					},
+					// {
+					// 	url: 'http://localhost:5000/rest',
+					// 	name: 'Local'
+					// }
 				]
 			}
 		};
