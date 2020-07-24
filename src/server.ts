@@ -10,16 +10,17 @@ import UserManagementController from './rest/UserManagement/userManagement.contr
 import Promotions from './rest/Promotions/promotions.controller';
 
 const app = new App(
-    [
-        new UserController(),
-        new AnyBodyController(),
-        new UserManagementController(),
-        new PizzaController(),
-        new DeliveryController(),
-        new ShopsController(),
-        new IngredientsController(),
-        new Promotions()
-    ],
-    5000, '/v1'
+	[
+		new UserController(),
+		new AnyBodyController(),
+		new UserManagementController(),
+		new PizzaController(),
+		new DeliveryController(),
+		new ShopsController(),
+		new IngredientsController(),
+		new Promotions()
+	],
+	+process.env.PORT,
+	'/v1'
 );
 app.listen();

@@ -1,12 +1,9 @@
-import HttpException from "./HttpException";
-
-export interface Errors {
-  field: string,
-  message: string
-}
+import HttpException from './HttpException';
+import { UnprocessableEntity } from './ErrorCodesList';
+import { Errors } from 'interfaces/errors.interface';
 
 export default class UnprocessableEntityException extends HttpException {
-  constructor(error: Errors) {
-    super(422, [error]);
-  }
+	constructor(error: Errors) {
+		super(UnprocessableEntity, [ error ]);
+	}
 }

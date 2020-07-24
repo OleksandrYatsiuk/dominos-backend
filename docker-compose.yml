@@ -1,0 +1,43 @@
+version: '3.3'
+
+services: 
+  web:
+    build: ./
+    image: nodejs
+    ports:
+      - ${PORT}:5000
+    volumes:
+      - .:/home/node/app
+    env_file: .env
+    environment:
+      GMAIL_USER: ${GMAIL_USER}
+      GMAIL_PASSWORD: ${GMAIL_PASSWORD}
+      AWS_SECRET: ${AWS_SECRET}
+      AWS_ID: ${AWS_ID}
+    depends_on:
+      - mongo
+    command: npm start
+  mongo:
+    image: mongo
+    ports:
+      - ${DB_PORT}:27017
+    env_file: .env
+    environment: 
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
+    volumes:
+      - .:/home/db
+  swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - ${SWAGGER_PORT}:8080
+    env_file: .env
+    environment: 
+      API_URL: "http://${API_URL}:${PORT}/rest"
+      SWAGGER_PORT: ${SWAGGER_PORT}
+    depends_on:
+      - web
+volumes:
+  data-volume:

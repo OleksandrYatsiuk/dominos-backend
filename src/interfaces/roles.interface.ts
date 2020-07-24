@@ -1,6 +1,5 @@
 export enum Roles {
-    techadmin = 'administrator',
-    projectManager = 'projectManager',
-    public = 'public'
-
+	techadmin = 'administrator',
+	projectManager = 'projectManager',
+	public = 'public'
 }

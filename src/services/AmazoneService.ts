@@ -12,13 +12,14 @@ export interface S3_File {
 }
 export default class AmazoneService {
 
-    private S3 = new AWS.S3({
-        accessKeyId: process.env.AWS_ID,
-        secretAccessKey: process.env.AWS_SECRET
-    });
+ 
     
     public uploadFile(file: any) {
         
+        const S3 = new AWS.S3({
+            accessKeyId: process.env.AWS_ID,
+            secretAccessKey: process.env.AWS_SECRET
+        });
         const params = {
             Bucket: BUCKET_NAME,
             Key: file.originalname, // File name you want to save as in S3
@@ -26,7 +27,7 @@ export default class AmazoneService {
             ACL: FILE_PERMISSION
         };
         return new Promise((resolve, reject) => {
-            this.S3.upload(params, (err, data: S3_File) => {
+            S3.upload(params, (err, data: S3_File) => {
                 resolve(data); reject(err);
             });
         })
