@@ -1,15 +1,7 @@
 import * as express from 'express';
 import Controller from '../Controller';
 import pizzaModel from './pizza.model';
-import {
-	code200,
-	code200DataProvider,
-	code204,
-	code404,
-	code500,
-	code422,
-	code201
-} from '../../middleware/base.response';
+import { code200, code200DataProvider, code204, code404, code500, code201 } from '../../middleware/base.response';
 import validate from '../../middleware/validation.middleware';
 import { pagination } from '../../validation/Pagination.validator';
 import NotFoundException from '../../exceptions/NotFoundException';
@@ -24,12 +16,14 @@ import AWS_S3 from '../../services/AmazoneService';
 import * as multer from 'multer';
 import checkFiles from '../../validation/Files.validator';
 import { Pizza } from './pizza.interface';
+import ingredientsModel from '../../rest/Ingredients/ingredients.model';
 
 const upload = multer();
 
 export default class PizzaController extends Controller {
 	public path = '/pizza';
 	private pizza = pizzaModel;
+	private ingredient = ingredientsModel;
 
 	constructor() {
 		super();
@@ -73,21 +67,7 @@ export default class PizzaController extends Controller {
 				code200DataProvider(
 					response,
 					{ total, limit, page, pages },
-					docs.map((pizza) => {
-						return {
-							id: pizza._id,
-							name: pizza.name,
-							ingredients: pizza.ingredients,
-							weight: pizza.weight,
-							price: pizza.price,
-							category: pizza.category,
-							image: pizza.image,
-							createdAt: pizza.createdAt,
-							updatedAt: pizza.updatedAt,
-							deletedAt: pizza.deletedAt,
-							deletedBy: pizza.deletedBy
-						};
-					})
+					docs.map((pizza) => this.parseFields(pizza))
 				);
 			});
 	};
@@ -133,21 +113,7 @@ export default class PizzaController extends Controller {
 		const { id } = request.params;
 		this.pizza
 			.findById(id)
-			.then((pizza) =>
-				code200(response, {
-					id: pizza._id,
-					name: pizza.name,
-					ingredients: pizza.ingredients,
-					weight: pizza.weight,
-					price: pizza.price,
-					category: pizza.category,
-					image: pizza.image,
-					createdAt: pizza.createdAt,
-					updatedAt: pizza.updatedAt,
-					deletedAt: pizza.deletedAt,
-					deletedBy: pizza.deletedBy
-				})
-			)
+			.then((pizza) => code200(response, this.parseFields(pizza)))
 			.catch((err) => code404(response, 'Pizza was not found.'));
 	};
 
@@ -160,19 +126,7 @@ export default class PizzaController extends Controller {
 					.findByIdAndUpdate(id, { image: s3['Location'] }, { new: true })
 					.then((pizza) => {
 						if (pizza) {
-							code200(response, {
-								id: pizza._id,
-								name: pizza.name,
-								ingredients: pizza.ingredients,
-								weight: pizza.weight,
-								price: pizza.price,
-								category: pizza.category,
-								image: pizza.image,
-								createdAt: pizza.createdAt,
-								updatedAt: pizza.updatedAt,
-								deletedAt: pizza.deletedAt,
-								deletedBy: pizza.deletedBy
-							});
+							code200(response, this.parseFields(pizza));
 						} else {
 							code404(response, 'Pizza not found!');
 						}
@@ -183,4 +137,24 @@ export default class PizzaController extends Controller {
 				code500(response, err);
 			});
 	};
+
+	private parseFields(pizza: Pizza) {
+		pizza.ingredients.forEach((id) => {
+			const arr = [];
+			this.ingredient.findById(id).then(res=>console.log(res))
+		});
+		return {
+			id: pizza._id,
+			name: pizza.name,
+			ingredients: pizza.ingredients,
+			weight: pizza.weight,
+			price: pizza.price,
+			category: pizza.category,
+			image: pizza.image,
+			createdAt: pizza.createdAt,
+			updatedAt: pizza.updatedAt,
+			deletedAt: pizza.deletedAt,
+			deletedBy: pizza.deletedBy
+		};
+	}
 }
