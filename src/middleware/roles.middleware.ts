@@ -1,16 +1,15 @@
-import { Request, Response, NextFunction } from "express";
-import { code403 } from "./base.response";
-import user from '../rest/User/user.model'
-
+import { Request, Response, NextFunction } from 'express';
+import { code403 } from './base.response';
+import user from '../rest/User/user.model';
 
 export default function checkRoles(roles: string[]) {
-    return (req: Request, res: Response, next: NextFunction) => {
-        user.findById(res.locals).then(user => {
-            if (!roles.includes(user.role)) {
-                code403(res);
-            } else {
-                next();
-            }
-        })
-    }
-}  
+	return (req: Request, res: Response, next: NextFunction) => {
+		user.findById(res.locals).then(({ role }) => {
+			if (!roles.includes(role)) {
+				code403(res);
+			} else {
+				next();
+			}
+		});
+	};
+}

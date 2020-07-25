@@ -11,7 +11,7 @@ const deliverySchema = new mongoose.Schema({
     phone: { type: Number, required: true },
     email: { type: String, required: true },
     userId: { type: String },
-    shop: { type: String },
+    shopId: { type: String },
     pizzaIds: { type: Array },
     address: {
         street: { type: String },
@@ -29,7 +29,7 @@ const deliverySchema = new mongoose.Schema({
     payment: {
         coupon: { type: String },
         remainder: { type: String },
-        type: { type: String, enum: ["cash", "card"] },
+        type: { type: Number},
     },
     amount: { type: Number, required: true },
     createdAt: { type: Number, default: Math.round(Date.now() / 1000) },

@@ -1,0 +1,27 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string",
+            "example": "5e8b2adb9e2aeb0024bf7627",
+            "readOnly": true
+        },
+        "title": {
+            "type": "string",
+            "example": "50% на каждую вторую пиццу"
+        },
+        "content": {
+            "type": "string",
+            "example": "some text"
+        },
+        "image": {
+            "type": "string",
+            "example": "https://example.com/image.png"
+        }
+    },
+    "required": [
+        "title",
+        "content",
+        "image"
+    ]
+}

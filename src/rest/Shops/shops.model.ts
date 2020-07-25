@@ -6,14 +6,14 @@ import { Shop } from './shops.interface';
 
 
 const shopsSchema = new mongoose.Schema({
-    _id: mongoose.Schema.Types.ObjectId,
+    id: mongoose.Schema.Types.ObjectId,
     address: { type: String, unique: true },
     lat: { type: Number, required: true },
     lng: { type: Number, required: true },
     label: { type: String, required: true },
     draggable: { type: Boolean, required: true, default: false },
-    createdAt: { type: Number, default: Math.round(Date.now() / 1000) },
-    updatedAt: { type: Number, default: Math.round(Date.now() / 1000) },
+    createdAt: { type: Number, default: getCurrentTime() },
+    updatedAt: { type: Number, default: getCurrentTime() },
     deletedAt: { type: Number, default: null },
     deletedBy: { type: Number, default: null }
 }, { versionKey: false });

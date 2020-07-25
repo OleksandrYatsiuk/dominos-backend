@@ -1,8 +1,8 @@
-import HttpException from "./HttpException";
-
+import HttpException from './HttpException';
+import { NotFound } from './ErrorCodesList';
 
 export default class NotFoundException extends HttpException {
-  constructor(name: string) {
-    super(404, `${name} was not founded.`);
-  }
+	constructor(name: string) {
+		super(NotFound, `${name} was not founded.`);
+	}
 }

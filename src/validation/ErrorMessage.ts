@@ -14,7 +14,7 @@ export class ErrorMessage extends ErrorList {
         this.code = this.BASIC_ERROR;
     }
 
-    private getMessage(code: number, params: Array<Params>): string {
+    public getMessage(code: number, params: Array<Params>): string {
         return params ? this.formatMessage(this.ERRORS[code], params) : this.ERRORS[code];
     }
 

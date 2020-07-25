@@ -1,0 +1,298 @@
+{
+  "get": {
+    "summary": "Promotion Overview",
+    "security": [],
+    "tags": [
+      "Promotion"
+    ],
+    "operationId": "promotionOverview",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "description": "Promotion id",
+        "required": true,
+        "schema": {
+          "$ref": "../../schemas/id.json"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "../../schemas/status200.json"
+                },
+                {
+                  "properties": {
+                    "result": {
+                      "allOf": [
+                        {
+                          "$ref": "../../schemas/promotion.json"
+                        },
+                        {
+                          "$ref": "../../schemas/time.json"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../../schemas/status401.json"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../../schemas/status404.json"
+            }
+          }
+        }
+      }
+    }
+  },
+  "delete": {
+    "summary": "Remove Promotion",
+    "description": "Allowed roles: Administrator",
+    "tags": ["Promotion"],
+    "operationId": "removePromotion",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "description": "Promotion id",
+        "required": true,
+        "schema": {
+          "$ref": "../../schemas/id.json"
+        }
+      }
+    ],
+    "responses": {
+      "204": {
+        "description": "No Content",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../../schemas/status204.json"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../../schemas/status401.json"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../../schemas/status403.json"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../../schemas/status404.json"
+            }
+          }
+        }
+      }
+    }
+  },
+  "put": {
+    "summary": "Edit Promotion",
+    "description": "Allowed roles: Administrator, Project Manager",
+    "tags": ["Promotion"],
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "description": "Promotion id",
+        "required": true,
+        "schema": {
+          "$ref": "../../schemas/id.json"
+        }
+      }
+    ],
+    "operationId": "editPromotion",
+    "responses": {
+      "200": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "../../schemas/status200.json"
+                },
+                {
+                  "properties": {
+                    "result": {
+                      "allOf": [
+                        {
+                          "$ref": "../../schemas/promotion.json"
+                        },
+                        {
+                          "$ref": "../../schemas/time.json"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "422": {
+        "description": "Unprocessable Entity",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "../../schemas/status422.json"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "../../schemas/promotion.json"
+          }
+        }
+      }
+    }
+  },
+  "post": {
+    "summary": "Upload image for promotion",
+    "description": "Allowed roles: Administrator, Project Manager",
+    "tags": [
+      "Promotion"
+    ],
+    "operationId": "uploadPromotionImage",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "id",
+        "description": "Promotion id",
+        "required": true,
+        "schema": {
+          "$ref": "../../schemas/id.json"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "../../schemas/status200.json"
+                },
+                {
+                  "properties": {
+                    "result": {
+                      "allOf": [
+                        {
+                          "$ref": "../../schemas/promotion.json"
+                        },
+                        {
+                          "$ref": "../../schemas/time.json"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unprocessable Entity",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../../schemas/status401.json"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "403 Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../../schemas/status403.json"
+            }
+          }
+        }
+      },
+      "422": {
+        "description": "Unprocessable Entity",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "../../schemas/status422.json"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "requestBody": {
+      "content": {
+        "multipart/form-data": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "file": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
