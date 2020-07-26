@@ -11,8 +11,8 @@ export default class EmailSenderService {
             host: 'smtp.gmail.com',
             secure: true, // use SSL
             auth: {
-                user: 'oleksandr.yatsiuk@gmail.com', // generated ethereal user
-                pass: 'zxcvas!!', // generated ethereal password
+                user: process.env.GMAIL_USER, // generated ethereal user
+                pass: process.env.GMAIL_PASSWORD, // generated ethereal password
             },
         })
     }
