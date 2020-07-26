@@ -128,7 +128,7 @@ export default class AnyBodyController extends Controller {
 						.then((tokenData) => {
 							this.mailer.send(user.email, "Welcome to Dominos", 'register.pug', {
 							    title: 'Welcome',
-								link: `https://dominos-app.herokuapp.com/${tokenData.token}`
+								link: `https://dominos-app.herokuapp.com/auth/confirm/${tokenData.token}`
 							}).then(res=>console.log(res));
 						})
 						.then(() => {
