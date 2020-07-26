@@ -58,6 +58,8 @@ export default class AnyBodyController extends Controller {
 						token: hash,
 						expiredAt: Math.round(Date.now() / 1000) + 8 * 3600
 					});
+
+
 					token.save().then((tokenData) => {
 						code200(response, {
 							token: tokenData.token,
@@ -124,9 +126,10 @@ export default class AnyBodyController extends Controller {
 					this.accessToken
 						.saveAccessToken(user)
 						.then((tokenData) => {
-							// this.mailer.send(user.email, "Welcome to Dominos", 'register.pug', {
-							//     title: 'Welcome',
-							//     link: `https://dominos-app.herokuapp.com/${tokenData.token}`
+							this.mailer.send(user.email, "Welcome to Dominos", 'register.pug', {
+							    title: 'Welcome',
+								link: `https://dominos-app.herokuapp.com/${tokenData.token}`
+							}).then(res=>console.log(res));
 						})
 						.then(() => {
 							code201(response, this.helper.parseUserModel(user));
@@ -143,7 +146,7 @@ export default class AnyBodyController extends Controller {
 				case false:
 					return next(
 						new UnprocessableEntityException(
-							this.validator.addCustomError('token', this.list.EXIST_INVALID, [ { value: 'Token' } ])
+							this.validator.addCustomError('token', this.list.EXIST_INVALID, [{ value: 'Token' }])
 						)
 					);
 				case true:
@@ -165,7 +168,7 @@ export default class AnyBodyController extends Controller {
 			.catch((e) =>
 				next(
 					new UnprocessableEntityException(
-						this.validator.addCustomError('email', this.list.EMAIL_INVALID, [ { value: 'Email' } ])
+						this.validator.addCustomError('email', this.list.EMAIL_INVALID, [{ value: 'Email' }])
 					)
 				)
 			);
