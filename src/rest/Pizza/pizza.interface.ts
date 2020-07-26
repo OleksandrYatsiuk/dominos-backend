@@ -2,7 +2,7 @@ export interface Pizza {
 	readonly id: string;
 	readonly _id: string;
 	name: string;
-	ingredients: string[];
+	ingredients:any;
 	weight: {
 		small: number;
 		middle: number;

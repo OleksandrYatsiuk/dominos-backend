@@ -78,8 +78,8 @@ export default class DeliveryController extends Controller {
 				result ? code204(response) : next(new NotFoundException('Delivery'));
 			})
 			.catch((err) => code404(response, 'Delivery Id is invalid.'));
-    };
-    
+	};
+
 	private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const body: Delivery = request.body;
 		this.shop

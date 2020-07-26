@@ -23,7 +23,7 @@ const upload = multer();
 export default class PizzaController extends Controller {
 	public path = '/pizza';
 	private pizza = pizzaModel;
-	private ingredient = ingredientsModel;
+	private ingredients = ingredientsModel;
 
 	constructor() {
 		super();
@@ -94,21 +94,80 @@ export default class PizzaController extends Controller {
 					)
 				);
 			} else {
-				const pizza = new this.pizza(pizzaData);
-				pizza.save().then((pizza) => code201(response, pizza)).catch((err) => {
-					code500(response, err);
-				});
+				this.ingredients
+					.find({ _id: { $in: pizzaData.ingredients } })
+					.then((res) => {
+						if (res.length != pizzaData.ingredients.length) {
+							next(
+								new UnprocessableEntityException(
+									this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
+										{ value: 'Ingredient Id' }
+									])
+								)
+							);
+						} else {
+							pizzaData.ingredients = res.map((el) => {
+								return { id: el._id, name: el.name };
+							});
+							const pizza = new this.pizza(pizzaData);
+							pizza.save().then((pizza) => code201(response, this.parseFields(pizza))).catch((err) => {
+								code500(response, err);
+							});
+						}
+					})
+					.catch((err) => {
+						next(
+							new UnprocessableEntityException(
+								this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
+									{ value: 'Ingredient Id' }
+								])
+							)
+						);
+					});
 			}
 		});
 	};
 
 	private update = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-		const updatedData = Object.assign(request.body, { updatedAt: getCurrentTime() });
+		const updatedData = request.body;
 		this.pizza
-			.findByIdAndUpdate(request.params.id, { $set: updatedData }, { new: true })
-			.then((pizza) => code200(response, pizza))
+			.findById(request.params.id)
+			.then((res) => {
+				this.ingredients
+					.find({ _id: { $in: updatedData.ingredients } })
+					.then((res) => {
+						if (res.length != updatedData.ingredients.length) {
+							next(
+								new UnprocessableEntityException(
+									this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
+										{ value: 'Ingredient Id' }
+									])
+								)
+							);
+						} else {
+							const updatedData = Object.assign(request.body, { updatedAt: getCurrentTime() });
+							updatedData.ingredients = res.map((el) => {
+								return { id: el._id, name: el.name };
+							});
+							this.pizza
+								.findByIdAndUpdate(request.params.id, { $set: updatedData }, { new: true })
+								.then((pizza) => code200(response, this.parseFields(pizza)))
+								.catch((err) => code404(response, 'Pizza was not found.'));
+						}
+					})
+					.catch((e) => {
+						next(
+							new UnprocessableEntityException(
+								this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
+									{ value: 'Ingredient Id' }
+								])
+							)
+						);
+					});
+			})
 			.catch((err) => code404(response, 'Pizza was not found.'));
 	};
+
 	private overview = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const { id } = request.params;
 		this.pizza
@@ -139,10 +198,6 @@ export default class PizzaController extends Controller {
 	};
 
 	private parseFields(pizza: Pizza) {
-		pizza.ingredients.forEach((id) => {
-			const arr = [];
-			this.ingredient.findById(id).then(res=>console.log(res))
-		});
 		return {
 			id: pizza._id,
 			name: pizza.name,
