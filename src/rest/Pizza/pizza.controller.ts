@@ -1,15 +1,7 @@
 import * as express from 'express';
 import Controller from '../Controller';
 import pizzaModel from './pizza.model';
-import {
-	code200,
-	code200DataProvider,
-	code204,
-	code404,
-	code500,
-	code422,
-	code201
-} from '../../middleware/base.response';
+import { code200, code200DataProvider, code204, code404, code500, code201 } from '../../middleware/base.response';
 import validate from '../../middleware/validation.middleware';
 import { pagination } from '../../validation/Pagination.validator';
 import NotFoundException from '../../exceptions/NotFoundException';
@@ -24,12 +16,14 @@ import AWS_S3 from '../../services/AmazoneService';
 import * as multer from 'multer';
 import checkFiles from '../../validation/Files.validator';
 import { Pizza } from './pizza.interface';
+import ingredientsModel from '../../rest/Ingredients/ingredients.model';
 
 const upload = multer();
 
 export default class PizzaController extends Controller {
 	public path = '/pizza';
 	private pizza = pizzaModel;
+	private ingredients = ingredientsModel;
 
 	constructor() {
 		super();
@@ -73,21 +67,7 @@ export default class PizzaController extends Controller {
 				code200DataProvider(
 					response,
 					{ total, limit, page, pages },
-					docs.map((pizza) => {
-						return {
-							id: pizza._id,
-							name: pizza.name,
-							ingredients: pizza.ingredients,
-							weight: pizza.weight,
-							price: pizza.price,
-							category: pizza.category,
-							image: pizza.image,
-							createdAt: pizza.createdAt,
-							updatedAt: pizza.updatedAt,
-							deletedAt: pizza.deletedAt,
-							deletedBy: pizza.deletedBy
-						};
-					})
+					docs.map((pizza) => this.parseFields(pizza))
 				);
 			});
 	};
@@ -114,40 +94,85 @@ export default class PizzaController extends Controller {
 					)
 				);
 			} else {
-				const pizza = new this.pizza(pizzaData);
-				pizza.save().then((pizza) => code201(response, pizza)).catch((err) => {
-					code500(response, err);
-				});
+				this.ingredients
+					.find({ _id: { $in: pizzaData.ingredients } })
+					.then((res) => {
+						if (res.length != pizzaData.ingredients.length) {
+							next(
+								new UnprocessableEntityException(
+									this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
+										{ value: 'Ingredient Id' }
+									])
+								)
+							);
+						} else {
+							pizzaData.ingredients = res.map((el) => {
+								return { id: el._id, name: el.name };
+							});
+							const pizza = new this.pizza(pizzaData);
+							pizza.save().then((pizza) => code201(response, this.parseFields(pizza))).catch((err) => {
+								code500(response, err);
+							});
+						}
+					})
+					.catch((err) => {
+						next(
+							new UnprocessableEntityException(
+								this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
+									{ value: 'Ingredient Id' }
+								])
+							)
+						);
+					});
 			}
 		});
 	};
 
 	private update = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-		const updatedData = Object.assign(request.body, { updatedAt: getCurrentTime() });
+		const updatedData = request.body;
 		this.pizza
-			.findByIdAndUpdate(request.params.id, { $set: updatedData }, { new: true })
-			.then((pizza) => code200(response, pizza))
+			.findById(request.params.id)
+			.then((res) => {
+				this.ingredients
+					.find({ _id: { $in: updatedData.ingredients } })
+					.then((res) => {
+						if (res.length != updatedData.ingredients.length) {
+							next(
+								new UnprocessableEntityException(
+									this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
+										{ value: 'Ingredient Id' }
+									])
+								)
+							);
+						} else {
+							const updatedData = Object.assign(request.body, { updatedAt: getCurrentTime() });
+							updatedData.ingredients = res.map((el) => {
+								return { id: el._id, name: el.name };
+							});
+							this.pizza
+								.findByIdAndUpdate(request.params.id, { $set: updatedData }, { new: true })
+								.then((pizza) => code200(response, this.parseFields(pizza)))
+								.catch((err) => code404(response, 'Pizza was not found.'));
+						}
+					})
+					.catch((e) => {
+						next(
+							new UnprocessableEntityException(
+								this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
+									{ value: 'Ingredient Id' }
+								])
+							)
+						);
+					});
+			})
 			.catch((err) => code404(response, 'Pizza was not found.'));
 	};
+
 	private overview = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const { id } = request.params;
 		this.pizza
 			.findById(id)
-			.then((pizza) =>
-				code200(response, {
-					id: pizza._id,
-					name: pizza.name,
-					ingredients: pizza.ingredients,
-					weight: pizza.weight,
-					price: pizza.price,
-					category: pizza.category,
-					image: pizza.image,
-					createdAt: pizza.createdAt,
-					updatedAt: pizza.updatedAt,
-					deletedAt: pizza.deletedAt,
-					deletedBy: pizza.deletedBy
-				})
-			)
+			.then((pizza) => code200(response, this.parseFields(pizza)))
 			.catch((err) => code404(response, 'Pizza was not found.'));
 	};
 
@@ -160,19 +185,7 @@ export default class PizzaController extends Controller {
 					.findByIdAndUpdate(id, { image: s3['Location'] }, { new: true })
 					.then((pizza) => {
 						if (pizza) {
-							code200(response, {
-								id: pizza._id,
-								name: pizza.name,
-								ingredients: pizza.ingredients,
-								weight: pizza.weight,
-								price: pizza.price,
-								category: pizza.category,
-								image: pizza.image,
-								createdAt: pizza.createdAt,
-								updatedAt: pizza.updatedAt,
-								deletedAt: pizza.deletedAt,
-								deletedBy: pizza.deletedBy
-							});
+							code200(response, this.parseFields(pizza));
 						} else {
 							code404(response, 'Pizza not found!');
 						}
@@ -183,4 +196,20 @@ export default class PizzaController extends Controller {
 				code500(response, err);
 			});
 	};
+
+	private parseFields(pizza: Pizza) {
+		return {
+			id: pizza._id,
+			name: pizza.name,
+			ingredients: pizza.ingredients,
+			weight: pizza.weight,
+			price: pizza.price,
+			category: pizza.category,
+			image: pizza.image,
+			createdAt: pizza.createdAt,
+			updatedAt: pizza.updatedAt,
+			deletedAt: pizza.deletedAt,
+			deletedBy: pizza.deletedBy
+		};
+	}
 }
