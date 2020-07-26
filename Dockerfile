@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-FROM node:7.7.2-alpine
-WORKDIR /usr/app
-COPY package.json .
-RUN npm install --quiet
-COPY . .
-=======
+
 FROM node:latest
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
@@ -22,4 +16,3 @@ COPY --chown=node:node . .
 EXPOSE 8080
 
 CMD [ "node", "app.ts" ]
->>>>>>> swagger
