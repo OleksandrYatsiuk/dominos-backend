@@ -10,7 +10,7 @@ export class UserHelper extends AuthorizeTokenHelper {
 		super();
 	}
 
-	public getUserById(id: string) {
+	public getUserById(id) {
 		return this.user.findById(id).then((user) => {
 			return this.parseUserModel(user);
 		});
@@ -53,7 +53,7 @@ export class UserHelper extends AuthorizeTokenHelper {
 		});
 	}
 
-	public updateUserItem(id: string, data: object) {
+	public updateUserItem(id, data: object) {
 		return this.user
 			.findByIdAndUpdate(id, { $set: Object.assign(data, { updatedAt: getCurrentTime() }) }, { new: true })
 			.then((user) => {
@@ -72,11 +72,11 @@ export class UserHelper extends AuthorizeTokenHelper {
 		return this.user.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition });
 	}
 
-	public clearAuthToken(id: string) {
+	public clearAuthToken(id) {
 		return super.removeItem(id);
 	}
 
-	public checkPasswordValid(id: string, password: string) {
+	public checkPasswordValid(id, password: string) {
 		return this.user.findById(id).then((user) => {
 			return this.createPasswordHash(password) === user.passwordHash;
 		});
@@ -87,7 +87,7 @@ export class UserHelper extends AuthorizeTokenHelper {
 		return hash;
 	}
 
-	public checkKeyForUpdating(id: string, key: string, value) {
+	public checkKeyForUpdating(id, key: string, value) {
 		let obj = {};
 		obj[key] = value;
 		return this.getUser(obj).then((user) => {
