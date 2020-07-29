@@ -8,7 +8,7 @@ import CustomError from '../../exceptions/CustomError';
  */
 export interface TokenData {
 	id: string;
-	userId: any;
+	userId: string|any;
 	token: string;
 	createdAt: number;
 	expiredAt: number;

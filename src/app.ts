@@ -11,11 +11,14 @@ export default class App {
 	public app: express.Application;
 	public port: number;
 	public version: string;
+	private host: string;
+	private hostDB: string;
 
 	constructor(controllers: Controller[], port: number, version: string) {
 		this.app = express();
-		this.port = port;
+		this.port = port || 5000;
 		this.version = version;
+		this.configureUrl()
 		this.connectToTheDatabase();
 		this.setBodyParser();
 		this.setCors();
@@ -44,7 +47,7 @@ export default class App {
 
 	public listen() {
 		this.app.listen(this.port, () => {
-			console.log(`App running on http://${process.env.API_URL}:${this.port || 5000}`);
+			console.log(`App running on ${this.host}`);
 		});
 	}
 
@@ -64,16 +67,7 @@ export default class App {
 		this.app.use('/rest', (req: express.Request, res: express.Response) => res.send(swaggerDocument));
 		var options = {
 			swaggerOptions: {
-				urls: [
-					{
-						url: 'https://dominos-backend.herokuapp.com/rest',
-						name: 'Production'
-					},
-					// {
-					// 	url: 'http://localhost:5000/rest',
-					// 	name: 'Local'
-					// }
-				]
+				url: `${this.host}rest`,
 			}
 		};
 		this.app.use(
@@ -89,21 +83,28 @@ export default class App {
 	}
 
 	private connectToTheDatabase() {
-		let uri: string;
-		if (process.env.PROD !== 'false') {
-			uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env
-				.MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/${process.env.DB_NAME}`;
-		} else {
-			uri = `mongodb://mongo:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-		}
+
 		mongoose
-			.connect(uri, {
+			.connect(this.hostDB, {
 				useNewUrlParser: true,
 				useCreateIndex: true,
 				useUnifiedTopology: true,
 				useFindAndModify: false
 			})
 			.then(() => console.info('MongoDB connected successfully!'))
-			.catch((error) => console.error(`MongoDB error: ${error}`));
+			.catch((error) => console.error(`MongoDB error:\n ${error}`));
+	}
+
+	private configureUrl() {
+		switch (process.env.PROD) {
+			case 'false':
+				this.host = `http://${process.env.API_URL}:${this.port}/`
+				this.hostDB = `mongodb://mongo:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+				break;
+			default:
+				this.host = `${process.env.HEROKU_URL}`;
+				this.hostDB = `mongodb+srv://${process.env.MONGO_USER}:${process.env
+					.MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/${process.env.DB_NAME}`;
+		}
 	}
 }
