@@ -17,7 +17,6 @@ export default class App {
 		this.app = express();
 		this.port = port||5000;
 		this.version = version;
-		this.configureUrl()
 		this.connectToTheDatabase();
 		this.setBodyParser();
 		this.setCors();
@@ -46,7 +45,7 @@ export default class App {
 
 	public listen() {
 		this.app.listen(this.port, () => {
-			console.log(`App running on ${this.host}`);
+			console.log(`App running on http://${process.env.API_URL}:${this.port || 5000}`);
 		});
 	}
 
