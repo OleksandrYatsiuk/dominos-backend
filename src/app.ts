@@ -12,11 +12,10 @@ export default class App {
 	public port: number;
 	public version: string;
 	private host: string;
-	private hostDB: string;
 
 	constructor(controllers: Controller[], port: number, version: string) {
 		this.app = express();
-		this.port = port || 5000;
+		this.port = port||5000;
 		this.version = version;
 		this.configureUrl()
 		this.connectToTheDatabase();
@@ -67,7 +66,12 @@ export default class App {
 		this.app.use('/rest', (req: express.Request, res: express.Response) => res.send(swaggerDocument));
 		var options = {
 			swaggerOptions: {
-				url: `${this.host}rest`,
+				urls: [
+					{
+						url: `${this.host}rest`,
+						name: 'Local'
+					}
+				]
 			}
 		};
 		this.app.use(
@@ -83,9 +87,15 @@ export default class App {
 	}
 
 	private connectToTheDatabase() {
-
+		let uri: string;
+		if (process.env.PROD !== 'false') {
+			uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env
+				.MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/${process.env.DB_NAME}`;
+		} else {
+			uri = `mongodb://mongo:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+		}
 		mongoose
-			.connect(this.hostDB, {
+			.connect(uri, {
 				useNewUrlParser: true,
 				useCreateIndex: true,
 				useUnifiedTopology: true,
@@ -96,15 +106,10 @@ export default class App {
 	}
 
 	private configureUrl() {
-		switch (process.env.PROD) {
-			case 'false':
-				this.host = `http://${process.env.API_URL}:${this.port}/`
-				this.hostDB = `mongodb://mongo:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-				break;
-			default:
-				this.host = `${process.env.HEROKU_URL}`;
-				this.hostDB = `mongodb+srv://${process.env.MONGO_USER}:${process.env
-					.MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/${process.env.DB_NAME}`;
+		if (process.env.PROD === 'false') {
+			this.host = `http://${process.env.API_URL}:${this.port}/`
+		} else {
+			this.host = `http://${process.env.HEROKU_URL}`;
 		}
 	}
 }
