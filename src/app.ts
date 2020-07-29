@@ -64,16 +64,16 @@ export default class App {
 		this.app.use('/rest', (req: express.Request, res: express.Response) => res.send(swaggerDocument));
 		var options = {
 			swaggerOptions: {
-				urls: [
-					{
+				// urls: [
+					// {
 						url: 'https://dominos-backend.herokuapp.com/rest',
-						name: 'Production'
-					},
+					// 	name: 'Production'
+					// },
 					// {
 					// 	url: 'http://localhost:5000/rest',
 					// 	name: 'Local'
 					// }
-				]
+				// ]
 			}
 		};
 		this.app.use(
