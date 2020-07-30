@@ -12,6 +12,7 @@ export default class App {
 	public port: number;
 	public version: string;
 	private host: string;
+	hostDb: string;
 
 	constructor(controllers: Controller[], port: number, version: string) {
 		this.app = express();
@@ -87,15 +88,9 @@ export default class App {
 	}
 
 	private connectToTheDatabase() {
-		let uri: string;
-		if (process.env.PROD !== 'false') {
-			uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env
-				.MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/${process.env.DB_NAME}`;
-		} else {
-			uri = `mongodb://mongo:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-		}
+
 		mongoose
-			.connect(uri, {
+			.connect(this.hostDb, {
 				useNewUrlParser: true,
 				useCreateIndex: true,
 				useUnifiedTopology: true,
@@ -110,9 +105,12 @@ export default class App {
 		switch (process.env.PROD) {
 			case 'false':
 				this.host = `http://${process.env.API_URL}:${this.port}/`
+				this.hostDb = `mongodb://mongo:${process.env.DB_PORT}/${process.env.DB_NAME}`;
 				break;
 			default:
 				this.host = `${process.env.HEROKU_URL}`;
+				this.hostDb = `mongodb+srv://${process.env.MONGO_USER}:${process.env
+					.MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/${process.env.DB_NAME}`;
 				break;
 		}
 	}
