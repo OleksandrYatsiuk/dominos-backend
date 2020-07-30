@@ -15,7 +15,7 @@ export default class App {
 
 	constructor(controllers: Controller[], port: number, version: string) {
 		this.app = express();
-		this.port = port||5000;
+		this.port = port || 5000;
 		this.version = version;
 		this.configureUrl();
 		this.connectToTheDatabase();
@@ -106,10 +106,14 @@ export default class App {
 	}
 
 	private configureUrl() {
-		if (process.env.PROD === 'false') {
-			this.host = `http://${process.env.API_URL}:${this.port}/`
-		} else {
-			this.host = `http://${process.env.HEROKU_URL}`;
+
+		switch (process.env.PROD) {
+			case 'false':
+				this.host = `http://${process.env.API_URL}:${this.port}/`
+				break;
+			default:
+				this.host = `${process.env.HEROKU_URL}`;
+				break;
 		}
 	}
 }
