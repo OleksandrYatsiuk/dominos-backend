@@ -11,11 +11,13 @@ export default class App {
 	public app: express.Application;
 	public port: number;
 	public version: string;
+	private host: string;
 
 	constructor(controllers: Controller[], port: number, version: string) {
 		this.app = express();
-		this.port = port;
+		this.port = port||5000;
 		this.version = version;
+		this.configureUrl();
 		this.connectToTheDatabase();
 		this.setBodyParser();
 		this.setCors();
@@ -66,13 +68,9 @@ export default class App {
 			swaggerOptions: {
 				urls: [
 					{
-						url: 'https://dominos-backend.herokuapp.com/rest',
-						name: 'Production'
-					},
-					// {
-					// 	url: 'http://localhost:5000/rest',
-					// 	name: 'Local'
-					// }
+						url: `${this.host}rest`,
+						name: 'Local'
+					}
 				]
 			}
 		};
@@ -104,6 +102,14 @@ export default class App {
 				useFindAndModify: false
 			})
 			.then(() => console.info('MongoDB connected successfully!'))
-			.catch((error) => console.error(`MongoDB error: ${error}`));
+			.catch((error) => console.error(`MongoDB error:\n ${error}`));
+	}
+
+	private configureUrl() {
+		if (process.env.PROD === 'false') {
+			this.host = `http://${process.env.API_URL}:${this.port}/`
+		} else {
+			this.host = `http://${process.env.HEROKU_URL}`;
+		}
 	}
 }
