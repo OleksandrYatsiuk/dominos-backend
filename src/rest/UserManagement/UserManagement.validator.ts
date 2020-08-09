@@ -1,43 +1,55 @@
 import * as Joi from "@hapi/joi";
 import { Roles } from "../../interfaces/roles.interface";
+import * as config from "./UserManagementConfig";
+import UserManagementConfig from "./UserManagementConfig.valid";
 
-const phoneEqual = (value, helpers) => {
+export default class UserManagementValidator {
+  private conf = new UserManagementConfig();
+
+  public phoneEqual = (value, helpers) => {
     if (value.toString().length != 12) {
-        return helpers.error('number.invalid')
+      return helpers.error("number.invalid");
     }
-}
+  };
 
-export const usernameMinLength = 3;
-export const usernameMaxLength = 15;
-export const fullNameMinLength = 4;
-export const fullNameMaxLength = 20;
+  public update = Joi.object({
+    username: Joi.string()
+      .optional()
+      .empty()
+      .label("Username")
+      .min(this.conf.usernameMinLength)
+      .max(this.conf.usernameMaxLength),
+    fullName: Joi.string()
+      .optional()
+      .empty()
+      .label("Full Name")
+      .min(this.conf.fullNameMinLength)
+      .max(this.conf.fullNameMaxLength),
+    email: Joi.string().optional().empty().label("Email").email(),
+    birthday: Joi.string().optional().empty().label("Birthday").isoDate(),
+    phone: Joi.number()
+      .optional()
+      .empty()
+      .custom(this.phoneEqual, "phone count")
+      .label("Phone"),
+  });
 
+  public updateLocation = Joi.object({
+    lat: Joi.number().required().empty().label("Latitude"),
+    lng: Joi.number().required().empty().label("Longitude"),
+  });
 
-export const update = Joi.object({
-    username: Joi.string().optional().empty().label('Username').min(usernameMinLength).max(usernameMaxLength),
-    fullName: Joi.string().optional().empty().label('Full Name').min(fullNameMinLength).max(fullNameMaxLength),
-    email: Joi.string().optional().empty().label('Email').email(),
-    birthday: Joi.string().optional().empty().label('Birthday').isoDate(),
-    phone: Joi.number().optional().empty().custom(phoneEqual, 'phone count').label('Phone')
-})
-
-export const updateLocation = Joi.object({
-    lat: Joi.number().required().empty().label('Latitude'),
-    lng: Joi.number().required().empty().label('Longitude')
-})
-
-
-
-const checkRoles = (value: string, helpers) => {
-    if (!Object.values(Roles).find(role => value === role)) {
-        return helpers.error('any.invalid');
+  public checkRoles = (value: string, helpers) => {
+    if (!Object.values(Roles).find((role) => value === role)) {
+      return helpers.error("any.invalid");
     }
+  };
+
+  updateRole = Joi.object({
+    role: Joi.string()
+      .required()
+      .empty()
+      .label("Role")
+      .custom(this.checkRoles, "role validation"),
+  });
 }
-
-
-export const updateRole = Joi.object({
-    role: Joi.string().required().empty().label('Role').custom(checkRoles, 'role validation'),
-})
-
-
-

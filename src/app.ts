@@ -65,14 +65,14 @@ export default class App {
 		var options = {
 			swaggerOptions: {
 				urls: [
-					{
-						url: 'https://dominos-backend.herokuapp.com/rest',
-						name: 'Production'
-					},
 					// {
-					// 	url: 'http://localhost:5000/rest',
-					// 	name: 'Local'
-					// }
+					// 	url: 'https://dominos-backend.herokuapp.com/rest',
+					// 	name: 'Production'
+					// },
+					{
+						url: 'http://localhost:5000/rest',
+						name: 'Local'
+					}
 				]
 			}
 		};

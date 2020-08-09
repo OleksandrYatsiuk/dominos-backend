@@ -18,7 +18,7 @@ import { promotion } from './promotions.validator';
 import NotFoundException from '../../exceptions/NotFoundException';
 const upload = multer();
 
-export default class Promotions extends Controller {
+export default class PromotionsController extends Controller {
     public path = '/promotion';
 
     public promo = promotionModel;

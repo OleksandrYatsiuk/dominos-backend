@@ -7,7 +7,8 @@ import DeliveryController from './rest/Delivery/delivery.controller';
 import ShopsController from './rest/Shops/shops.controller';
 import IngredientsController from './rest/Ingredients/ingredients.controller';
 import UserManagementController from './rest/UserManagement/userManagement.controller';
-import Promotions from './rest/Promotions/promotions.controller';
+import PromotionsController from './rest/Promotions/promotions.controller';
+import ConfigController from './rest/Config/config.controller';
 
 const app = new App(
 	[
@@ -18,7 +19,8 @@ const app = new App(
 		new DeliveryController(),
 		new ShopsController(),
 		new IngredientsController(),
-		new Promotions()
+		new PromotionsController(),
+		new ConfigController()
 	],
 	+process.env.PORT,
 	'/v1'

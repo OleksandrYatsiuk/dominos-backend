@@ -2,10 +2,10 @@ import * as express from 'express';
 import Controller from '../Controller';
 import { code200, code204, code401, code500 } from '../../middleware/base.response';
 import validate from '../../middleware/validation.middleware';
-import { update, updateLocation } from '../UserManagement/UserManagement.validator';
+import UserManagementValidator from '../UserManagement/UserManagement.validator';
 import checkAuth from '../../middleware/auth.middleware';
 import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
-import { changePassword } from '../AnyBody/Register.validator';
+import AnyBodyValidator from '../AnyBody/AnyBodyValidator.validator';
 import * as multer from 'multer';
 import checkFiles from '../../validation/Files.validator';
 import AmazoneService from '../../services/AmazoneService';
@@ -17,6 +17,8 @@ export default class UserController extends Controller {
 	public path = '/user';
 	private helper = new UserHelper();
 	private storage = new AmazoneService();
+	private customValidator = new AnyBodyValidator()
+	private customManagementValidator = new UserManagementValidator()
 
 	constructor() {
 		super();
@@ -24,11 +26,11 @@ export default class UserController extends Controller {
 	}
 
 	private initializeRoutes() {
-		this.router.put(`${this.path}/profile`, checkAuth, validate(update), this.update);
-		this.router.put(`${this.path}/location`, checkAuth, validate(updateLocation), this.updateLocation);
+		this.router.put(`${this.path}/profile`, checkAuth, validate(this.customManagementValidator.update), this.update);
+		this.router.put(`${this.path}/location`, checkAuth, validate(this.customManagementValidator.updateLocation), this.updateLocation);
 		this.router.get(`${this.path}/current`, checkAuth, this.current);
 		this.router.post(`${this.path}/logout`, checkAuth, this.logout);
-		this.router.post(`${this.path}/change-password`, checkAuth, validate(changePassword), this.changePassword);
+		this.router.post(`${this.path}/change-password`, checkAuth, validate(this.customValidator.changePassword), this.changePassword);
 		this.router.post(`${this.path}/upload`, checkAuth, upload.single('file'), checkFiles(), this.upload);
 	}
 
