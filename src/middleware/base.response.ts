@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { Pagination } from 'interfaces/pagination.interface';
+import { Pagination } from '../interfaces/pagination.interface';
 import {
 	UnprocessableEntity,
 	Unauthorized,

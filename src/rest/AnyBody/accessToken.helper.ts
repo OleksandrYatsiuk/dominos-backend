@@ -1,8 +1,8 @@
 
-import accessToken from './accessToken.model';
+import accessToken from '../models/accessToken.model';
 import { getCurrentTime } from '../../utils/current-time-UTC';
 import * as crypto from 'crypto';
-import User from '../../rest/User/user.interface';
+import User from '../interfaces/user.interface';
 import { UserHelper } from '../../rest/User/user.helper';
 
 export class AccessTokenHelper {

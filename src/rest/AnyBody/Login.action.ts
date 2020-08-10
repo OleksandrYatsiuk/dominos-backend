@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import * as express from 'express';
 import { getCurrentTime, setTokenLifeTime } from '../../utils/current-time-UTC';
 import { code200 } from '../../middleware/base.response';
-import userModel from '../User/user.model';
+import userModel from '../models/user.model';
 import authToken from './authToken.model';
 
 export class LoginHelper {

@@ -4,8 +4,6 @@ import ErrorList from "./ErrorList";
 export interface Params {
     value: any
 }
-
-
 export class ErrorMessage extends ErrorList {
     public code: number;
 

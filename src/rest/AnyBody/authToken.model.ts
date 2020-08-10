@@ -1,7 +1,6 @@
 import * as mongoose from 'mongoose';
 import { getCurrentTime, setTokenLifeTime } from '../../utils/current-time-UTC';
 import * as Joi from '@hapi/joi';
-import CustomError from '../../exceptions/CustomError';
 /**
  * converting
  * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/joigoose/joigoose-tests.ts
@@ -29,8 +28,3 @@ const authTokenSchema = new mongoose.Schema(
 );
 
 export default mongoose.model<TokenData & mongoose.Document>('authToken', authTokenSchema);
-
-export const loginSchema = Joi.object({
-	username: Joi.string().required().label('Username'),
-	password: Joi.string().required().label('Password')
-});

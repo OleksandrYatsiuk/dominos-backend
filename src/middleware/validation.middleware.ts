@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { code422 } from './base.response';
-import CustomError from '../exceptions/CustomError';
+import { BaseValidator } from '../rest/validator/base.validator';
 
 export default function validate<T>(schema:any, config: string = 'body') {
 	return (req: Request, res: Response, next: NextFunction) => {
-		const validator = new CustomError();
+		const validator = new BaseValidator();
 		let body = req.body;
 		config === 'body' ? (body = req.body) : (body = req.query);
 		const result = schema.validate(body, { abortEarly: false });

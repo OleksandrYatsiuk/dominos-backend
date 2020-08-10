@@ -1,5 +1,5 @@
-import userModel from './user.model';
-import User from './user.interface';
+import userModel from '../models/user.model';
+import User from '../interfaces/user.interface';
 import { AuthorizeTokenHelper } from '../../rest/AnyBody/authToken.helper';
 import * as crypto from 'crypto';
 import { getCurrentTime } from '../../utils/current-time-UTC';

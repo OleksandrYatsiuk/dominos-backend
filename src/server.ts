@@ -1,17 +1,21 @@
 import App from './app';
 import 'dotenv/config';
-import AnyBodyController from './rest/AnyBody/anyBody.controller';
-import UserController from './rest/User/user.controller';
-import PizzaController from './rest/Pizza/pizza.controller';
-import DeliveryController from './rest/Delivery/delivery.controller';
-import ShopsController from './rest/Shops/shops.controller';
-import IngredientsController from './rest/Ingredients/ingredients.controller';
-import UserManagementController from './rest/UserManagement/userManagement.controller';
-import PromotionsController from './rest/Promotions/promotions.controller';
-import ConfigController from './rest/Config/config.controller';
+import {
+	AnyBodyController,
+	UserController,
+	UserManagementController,
+	PizzaController,
+	DeliveryController,
+	ShopsController,
+	IngredientsController,
+	PromotionsController,
+	ConfigController
+} from './rest/controllers/index';
+import Controller from './rest/controllers/Controller';
 
 const app = new App(
 	[
+		new Controller(),
 		new UserController(),
 		new AnyBodyController(),
 		new UserManagementController(),

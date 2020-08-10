@@ -1,10 +1,4 @@
-export const ERRORS = {
-	[this.EMAIL_INVALID]: '{attr} is not a valid email address.',
-	[this.DATE_INVALID]: 'The format of {attr} is invalid.',
-	[this.DATE_TOO_SMALL]: '{attr} must be no less than {min}.',
-	[this.DATE_TOO_BIG]: '{attr} must be no greater than {max}.',
-	[this.UNIQUE_INVALID]: '{attr} "{value}" has already been taken.'
-};
+
 export default class ErrorList {
 	public BASIC_ERROR = 1000;
 
@@ -32,26 +26,29 @@ export default class ErrorList {
 
 	public COMPARE_EQUAL = 1110;
 
+	public PHONE_NUMBER_INVALID = 1120
+
 	public ERRORS = {
 		[this.REQUIRED_INVALID]: '{attr} cannot be blank.',
 
-		[this.UNIQUE_INVALID]: '{attr} "{value}" has already been taken.',
-		[this.EMAIL_INVALID]: '{attr} is not a valid email address.',
-		[this.DATE_INVALID]: 'The format of {attr} is invalid.',
-		[this.DATE_TOO_SMALL]: '{attr} must be no less than {min}.',
-		[this.DATE_TOO_BIG]: '{attr} must be no greater than {max}.',
+		[this.UNIQUE_INVALID]: '"{attr}" "{value}" has already been taken.',
+		[this.EMAIL_INVALID]: '"{attr}" is not a valid email address.',
+		[this.DATE_INVALID]: 'The format of "{attr}" is invalid.',
+		[this.DATE_TOO_SMALL]: '"{attr}" must be no less than {min}.',
+		[this.DATE_TOO_BIG]: '"{attr}" must be no greater than {max}.',
 		[this.CREDENTIALS_INVALID]: 'Incorrect email address and/or password',
-		[this.EXIST_INVALID]: '{attr} is invalid.',
+		[this.EXIST_INVALID]: '"{attr}" is invalid.',
 
-		[this.NUMBER_INVALID]: '{attr} must be a number.',
-		[this.NUMBER_INTEGER_ONLY]: '{attr} must be an integer.',
-		[this.NUMBER_TOO_SMALL]: '{attr} must be no less than {min}.',
-		[this.NUMBER_TOO_BIG]: '{attr} must be no greater than {max}.',
+		[this.NUMBER_INVALID]: '"{attr}" must be a number.',
+		[this.NUMBER_INTEGER_ONLY]: '"{attr}" must be an integer.',
+		[this.NUMBER_TOO_SMALL]: '"{attr}" must be no less than {min}.',
+		[this.NUMBER_TOO_BIG]: '"{attr}" must be no greater than {max}.',
 
-		[this.STRING_INVALID]: '{attr} must be a string.',
-		[this.STRING_TOO_SHORT]: '{attr} should contain at least {min} character(s).',
-		[this.STRING_TOO_LONG]: '{attr} should contain at most {max} character(s).',
-		[this.STRING_NOT_EQUAL]: '{attr} should contain {length} character(s).',
-		[this.COMPARE_EQUAL]: '{attr} must be equal to "{compareValueOrAttr}".'
+		[this.STRING_INVALID]: '"{attr}" must be a string.',
+		[this.STRING_TOO_SHORT]: '"{attr}" should contain at least {min} character(s).',
+		[this.STRING_TOO_LONG]: '"{attr}" should contain at most {max} character(s).',
+		[this.STRING_NOT_EQUAL]: '"{attr}" should contain {length} character(s).',
+		[this.COMPARE_EQUAL]: '"{attr}" must be equal to "{compareValueOrAttr}".',
+		[this.PHONE_NUMBER_INVALID]: '"{value}" is not a valid phone number.'
 	};
 }

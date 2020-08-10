@@ -3,8 +3,8 @@ import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
 import errorMiddleware from './middleware/error.middleware';
 import { code404 } from './middleware/base.response';
-import Controller from 'rest/Controller';
 import * as swaggerUi from 'swagger-ui-express';
+import Controller from './rest/controllers/Controller';
 const swaggerDocument = require('./swagger/swagger.json');
 
 export default class App {
@@ -12,7 +12,7 @@ export default class App {
 	public port: number;
 	public version: string;
 	private host: string;
-	hostDb: string;
+	private hostDb: string;
 
 	constructor(controllers: Controller[], port: number, version: string) {
 		this.app = express();

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { code403 } from './base.response';
-import user from '../rest/User/user.model';
+import user from '../rest/models/user.model';
 
 export default function checkRoles(roles: string[]) {
 	return (req: Request, res: Response, next: NextFunction) => {

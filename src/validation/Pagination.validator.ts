@@ -1,5 +1,5 @@
 import * as Joi from "@hapi/joi";
-import { PromotionStatuses } from "../rest/Promotions/promotions.interface";
+import { PromotionStatuses } from "../rest/interfaces/promotions.interface";
 
 export const pagination = Joi.object({
     page: Joi.number().optional().label('Page').min(1).default(1),
