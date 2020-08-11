@@ -1,15 +1,9 @@
 import * as express from 'express';
 import Controller from './Controller';
 import deliveryModel from '../models/delivery.model';
-import { code200DataProvider, code204, code404, code500, code201 } from '../../middleware/base.response';
-import validate from '../../middleware/validation.middleware';
-import NotFoundException from '../../exceptions/NotFoundException';
-import checkAuth from '../../middleware/auth.middleware';
-import checkRoles from '../../middleware/roles.middleware';
 import { setSorting } from '../../utils/sortingHelper';
 import { Delivery } from '../interfaces/delivery.interface';
 import shopsModel from '../models/shops.model';
-import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 import DeliveryValidator from '../validator/delivery.validator';
 
 export class DeliveryController extends Controller {
@@ -24,12 +18,12 @@ export class DeliveryController extends Controller {
 	}
 
 	private initializeRoutes() {
-		this.router.get(`${this.path}`, checkAuth, checkRoles([this.roles.techadmin, this.roles.projectManager]),
-			validate(this.baseValidator.paginationSchema(), 'query'),
+		this.router.get(`${this.path}`, super.checkAuth(), super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
+			super.validate(this.baseValidator.paginationSchema(), 'query'),
 			this.getList
 		);
-		this.router.post(`${this.path}`, checkAuth, validate(this.conf.delivery), this.create);
-		this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([this.roles.techadmin]), this.remove);
+		this.router.post(`${this.path}`, super.checkAuth(), super.validate(this.conf.delivery), this.create);
+		this.router.delete(`${this.path}/:id`, super.checkAuth(), super.checkRoles([this.roles.techadmin]), this.remove);
 	}
 
 	private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -38,30 +32,26 @@ export class DeliveryController extends Controller {
 		this.delivery
 			.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
 			.then(({ docs, total, limit, page, pages }) => {
-				code200DataProvider(
-					response,
-					{ total, limit, page, pages },
-					docs.map((delivery) => {
-						return {
-							id: delivery._id,
-							firstName: delivery.firstName,
-							phone: delivery.phone,
-							email: delivery.email,
-							shopId: delivery.shopId,
-							pizzaIds: delivery.pizzaIds,
-							address: delivery.address,
-							comment: delivery.comment,
-							date: delivery.date,
-							payment: delivery.payment,
-							image: delivery.image,
-							amount: delivery.amount,
-							createdAt: delivery.createdAt,
-							updatedAt: delivery.updatedAt,
-							deletedAt: delivery.deletedAt,
-							deletedBy: delivery.deletedBy
-						};
-					})
-				);
+				this.send200Data(response, { total, limit, page, pages }, docs.map((delivery) => {
+					return {
+						id: delivery._id,
+						firstName: delivery.firstName,
+						phone: delivery.phone,
+						email: delivery.email,
+						shopId: delivery.shopId,
+						pizzaIds: delivery.pizzaIds,
+						address: delivery.address,
+						comment: delivery.comment,
+						date: delivery.date,
+						payment: delivery.payment,
+						image: delivery.image,
+						amount: delivery.amount,
+						createdAt: delivery.createdAt,
+						updatedAt: delivery.updatedAt,
+						deletedAt: delivery.deletedAt,
+						deletedBy: delivery.deletedBy
+					};
+				}))
 			});
 	};
 
@@ -69,9 +59,9 @@ export class DeliveryController extends Controller {
 		this.delivery
 			.findByIdAndDelete(request.params.id)
 			.then((result) => {
-				result ? code204(response) : next(new NotFoundException('Delivery'));
+				result ? super.send204(response) : next(super.send404('Delivery'));
 			})
-			.catch((err) => code404(response, 'Delivery Id is invalid.'));
+			.catch((err) => super.send404('Delivery Id'));
 	};
 
 	private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -80,14 +70,14 @@ export class DeliveryController extends Controller {
 			.findById(body.shopId)
 			.then((res) => {
 				const delivery = new this.delivery(body);
-				delivery.save().then((delivery) => code201(response, delivery)).catch((err) => {
-					code500(response, err);
-				});
+				delivery.save()
+					.then((delivery) => super.send201(response, delivery))
+					.catch((err) => super.send500(err));
 			})
 			.catch((err) => {
 				next(
-					new UnprocessableEntityException(
-						this.validator.addCustomError('shopId', this.list.EXIST_INVALID, [{ value: 'Shop Id' }])
+					super.send422(
+						super.custom('shopId', this.list.EXIST_INVALID, [{ value: 'Shop Id' }])
 					)
 				);
 			});

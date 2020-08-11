@@ -1,14 +1,9 @@
 import * as express from 'express';
 import Controller from './Controller';
-import { code200DataProvider, code201, code500 } from '../../middleware/base.response';
-import validate from '../../middleware/validation.middleware';
 import { pagination } from '../../validation/Pagination.validator';
 import shopsModel from '../models/shops.model';
 import { setSorting } from '../../utils/sortingHelper';
 import { Shop } from '../interfaces/shops.interface';
-import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
-import checkRoles from '../../middleware/roles.middleware';
-import checkAuth from '../../middleware/auth.middleware';
 
 export class ShopsController extends Controller {
 	public path = '/shops';
@@ -20,8 +15,8 @@ export class ShopsController extends Controller {
 	}
 
 	private initializeRoutes() {
-		this.router.get(`${this.path}`, validate(pagination, 'query'), this.data);
-		this.router.post(`${this.path}/create`, checkAuth, checkRoles([this.roles.techadmin]), this.create);
+		this.router.get(`${this.path}`, super.validate(pagination, 'query'), this.data);
+		this.router.post(`${this.path}/create`, super.checkAuth, super.checkRoles([this.roles.techadmin]), this.create);
 	}
 
 	private data = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -30,8 +25,7 @@ export class ShopsController extends Controller {
 		this.shop
 			.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
 			.then(({ docs, total, limit, page, pages }) => {
-				code200DataProvider(
-					response,
+				super.send200Data(response,
 					{ total, limit, page, pages },
 					docs.map((delivery) => {
 						return {
@@ -45,8 +39,7 @@ export class ShopsController extends Controller {
 							deletedAt: delivery.deletedAt,
 							deletedBy: delivery.deletedBy
 						};
-					})
-				);
+					}))
 			});
 	};
 	private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -54,8 +47,8 @@ export class ShopsController extends Controller {
 		this.shop.findOne({ address: promoData.address }).then((shop) => {
 			if (shop && shop.address == promoData.address) {
 				next(
-					new UnprocessableEntityException(
-						this.validator.addCustomError('address', this.list.UNIQUE_INVALID, [
+					super.send422(
+						super.custom('address', this.list.UNIQUE_INVALID, [
 							{ value: 'Address' },
 							{ value: promoData.address }
 						])
@@ -63,8 +56,8 @@ export class ShopsController extends Controller {
 				);
 			} else {
 				const promo = new this.shop(promoData);
-				promo.save().then((promotion) => code201(response, this.parseFields(promotion))).catch((err) => {
-					code500(response, err);
+				promo.save().then((promotion) => super.send201(response, this.parseFields(promotion))).catch((err) => {
+					next(super.send500(err));
 				});
 			}
 		});

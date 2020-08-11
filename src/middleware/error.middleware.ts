@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import HttpException from '../exceptions/HttpException';
+import {HttpException} from '../exceptions/HttpException';
 import { code404, code422, code500, code400 } from './base.response';
 import { BadRequest, InternalServerError, NotFound, Unauthorized, UnprocessableEntity } from '../exceptions/ErrorCodesList';
 

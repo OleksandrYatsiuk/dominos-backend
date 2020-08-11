@@ -1,55 +1,49 @@
 import * as express from 'express';
 import Controller from './Controller';
 import pizzaModel from '../models/pizza.model';
-import { code200, code200DataProvider, code204, code404, code500, code201 } from '../../middleware/base.response';
-import validate from '../../middleware/validation.middleware';
-import NotFoundException from '../../exceptions/NotFoundException';
 import { getCurrentTime } from '../../utils/current-time-UTC';
-import checkAuth from '../../middleware/auth.middleware';
-import checkRoles from '../../middleware/roles.middleware';
 import { setSorting } from '../../utils/sortingHelper';
-import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
 import AWS_S3 from '../../services/AmazoneService';
 import * as multer from 'multer';
 import checkFiles from '../../validation/Files.validator';
-import ingredientsModel from '../models/ingredients.model';
 import { Pizza } from '../../rest/interfaces/pizza.interface';
 import PizzaValidator from '../validator/pizza.validator';
+import ingredientsModel from '../models/ingredients.model';
 
 const upload = multer();
 
 export class PizzaController extends Controller {
 	public path = '/pizza';
 	private pizza = pizzaModel;
-	private ingredients = ingredientsModel;
-private conf = new PizzaValidator()
+	private ingredients = ingredientsModel
+	private conf = new PizzaValidator()
 	constructor() {
 		super();
 		this.initializeRoutes();
 	}
 
 	private initializeRoutes() {
-		this.router.get(`${this.path}`, validate(this.baseValidator.paginationSchema(), 'query'), this.getList);
+		this.router.get(`${this.path}`, super.validate(this.baseValidator.paginationSchema(), 'query'), this.getList);
 		this.router.post(
 			`${this.path}`,
-			checkAuth,
-			checkRoles([ this.roles.techadmin, this.roles.projectManager ]),
-			validate(this.conf.pizza),
+			this.checkAuth,
+			super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
+			super.validate(this.conf.pizza),
 			this.create
 		);
 		this.router.get(`${this.path}/:id`, this.overview);
-		this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([ this.roles.techadmin ]), this.remove);
+		this.router.delete(`${this.path}/:id`, super.checkAuth, super.checkRoles([this.roles.techadmin]), this.remove);
 		this.router.put(
 			`${this.path}/:id`,
-			checkAuth,
-			checkRoles([ this.roles.techadmin, this.roles.projectManager ]),
-			validate(this.conf.pizza),
+			super.checkAuth,
+			super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
+			super.validate(this.conf.pizza),
 			this.update
 		);
 		this.router.post(
 			`${this.path}/:id/upload`,
-			checkAuth,
-			checkRoles([ this.roles.techadmin, this.roles.projectManager ]),
+			super.checkAuth,
+			super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
 			upload.single('file'),
 			checkFiles(),
 			this.upload
@@ -62,11 +56,7 @@ private conf = new PizzaValidator()
 		this.pizza
 			.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
 			.then(({ docs, total, limit, page, pages }) => {
-				code200DataProvider(
-					response,
-					{ total, limit, page, pages },
-					docs.map((pizza) => this.parseFields(pizza))
-				);
+				super.send200Data(response, { total, limit, page, pages }, docs.map((pizza) => this.parseFields(pizza)))
 			});
 	};
 
@@ -74,9 +64,9 @@ private conf = new PizzaValidator()
 		this.pizza
 			.findByIdAndDelete(request.params.id)
 			.then((result) => {
-				result ? code204(response) : next(new NotFoundException('Pizza'));
+				result ? super.send204(response) : next(super.send404('Pizza'));
 			})
-			.catch((err) => code404(response, 'Pizza Id is invalid.'));
+			.catch((err) => super.send404('Pizza'));
 	};
 
 	private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -84,11 +74,8 @@ private conf = new PizzaValidator()
 		this.pizza.findOne({ name: pizzaData.name }).then((pizza) => {
 			if (pizza && pizza.name == pizzaData.name) {
 				next(
-					new UnprocessableEntityException(
-						this.validator.addCustomError('name', this.list.UNIQUE_INVALID, [
-							{ value: 'Name' },
-							{ value: pizzaData.name }
-						])
+					super.send422(
+						this.custom('name', this.list.UNIQUE_INVALID, [{ value: 'Name' }, { value: pizzaData.name }])
 					)
 				);
 			} else {
@@ -97,28 +84,24 @@ private conf = new PizzaValidator()
 					.then((res) => {
 						if (res.length != pizzaData.ingredients.length) {
 							next(
-								new UnprocessableEntityException(
-									this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
-										{ value: 'Ingredient Id' }
-									])
+								super.send422(
+									this.custom('ingredient', this.list.EXIST_INVALID, [{ value: 'Ingredient' }])
 								)
-							);
+							)
 						} else {
 							pizzaData.ingredients = res.map((el) => {
 								return { id: el._id, name: el.name };
 							});
 							const pizza = new this.pizza(pizzaData);
-							pizza.save().then((pizza) => code201(response, this.parseFields(pizza))).catch((err) => {
-								code500(response, err);
+							pizza.save().then((pizza) => super.send201(response, this.parseFields(pizza))).catch((err) => {
+								super.send500(err);
 							});
 						}
 					})
 					.catch((err) => {
 						next(
-							new UnprocessableEntityException(
-								this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
-									{ value: 'Ingredient Id' }
-								])
+							super.send422(
+								super.custom('ingredient', this.list.EXIST_INVALID, [{ value: 'Ingredient Id' }])
 							)
 						);
 					});
@@ -136,10 +119,8 @@ private conf = new PizzaValidator()
 					.then((res) => {
 						if (res.length != updatedData.ingredients.length) {
 							next(
-								new UnprocessableEntityException(
-									this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
-										{ value: 'Ingredient Id' }
-									])
+								super.send422(
+									super.custom('ingredient', this.list.EXIST_INVALID, [{ value: 'Ingredient Id' }])
 								)
 							);
 						} else {
@@ -149,29 +130,27 @@ private conf = new PizzaValidator()
 							});
 							this.pizza
 								.findByIdAndUpdate(request.params.id, { $set: updatedData }, { new: true })
-								.then((pizza) => code200(response, this.parseFields(pizza)))
-								.catch((err) => code404(response, 'Pizza was not found.'));
+								.then((pizza) => super.send200(response, this.parseFields(pizza)))
+								.catch((err) => super.send404('Pizza'));
 						}
 					})
 					.catch((e) => {
 						next(
-							new UnprocessableEntityException(
-								this.validator.addCustomError('ingredient', this.list.EXIST_INVALID, [
-									{ value: 'Ingredient Id' }
-								])
+							super.send422(
+								super.custom('ingredient', this.list.EXIST_INVALID, [{ value: 'Ingredient Id' }])
 							)
 						);
 					});
 			})
-			.catch((err) => code404(response, 'Pizza was not found.'));
+			.catch((err) => super.send404('Pizza'));
 	};
 
 	private overview = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const { id } = request.params;
 		this.pizza
 			.findById(id)
-			.then((pizza) => code200(response, this.parseFields(pizza)))
-			.catch((err) => code404(response, 'Pizza was not found.'));
+			.then((pizza) => super.send200(response, this.parseFields(pizza)))
+			.catch((err) => super.send404('Pizza'));
 	};
 
 	private upload = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -183,16 +162,14 @@ private conf = new PizzaValidator()
 					.findByIdAndUpdate(id, { image: s3['Location'] }, { new: true })
 					.then((pizza) => {
 						if (pizza) {
-							code200(response, this.parseFields(pizza));
+							super.send200(response, this.parseFields(pizza));
 						} else {
-							code404(response, 'Pizza not found!');
+							next(super.send404('Pizza'))
 						}
 					})
-					.catch((err) => code500(response, err));
+					.catch((err) => next(super.send500(err)))
 			})
-			.catch((err) => {
-				code500(response, err);
-			});
+			.catch((err) => next(super.send500(err)));
 	};
 
 	private parseFields(pizza: Pizza) {

@@ -1,15 +1,9 @@
 import * as express from 'express';
 import Controller from './Controller';
 import ingredientsModel from '../models/ingredients.model';
-import { code200, code200DataProvider, code204, code404 } from '../../middleware/base.response';
-import validate from '../../middleware/validation.middleware';
 import { pagination } from '../../validation/Pagination.validator';
-import NotFoundException from '../../exceptions/NotFoundException';
-import checkAuth from '../../middleware/auth.middleware';
-import checkRoles from '../../middleware/roles.middleware';
 import { setSorting } from '../../utils/sortingHelper';
-import UnprocessableEntityException from '../../exceptions/UnprocessableEntityException';
-import { Ingredient } from '../interfaces/ingredients.interface';
+import { Ingredient } from '../../interfaces/ingredients.interface';
 
 export class IngredientsController extends Controller {
 	public path = '/ingredients';
@@ -22,9 +16,9 @@ export class IngredientsController extends Controller {
 	}
 
 	private initializeRoutes() {
-		this.router.get(`${this.path}`, validate(pagination, 'query'), this.getList);
-		this.router.delete(`${this.path}/:id`, checkAuth, checkRoles([ this.roles.techadmin ]), this.remove);
-		this.router.post(`${this.path}`, checkAuth, checkRoles([this.roles.techadmin, this.roles.projectManager ]), this.create);
+		this.router.get(`${this.path}`, super.validate(pagination, 'query'), this.getList);
+		this.router.delete(`${this.path}/:id`, super.checkAuth, super.checkRoles([this.roles.techadmin]), this.remove);
+		this.router.post(`${this.path}`, super.checkAuth, super.checkRoles([this.roles.techadmin, this.roles.projectManager]), this.create);
 	}
 
 	private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -33,16 +27,12 @@ export class IngredientsController extends Controller {
 		this.ingredient
 			.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
 			.then(({ docs, total, limit, page, pages }) => {
-				code200DataProvider(
-					response,
-					{ total, limit, page, pages },
-					docs.map((item) => {
-						return {
-							id: item._id,
-							name: item.name
-						};
-					})
-				);
+				super.send200Data(response, { total, limit, page, pages }, docs.map((item) => {
+					return {
+						id: item._id,
+						name: item.name
+					};
+				}))
 			});
 	};
 
@@ -50,9 +40,9 @@ export class IngredientsController extends Controller {
 		this.ingredient
 			.findByIdAndDelete(request.params.id)
 			.then((result) => {
-				result ? code204(response) : next(new NotFoundException('Ingredient'));
+				result ? super.send204(response) : next(super.send404('Ingredient'));
 			})
-			.catch((err) => code404(response, 'Ingredient Id is invalid.'));
+			.catch((err) => super.send404('Ingredient'));
 	};
 	private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const data: Ingredient = request.body;
@@ -60,15 +50,12 @@ export class IngredientsController extends Controller {
 			if (!res) {
 				const item = new this.ingredient(data);
 				item.save().then((item) => {
-					code200(response, { id: item._id, name: item.name });
+					super.send200(response, { id: item._id, name: item.name });
 				});
 			} else {
 				next(
-					new UnprocessableEntityException(
-						this.validator.addCustomError('name', this.list.UNIQUE_INVALID, [
-							{ value: 'Name' },
-							{ value: data.name }
-						])
+					super.send422(
+						super.custom('name', this.list.UNIQUE_INVALID, [{ value: 'Name' }, { value: data.name }])
 					)
 				);
 			}

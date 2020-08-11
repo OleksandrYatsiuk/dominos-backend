@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate';
-import { Ingredient } from '../interfaces/ingredients.interface';
+import { Ingredient } from '../../interfaces/ingredients.interface';
 
 const ingredientsModel = new mongoose.Schema(
 	{

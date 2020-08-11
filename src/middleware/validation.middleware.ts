@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { code422 } from './base.response';
 import { BaseValidator } from '../rest/validator/base.validator';
 
-export default function validate<T>(schema:any, config: string = 'body') {
+export function validate<T>(schema:any, config: string = 'body') {
 	return (req: Request, res: Response, next: NextFunction) => {
 		const validator = new BaseValidator();
 		let body = req.body;

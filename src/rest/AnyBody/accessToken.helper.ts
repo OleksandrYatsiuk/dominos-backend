@@ -1,19 +1,19 @@
 
-import accessToken from '../models/accessToken.model';
 import { getCurrentTime } from '../../utils/current-time-UTC';
 import * as crypto from 'crypto';
 import User from '../interfaces/user.interface';
 import { UserHelper } from '../../rest/User/user.helper';
+import accessTokenModel from '../models/accessToken.model';
 
 export class AccessTokenHelper {
-    private access = accessToken;
+    private access = accessTokenModel;
     private user = new UserHelper();
 
 
     constructor() { }
 
     public getItem(token: string) {
-        return this.access.findOne({ token })
+        return this.access.findOne({token})
             .then(result => {
                 if (result) {
                     return result

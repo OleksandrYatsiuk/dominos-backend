@@ -1,9 +1,9 @@
 import * as Joi from "@hapi/joi";
 import { SchemaMap } from "@hapi/joi";
 import { ErrorMessage } from "../../validation/ErrorMessage";
-import HttpException from "../../exceptions/HttpException";
 import { BaseConfig } from "./validatorConfig/base.config";
 import { RolesMap } from "../interfaces/roles.interface";
+import { HttpException } from "../../exceptions/index";
 
 export class BaseValidator extends ErrorMessage {
     public conf = new BaseConfig()

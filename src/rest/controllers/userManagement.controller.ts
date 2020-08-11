@@ -1,18 +1,8 @@
 import * as express from "express";
 import Controller from "./Controller";
 import { UserHelper } from "../User/user.helper";
-import {
-  code200,
-  code200DataProvider,
-  code204,
-  code404,
-} from "../../middleware/base.response";
-import validate from "../../middleware/validation.middleware";
 import { pagination } from "../../validation/Pagination.validator";
-import NotFoundException from "../../exceptions/NotFoundException";
 import { UserManagementValidator } from "../validator/user-management.validator";
-import checkAuth from "../../middleware/auth.middleware";
-import checkRoles from "../../middleware/roles.middleware";
 import { setSorting } from "../../utils/sortingHelper";
 
 export class UserManagementController extends Controller {
@@ -28,22 +18,22 @@ export class UserManagementController extends Controller {
   private initializeRoutes() {
     this.router.get(
       `${this.path}`,
-      checkAuth,
-      checkRoles([this.roles.techadmin, this.roles.projectManager]),
-      validate(pagination, "query"),
+      super.checkAuth,
+      super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
+      super.validate(pagination, "query"),
       this.getList
     );
     this.router.delete(
       `${this.path}/:id`,
-      checkAuth,
-      checkRoles([this.roles.techadmin]),
+      super.checkAuth,
+      super.checkRoles([this.roles.techadmin]),
       this.remove
     );
     this.router.put(
       `${this.path}/:id/role`,
-      checkAuth,
-      checkRoles([this.roles.techadmin]),
-      validate(this.customValidator.updateRole),
+      super.checkAuth,
+      super.checkRoles([this.roles.techadmin]),
+      super.validate(this.customValidator.updateRole),
       this.updateRole
     );
   }
@@ -58,13 +48,11 @@ export class UserManagementController extends Controller {
     this.helper
       .paginateUser(condition, +page, +limit)
       .then(({ docs, total, limit, page, pages }) => {
-        code200DataProvider(
-          response,
+        super.send200Data(response,
           { total, limit, page, pages },
           docs.map((user) => {
             return this.helper.parseUserModel(user);
-          })
-        );
+          }))
       });
   };
 
@@ -76,9 +64,9 @@ export class UserManagementController extends Controller {
     this.helper
       .removeUser(request.params.id)
       .then((result) => {
-        result ? code204(response) : next(new NotFoundException("User"));
+        result ? super.send204(response) : next(super.send404("User"));
       })
-      .catch((err) => code404(response, "User Id is invalid."));
+      .catch(err => next(super.send404("User")));
   };
 
   private updateRole = (
@@ -89,7 +77,7 @@ export class UserManagementController extends Controller {
     const { role } = request.body;
     this.helper
       .updateUserItem(request.params.id, { role })
-      .then((user) => code200(response, null))
-      .catch((err) => code404(response, "User was not found."));
+      .then((user) => super.send200(response, null))
+      .catch((err) => next(super.send404("User")));
   };
 }

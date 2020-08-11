@@ -3,17 +3,10 @@ import { UserHelper } from "../User/user.helper";
 import authModel from "../AnyBody/authToken.model";
 import { Authentication } from "../../interfaces/authentication.interface";
 import { Registration } from "../../interfaces/registration.interface";
-import {
-  code200,
-  code201,
-  code204,
-} from "../../middleware/base.response";
-import validate from "../../middleware/validation.middleware";
-import UnprocessableEntityException from "../../exceptions/UnprocessableEntityException";
 import { LoginHelper } from "../AnyBody/Login.action";
 import EmailSenderService from "../../services/EmailSenderService";
 import { AccessTokenHelper } from "../AnyBody/accessToken.helper";
-import NotFoundException from "../../exceptions/NotFoundException";
+import {NotFoundException} from "../../exceptions/NotFoundException";
 import Controller from "./Controller";
 import AnyBodyValidator from "../validator/any-body.validator";
 
@@ -32,10 +25,10 @@ export class AnyBodyController extends Controller {
   }
 
   private initializeRoutes() {
-    this.router.post(`${this.path}/login`, validate(this.customValidator.login), this.login);
+    this.router.post(`${this.path}/login`, super.validate(this.customValidator.login), this.login);
     this.router.post(
       `${this.path}/register`,
-      validate(this.customValidator.register),
+      super.validate(this.customValidator.register),
       this.registering
     );
     this.router.get(`${this.path}/confirm/:token`, this.confirm);
@@ -75,7 +68,7 @@ export class AnyBodyController extends Controller {
           });
 
           token.save().then((tokenData) => {
-            code200(response, {
+            super.send200(response, {
               token: tokenData.token,
               expiredAt: tokenData.expiredAt,
             });
@@ -83,21 +76,15 @@ export class AnyBodyController extends Controller {
         }
       } else {
         next(
-          new UnprocessableEntityException(
-            this.validator.addCustomError(
-              "username",
-              this.list.CREDENTIALS_INVALID
-            )
+          super.send422(
+            super.custom('username', this.list.CREDENTIALS_INVALID)
           )
         );
       }
     } else {
       next(
-        new UnprocessableEntityException(
-          this.validator.addCustomError(
-            "username",
-            this.list.CREDENTIALS_INVALID
-          )
+        super.send422(
+          super.custom('username', this.list.CREDENTIALS_INVALID)
         )
       );
     }
@@ -118,30 +105,22 @@ export class AnyBodyController extends Controller {
     if (registerData.password !== registerData.confirmPassword) {
       console.log(registerData.password !== registerData.confirmPassword);
       next(
-        new UnprocessableEntityException(
-          this.validator.addCustomError(
-            "confirmPassword",
-            this.list.COMPARE_EQUAL,
-            [{ value: "Confirm Password" }, { value: "Password" }]
-          )
+        super.send422(
+          super.custom('confirmPassword', this.list.COMPARE_EQUAL, [{ value: 'Confirm Password' }, { value: 'Password' }])
         )
-      );
+      )
     } else if (emailExist) {
       next(
-        new UnprocessableEntityException(
-          this.validator.addCustomError("email", this.list.UNIQUE_INVALID, [
-            { value: "Email" },
-            { value: registerData.email },
-          ])
+        super.send422(
+          super.custom('email', this.list.UNIQUE_INVALID, [{ value: 'Email' }, { value: registerData.email }])
         )
-      );
+      )
+
+
     } else if (usernameExist) {
       next(
-        new UnprocessableEntityException(
-          this.validator.addCustomError("username", this.list.UNIQUE_INVALID, [
-            { value: "Username" },
-            { value: registerData.username },
-          ])
+        super.send422(
+          super.custom('username', this.list.UNIQUE_INVALID, [{ value: 'Username' }, { value: registerData.username }])
         )
       );
     } else {
@@ -163,7 +142,7 @@ export class AnyBodyController extends Controller {
                 .then((res) => console.log(res));
             })
             .then(() => {
-              code201(response, this.helper.parseUserModel(user));
+              super.send201(response, this.helper.parseUserModel(user));
             })
         );
     }
@@ -180,16 +159,14 @@ export class AnyBodyController extends Controller {
           return next(new NotFoundException("Token"));
         case false:
           return next(
-            new UnprocessableEntityException(
-              this.validator.addCustomError("token", this.list.EXIST_INVALID, [
-                { value: "Token" },
-              ])
+            super.send422(
+              super.custom('token', this.list.EXIST_INVALID, [{ value: 'Token' }])
             )
           );
         case true:
           return this.accessToken
             .confirmEmail(token)
-            .then((res) => code200(response, null));
+            .then((res) => super.send201(response, null))
       }
     });
   };
@@ -206,14 +183,12 @@ export class AnyBodyController extends Controller {
           title: "Welcome",
           link: `https://dominos-app.herokuapp.com/${result.token}`,
         });
-        code204(response);
+        super.send204(response);
       })
       .catch((e) =>
         next(
-          new UnprocessableEntityException(
-            this.validator.addCustomError("email", this.list.EMAIL_INVALID, [
-              { value: "Email" },
-            ])
+          super.send422(
+            super.custom('username', this.list.EMAIL_INVALID, [{ value: 'Email' }])
           )
         )
       );
