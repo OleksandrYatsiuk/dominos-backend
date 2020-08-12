@@ -18,12 +18,12 @@ export class DeliveryController extends Controller {
 	}
 
 	private initializeRoutes() {
-		this.router.get(`${this.path}`, super.checkAuth(), super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
+		this.router.get(`${this.path}`, super.checkAuth, super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
 			super.validate(this.baseValidator.paginationSchema(), 'query'),
 			this.getList
 		);
-		this.router.post(`${this.path}`, super.checkAuth(), super.validate(this.conf.delivery), this.create);
-		this.router.delete(`${this.path}/:id`, super.checkAuth(), super.checkRoles([this.roles.techadmin]), this.remove);
+		this.router.post(`${this.path}`, super.checkAuth, super.validate(this.conf.delivery), this.create);
+		this.router.delete(`${this.path}/:id`, super.checkAuth, super.checkRoles([this.roles.techadmin]), this.remove);
 	}
 
 	private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {

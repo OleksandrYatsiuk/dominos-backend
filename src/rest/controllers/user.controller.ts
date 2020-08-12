@@ -6,6 +6,7 @@ import checkFiles from '../../validation/Files.validator';
 import AmazoneService from '../../services/AmazoneService';
 import { UserHelper } from '../User/user.helper';
 import AnyBodyValidator from '../validator/any-body.validator';
+import { checkAuth } from '../../middleware';
 
 const upload = multer();
 
@@ -22,12 +23,12 @@ export class UserController extends Controller {
 	}
 
 	private initializeRoutes() {
-		this.router.put(`${this.path}/profile`, super.checkAuth, super.validate(this.customManagementValidator.update), this.update);
-		this.router.put(`${this.path}/location`, super.checkAuth, super.validate(this.customManagementValidator.updateLocation), this.updateLocation);
-		this.router.get(`${this.path}/current`, super.checkAuth, this.current);
-		this.router.post(`${this.path}/logout`, super.checkAuth, this.logout);
-		this.router.post(`${this.path}/change-password`, super.checkAuth, super.validate(this.customValidator.changePassword), this.changePassword);
-		this.router.post(`${this.path}/upload`, super.checkAuth, upload.single('file'), checkFiles(), this.upload);
+		this.router.put(`${this.path}/profile`, super.checkAuth(), super.validate(this.customManagementValidator.update), this.update);
+		this.router.put(`${this.path}/location`, super.checkAuth(), super.validate(this.customManagementValidator.updateLocation), this.updateLocation);
+		this.router.get(`${this.path}/current`, super.checkAuth(), this.current);
+		this.router.post(`${this.path}/logout`, super.checkAuth(), this.logout);
+		this.router.post(`${this.path}/change-password`, super.checkAuth(), super.validate(this.customValidator.changePassword), this.changePassword);
+		this.router.post(`${this.path}/upload`, super.checkAuth(), upload.single('file'), checkFiles(), this.upload);
 	}
 
 	private update = async (request: express.Request, response: express.Response, next: express.NextFunction) => {

@@ -23,10 +23,10 @@ export class PromotionsController extends Controller {
     }
     private initializeRoutes() {
         this.router.get(`${this.path}`, super.validate(this.valid.pagination, 'query'), this.getList);
-        this.router.delete(`${this.path}/:id`, super.checkAuth, super.checkRoles([this.roles.techadmin]), this.remove);
-        this.router.post(`${this.path}`, super.checkAuth, super.checkRoles([this.roles.techadmin, this.roles.projectManager]), super.validate(this.valid.promotion), this.create);
-        this.router.post(`${this.path}/:id`, super.checkAuth, upload.single('file'), checkFiles(), this.upload);
-        this.router.patch(`${this.path}/:id`, super.checkAuth, super.checkRoles([this.roles.techadmin, this.roles.projectManager]), super.validate(this.valid.promotion), this.update);
+        this.router.delete(`${this.path}/:id`, super.checkAuth(), super.checkRoles([this.roles.techadmin]), this.remove);
+        this.router.post(`${this.path}`, super.checkAuth(), super.checkRoles([this.roles.techadmin, this.roles.projectManager]), super.validate(this.valid.promotion), this.create);
+        this.router.post(`${this.path}/:id`, super.checkAuth(), upload.single('file'), checkFiles(), this.upload);
+        this.router.patch(`${this.path}/:id`, super.checkAuth(), super.checkRoles([this.roles.techadmin, this.roles.projectManager]), super.validate(this.valid.promotion), this.update);
         this.router.get(`${this.path}/:id`, this.overview);
     }
 

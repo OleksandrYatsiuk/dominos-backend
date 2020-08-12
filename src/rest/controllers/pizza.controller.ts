@@ -26,23 +26,23 @@ export class PizzaController extends Controller {
 		this.router.get(`${this.path}`, super.validate(this.baseValidator.paginationSchema(), 'query'), this.getList);
 		this.router.post(
 			`${this.path}`,
-			this.checkAuth,
+			this.checkAuth(),
 			super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
 			super.validate(this.conf.pizza),
 			this.create
 		);
 		this.router.get(`${this.path}/:id`, this.overview);
-		this.router.delete(`${this.path}/:id`, super.checkAuth, super.checkRoles([this.roles.techadmin]), this.remove);
+		this.router.delete(`${this.path}/:id`, super.checkAuth(), super.checkRoles([this.roles.techadmin]), this.remove);
 		this.router.put(
 			`${this.path}/:id`,
-			super.checkAuth,
+			super.checkAuth(),
 			super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
 			super.validate(this.conf.pizza),
 			this.update
 		);
 		this.router.post(
 			`${this.path}/:id/upload`,
-			super.checkAuth,
+			super.checkAuth(),
 			super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
 			upload.single('file'),
 			checkFiles(),

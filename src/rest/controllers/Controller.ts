@@ -74,7 +74,7 @@ export default class Controller implements Controller {
     return new UnprocessableEntityException(errors);
   }
 
-  public send500(data:any) {
+  public send500(data: any) {
     return new HttpException(InternalServerError, data)
   }
 

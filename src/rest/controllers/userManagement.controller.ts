@@ -18,20 +18,20 @@ export class UserManagementController extends Controller {
   private initializeRoutes() {
     this.router.get(
       `${this.path}`,
-      super.checkAuth,
+      super.checkAuth(),
       super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
       super.validate(pagination, "query"),
       this.getList
     );
     this.router.delete(
       `${this.path}/:id`,
-      super.checkAuth,
+      super.checkAuth(),
       super.checkRoles([this.roles.techadmin]),
       this.remove
     );
     this.router.put(
       `${this.path}/:id/role`,
-      super.checkAuth,
+      super.checkAuth(),
       super.checkRoles([this.roles.techadmin]),
       super.validate(this.customValidator.updateRole),
       this.updateRole

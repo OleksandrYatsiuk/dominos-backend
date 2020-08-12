@@ -16,7 +16,7 @@ export class ShopsController extends Controller {
 
 	private initializeRoutes() {
 		this.router.get(`${this.path}`, super.validate(pagination, 'query'), this.data);
-		this.router.post(`${this.path}/create`, super.checkAuth, super.checkRoles([this.roles.techadmin]), this.create);
+		this.router.post(`${this.path}/create`, super.checkAuth(), super.checkRoles([this.roles.techadmin]), this.create);
 	}
 
 	private data = (request: express.Request, response: express.Response, next: express.NextFunction) => {

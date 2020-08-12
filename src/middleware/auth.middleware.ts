@@ -9,6 +9,8 @@ export function checkAuth(request: Request, response: Response, next: NextFuncti
 		authToken.findOne({ token: token }).then((token) => {
 			try {
 				if (token.expiredAt > getCurrentTime()) {
+					console.log(token);
+
 					response.locals = token.userId;
 					next();
 				}

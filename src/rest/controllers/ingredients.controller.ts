@@ -17,8 +17,8 @@ export class IngredientsController extends Controller {
 
 	private initializeRoutes() {
 		this.router.get(`${this.path}`, super.validate(pagination, 'query'), this.getList);
-		this.router.delete(`${this.path}/:id`, super.checkAuth, super.checkRoles([this.roles.techadmin]), this.remove);
-		this.router.post(`${this.path}`, super.checkAuth, super.checkRoles([this.roles.techadmin, this.roles.projectManager]), this.create);
+		this.router.delete(`${this.path}/:id`, super.checkAuth(), super.checkRoles([this.roles.techadmin]), this.remove);
+		this.router.post(`${this.path}`, super.checkAuth(), super.checkRoles([this.roles.techadmin, this.roles.projectManager]), this.create);
 	}
 
 	private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
