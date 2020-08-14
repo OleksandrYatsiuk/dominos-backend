@@ -124,7 +124,7 @@ export class AnyBodyController extends Controller {
               .then((result) => {
                 this.mailer.send(email, "Welcome to Dominos", "register.pug", {
                   title: "Welcome",
-                  link: `https://dominos-app.herokuapp.com/${result.token}`,
+                  link: `https://dominos-app.herokuapp.com/auth/confirm/${result.token}`,
                 })
                   .then(res => super.send204(response))
                   .catch(e => next(super.send500(e)));
