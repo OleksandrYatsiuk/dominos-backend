@@ -1,4 +1,3 @@
-import * as Joi from '@hapi/joi';
 import { PaymentType } from '../interfaces/delivery.interface';
 import { DeliveryConfig } from './validatorConfig/index';
 import { BaseValidator } from './base.validator'
@@ -11,7 +10,7 @@ export default class DeliveryValidator extends BaseValidator {
 		firstName: this.val.string().required().label('First Name'),
 		phone: this.val.number().required().label('Phone'),
 		email: this.val.string().email().required().label('Email'),
-		pizzaIds: this.val.array().items(Joi.string().label('Pizza Id')).required().label('Pizza Ids'),
+		pizzaIds: this.val.array().items(this.val.string().label('Pizza Id')).required().label('Pizza Ids'),
 		userId: this.val.string(),
 		shopId: this.val.string().label('Shop Id').optional().allow(""),
 		address: this.val.object().label('Address'),

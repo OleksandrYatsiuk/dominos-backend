@@ -53,38 +53,33 @@ export default class App {
 
 	private initializeErrorHandling() {
 		this.app.use(errorMiddleware);
-		this.app.use((request: express.Request, response: express.Response, next: express.NextFunction) => {
-			next(code404(response, 'Page not found!'));
-		});
 	}
 
 	private initializeControllers(controllers: Controller[]) {
 		controllers.forEach((controller) => {
 			this.app.use(`/api${this.version}`, controller.router);
-		});
-
+		})
 		this.app.use(express.static('src/swagger'));
 		this.app.use('/rest', (req: express.Request, res: express.Response) => res.send(swaggerDocument));
 		var options = {
 			swaggerOptions: {
-				urls: [
-					{
-						url: `${this.host}rest`,
-						name: 'Local'
-					}
-				]
+				urls: [{
+					url: `${this.host}rest`,
+					name: 'Local'
+				}]
 			}
 		};
-		this.app.use(
-			'/',
-			(req, res, next) => {
-				swaggerDocument.host = req.get('host');
-				req['swaggerDoc'] = swaggerDocument;
-				next();
-			},
+		this.app.use('/', (req, res, next) => {
+			swaggerDocument.host = req.get('host');
+			req['swaggerDoc'] = swaggerDocument;
+			next();
+		},
 			swaggerUi.serve,
 			swaggerUi.setup(null, options)
 		);
+		this.app.use((request: express.Request, response: express.Response, next: express.NextFunction) => {
+			next(code404(response, 'Page not found!'));
+		});
 	}
 
 	private connectToTheDatabase() {

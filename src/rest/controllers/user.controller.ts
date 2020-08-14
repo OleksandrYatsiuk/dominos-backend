@@ -2,17 +2,17 @@ import * as express from 'express';
 import Controller from './Controller';
 import { UserManagementValidator } from '../validator/user-management.validator';
 import * as multer from 'multer';
-import checkFiles from '../../validation/Files.validator';
 import AmazoneService from '../../services/AmazoneService';
-import { UserHelper } from '../User/user.helper';
 import AnyBodyValidator from '../validator/any-body.validator';
-import { checkAuth } from '../../middleware';
+import { UserModel } from '../models/user.model';
+import { AccessTokenModel } from '../models/accessToken.model';
 
 const upload = multer();
 
 export class UserController extends Controller {
 	public path = '/user';
-	private helper = new UserHelper();
+	private helper = new UserModel();
+	private access = new AccessTokenModel();
 	private storage = new AmazoneService();
 	private customValidator = new AnyBodyValidator()
 	private customManagementValidator = new UserManagementValidator()
@@ -28,7 +28,7 @@ export class UserController extends Controller {
 		this.router.get(`${this.path}/current`, super.checkAuth(), this.current);
 		this.router.post(`${this.path}/logout`, super.checkAuth(), this.logout);
 		this.router.post(`${this.path}/change-password`, super.checkAuth(), super.validate(this.customValidator.changePassword), this.changePassword);
-		this.router.post(`${this.path}/upload`, super.checkAuth(), upload.single('file'), checkFiles(), this.upload);
+		this.router.post(`${this.path}/upload`, super.checkAuth(), upload.single('file'), super.checkFiles(), this.upload);
 	}
 
 	private update = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -55,7 +55,7 @@ export class UserController extends Controller {
 					} else {
 						this.helper
 							.updateUserItem(response.locals, updatedData)
-							.then((user) => super.send200(response, user))
+							.then((user) => super.send200(response, this.helper.parseModel(user)))
 							.catch((err) => next(super.send500(err)));
 					}
 				});
@@ -65,21 +65,21 @@ export class UserController extends Controller {
 	private updateLocation = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		this.helper
 			.updateUserItem(response.locals, { location: request.body })
-			.then((user) => super.send200(response, user))
+			.then((user) => super.send200(response, this.helper.parseModel(user)))
 			.catch((err) => next(super.send500(err)));
 	};
 
 	private current = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		this.helper
 			.getUserById(response.locals)
-			.then((user) => super.send200(response, user))
-			.catch((err) => next(super.send500(err)));
+			.then((user) => super.send200(response, this.helper.parseModel(user)))
+			.catch((err) => next(super.send404('User')));
 	};
 
 	private logout = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-		this.helper.clearAuthToken(response.locals).then((result) => {
-			result ? super.send204(response) : super.send401(response);
-		});
+		this.access.model.remove({ userId: response.locals })
+			.then(res => super.send204(response))
+			.catch(err => super.send401(response));
 	};
 	private changePassword = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const { currentPassword, newPassword, confirmPassword } = request.body;
@@ -92,18 +92,19 @@ export class UserController extends Controller {
 					))
 			);
 		} else {
-			this.helper.checkPasswordValid(response.locals, currentPassword).then((result) => {
-				if (!result) {
+			this.helper.isPassValid(response.locals, currentPassword).then((result) => {
+				if (result) {
+					this.helper
+						.updateUserItem(response.locals, { passwordHash: this.helper.createPasswordHash(newPassword) })
+						.then(() => super.send204(response));
+				} else {
 					next(
 						super.send422(
 							super.custom('currentPassword', this.list.EXIST_INVALID, [
 								{ value: 'Current Password' }]
 							))
 					);
-				} else {
-					this.helper
-						.updateUserItem(response.locals, { passwordHash: this.helper.createPasswordHash(newPassword) })
-						.then(() => super.send204(response));
+
 				}
 			});
 		}

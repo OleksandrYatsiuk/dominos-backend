@@ -1,22 +1,18 @@
 import * as express from "express";
-import { UserHelper } from "../User/user.helper";
-import authModel from "../AnyBody/authToken.model";
 import { Authentication } from "../../interfaces/authentication.interface";
 import { Registration } from "../../interfaces/registration.interface";
-import { LoginHelper } from "../AnyBody/Login.action";
 import EmailSenderService from "../../services/EmailSenderService";
-import { AccessTokenHelper } from "../AnyBody/accessToken.helper";
-import {NotFoundException} from "../../exceptions/NotFoundException";
 import Controller from "./Controller";
 import AnyBodyValidator from "../validator/any-body.validator";
+import { AccessTokenModel } from "../models/accessToken.model";
+import { UserModel } from "../models/user.model";
+import { AuthTokenModel } from "../models/authToken.model";
 
 export class AnyBodyController extends Controller {
   public path = "/auth";
-  private userHelper = new LoginHelper();
-  private helper = new UserHelper();
-  private accessToken = new AccessTokenHelper();
+  private helper = new UserModel();
+  private accessToken = new AccessTokenModel();
   private customValidator = new AnyBodyValidator();
-  private authToken = authModel;
   private mailer = new EmailSenderService();
 
   constructor() {
@@ -26,54 +22,27 @@ export class AnyBodyController extends Controller {
 
   private initializeRoutes() {
     this.router.post(`${this.path}/login`, super.validate(this.customValidator.login), this.login);
-    this.router.post(
-      `${this.path}/register`,
-      super.validate(this.customValidator.register),
-      this.registering
-    );
+    this.router.post(`${this.path}/register`, super.validate(this.customValidator.register), this.registering);
     this.router.get(`${this.path}/confirm/:token`, this.confirm);
-    this.router.post(
-      `${this.path}/resend-verify-email`,
-      this.resendVerifyEmail
-    );
+    this.router.post(`${this.path}/resend-verify-email`, this.resendVerifyEmail);
   }
 
-  private login = async (
-    request: express.Request,
-    response: express.Response,
-    next: express.NextFunction
-  ) => {
+  private login = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
     const { username, password }: Authentication = request.body;
-    let hash;
-    const user = await this.helper.getUser({ username });
-    if (user) {
-      if (this.userHelper.isPasswordCorrect(password, user.passwordHash)) {
-        const authToken = await this.authToken.findOne({ userId: user._id });
-        if (authToken) {
-          this.userHelper.isTokenExpired(authToken.expiredAt)
-            ? (hash = this.userHelper.newToken(username, password))
-            : (hash = authToken.token);
-          this.userHelper.updateTokenTable(
-            authToken._id,
-            user._id,
-            hash,
-            response
-          );
-        } else {
-          hash = this.userHelper.newToken(username, password);
-          const token = new this.authToken({
-            userId: user._id,
-            token: hash,
-            expiredAt: Math.round(Date.now() / 1000) + 8 * 3600,
-          });
-
-          token.save().then((tokenData) => {
-            super.send200(response, {
-              token: tokenData.token,
-              expiredAt: tokenData.expiredAt,
-            });
-          });
-        }
+    this.helper.getUser({ username }).then(user => {
+      if (user) {
+        this.helper.isPassValid(user, password).then(valid => {
+          if (valid) {
+            this.accessToken.create(user._id)
+              .then(({ token, expiredAt }) => super.send201(response, { token, expiredAt }))
+          } else {
+            next(
+              super.send422(
+                super.custom('username', this.list.CREDENTIALS_INVALID)
+              )
+            );
+          }
+        })
       } else {
         next(
           super.send422(
@@ -81,29 +50,15 @@ export class AnyBodyController extends Controller {
           )
         );
       }
-    } else {
-      next(
-        super.send422(
-          super.custom('username', this.list.CREDENTIALS_INVALID)
-        )
-      );
-    }
+    })
   };
 
-  private registering = async (
-    request: express.Request,
-    response: express.Response,
-    next: express.NextFunction
-  ) => {
-    const registerData: Registration = request.body;
+  private registering = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+    const data: Registration = request.body;
+    const emailExist = await this.helper.getUser({ email: data.email });
+    const usernameExist = await this.helper.getUser({ username: data.username });
 
-    const emailExist = await this.helper.getUser({ email: registerData.email });
-    const usernameExist = await this.helper.getUser({
-      username: registerData.username,
-    });
-
-    if (registerData.password !== registerData.confirmPassword) {
-      console.log(registerData.password !== registerData.confirmPassword);
+    if (data.password !== data.confirmPassword) {
       next(
         super.send422(
           super.custom('confirmPassword', this.list.COMPARE_EQUAL, [{ value: 'Confirm Password' }, { value: 'Password' }])
@@ -112,51 +67,40 @@ export class AnyBodyController extends Controller {
     } else if (emailExist) {
       next(
         super.send422(
-          super.custom('email', this.list.UNIQUE_INVALID, [{ value: 'Email' }, { value: registerData.email }])
+          super.custom('email', this.list.UNIQUE_INVALID, [{ value: 'Email' }, { value: data.email }])
         )
       )
-
-
     } else if (usernameExist) {
       next(
         super.send422(
-          super.custom('username', this.list.UNIQUE_INVALID, [{ value: 'Username' }, { value: registerData.username }])
+          super.custom('username', this.list.UNIQUE_INVALID, [{ value: 'Username' }, { value: data.username }])
         )
       );
     } else {
-      this.helper
-        .createUser(
-          Object.assign(registerData, {
-            passwordHash: this.helper.createPasswordHash(registerData.password),
-          })
-        )
-        .then((user) =>
+      this.helper.model.create(Object.assign({
+        passwordHash: this.helper.createPasswordHash(data.password)
+      }, data))
+        .then((user) => {
           this.accessToken
-            .saveAccessToken(user)
+            .create(user._id)
             .then((tokenData) => {
-              this.mailer
-                .send(user.email, "Welcome to Dominos", "register.pug", {
-                  title: "Welcome",
-                  link: `https://dominos-app.herokuapp.com/auth/confirm/${tokenData.token}`,
-                })
-                .then((res) => console.log(res));
+              this.mailer.send(user.email, "Welcome to Dominos", "register.pug", {
+                title: "Welcome",
+                link: `https://dominos-app.herokuapp.com/auth/confirm/${tokenData.token}`,
+              })
             })
             .then(() => {
-              super.send201(response, this.helper.parseUserModel(user));
+              super.send201(response, this.helper.parseModel(user));
             })
-        );
+        });
     }
   };
-  private confirm = (
-    request: express.Request,
-    response: express.Response,
-    next: express.NextFunction
-  ) => {
+  private confirm = (request: express.Request, response: express.Response, next: express.NextFunction) => {
     const { token } = request.params;
     this.accessToken.checkAccessTokenValid(token).then((result) => {
       switch (result) {
         case null:
-          return next(new NotFoundException("Token"));
+          return next(super.send404('Token'));
         case false:
           return next(
             super.send422(
@@ -164,33 +108,40 @@ export class AnyBodyController extends Controller {
             )
           );
         case true:
-          return this.accessToken
-            .confirmEmail(token)
-            .then((res) => super.send201(response, null))
+          return this.accessToken.confirmEmail(token)
+            .then((res) => super.send200(response))
       }
     });
   };
-  private resendVerifyEmail = (
-    request: express.Request,
-    response: express.Response,
-    next: express.NextFunction
-  ) => {
+  private resendVerifyEmail = (request: express.Request, response: express.Response, next: express.NextFunction) => {
     const { email } = request.body;
-    this.accessToken
-      .updateAccessToken(email)
-      .then((result) => {
-        this.mailer.send(email, "Welcome to Dominos", "register.pug", {
-          title: "Welcome",
-          link: `https://dominos-app.herokuapp.com/${result.token}`,
-        });
-        super.send204(response);
-      })
-      .catch((e) =>
-        next(
-          super.send422(
-            super.custom('username', this.list.EMAIL_INVALID, [{ value: 'Email' }])
-          )
-        )
-      );
+    this.helper.getUser({ email }).then(user => {
+      if (user) {
+        this.accessToken.exists({ userId: user._id }).then(exist => {
+          if (exist) {
+            this.accessToken
+              .updateAccessToken(email)
+              .then((result) => {
+                this.mailer.send(email, "Welcome to Dominos", "register.pug", {
+                  title: "Welcome",
+                  link: `https://dominos-app.herokuapp.com/${result.token}`,
+                })
+                  .then(res => super.send204(response))
+                  .catch(e => next(super.send500(e)));
+              })
+          } else {
+            next(super.send422(
+              super.custom('email', this.list.EMAIL_VERIFIED, [{ value: email }])
+            ))
+          }
+        })
+      } else {
+        next(super.send422(
+          super.custom('email', this.list.EMAIL_INVALID, [{ value: email }])
+        ))
+      }
+    })
+
+
   };
 }

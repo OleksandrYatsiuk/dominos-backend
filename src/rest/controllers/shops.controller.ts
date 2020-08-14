@@ -1,13 +1,13 @@
 import * as express from 'express';
 import Controller from './Controller';
 import { pagination } from '../../validation/Pagination.validator';
-import shopsModel from '../models/shops.model';
 import { setSorting } from '../../utils/sortingHelper';
 import { Shop } from '../interfaces/shops.interface';
+import { ShopModel } from '../models/shops.model';
 
 export class ShopsController extends Controller {
 	public path = '/shops';
-	private shop = shopsModel;
+	private helper = new ShopModel();
 
 	constructor() {
 		super();
@@ -21,60 +21,27 @@ export class ShopsController extends Controller {
 
 	private data = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const { page, limit, sort } = request.query;
-		const condition = setSorting(sort);
-		this.shop
-			.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
-			.then(({ docs, total, limit, page, pages }) => {
-				super.send200Data(response,
-					{ total, limit, page, pages },
-					docs.map((delivery) => {
-						return {
-							id: delivery._id,
-							address: delivery.address,
-							lat: delivery.lat,
-							lng: delivery.lng,
-							label: delivery.label,
-							createdAt: delivery.createdAt,
-							updatedAt: delivery.updatedAt,
-							deletedAt: delivery.deletedAt,
-							deletedBy: delivery.deletedBy
-						};
-					}))
-			});
+		this.helper.getListWithPagination(page, limit, sort)
+			.then(({ docs, total, limit, page, pages }) => super.send200Data(response, { total, limit, page, pages },
+				docs.map((shops) => this.helper.parseFields(shops))))
 	};
-	private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-		const promoData: Shop = request.body;
-		this.shop.findOne({ address: promoData.address }).then((shop) => {
-			if (shop && shop.address == promoData.address) {
+	private create = ({body}: express.Request, response: express.Response, next: express.NextFunction) => {
+		const shop: Shop = body;
+		this.helper.model.findOne({ address: shop.address }).then((shop) => {
+			if (shop && shop.address == shop.address) {
 				next(
 					super.send422(
 						super.custom('address', this.list.UNIQUE_INVALID, [
 							{ value: 'Address' },
-							{ value: promoData.address }
+							{ value: shop.address }
 						])
 					)
 				);
 			} else {
-				const promo = new this.shop(promoData);
-				promo.save().then((promotion) => super.send201(response, this.parseFields(promotion))).catch((err) => {
-					next(super.send500(err));
-				});
+				this.helper.model.create(shop)
+					.then((shop) => super.send201(response, this.helper.parseFields(shop)))
+					.catch((err) => next(super.send500(err)));
 			}
 		});
 	};
-
-	private parseFields(shop: Shop) {
-		return {
-			id: shop._id,
-			address: shop.address,
-			lat: shop.lat,
-			lng: shop.lng,
-			label: shop.label,
-			draggable: shop.draggable,
-			createdAt: shop.createdAt,
-			updatedAt: shop.updatedAt,
-			deletedAt: shop.deletedAt,
-			deletedBy: shop.deletedBy
-		};
-	}
 }

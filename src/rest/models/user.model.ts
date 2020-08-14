@@ -1,31 +1,90 @@
+import { BaseModel } from "./base.model";
+import schema from "./schemas/users.schema";
+import * as crypto from 'crypto';
+import { hash, compare, hashSync } from 'bcrypt';
 import * as mongoose from 'mongoose';
-import * as  mongoosePaginate from 'mongoose-paginate';
-import User from '../interfaces/user.interface';
+import { User } from "../interfaces";
+import { getCurrentTime } from "../../utils/current-time-UTC";
 
-const userSchema = new mongoose.Schema({
-    id: mongoose.Schema.Types.ObjectId,
-    fullName: { type: String },
-    username: { type: String },
-    email: { type: String },
-    passwordHash: { type: String },
-    role: { type: String, default: "public" },
-    birthday: { type: String, default: null },
-    phone: { type: Number, default: null },
-    location: {
-        lat: { type: Number, default: null },
-        lng: { type: Number, default: null }
-    },
-    image: { type: String, default: null },
-    createdAt: { type: Number, default: Math.round(Date.now() / 1000) },
-    updatedAt: { type: Number, default: Math.round(Date.now() / 1000) },
-    deletedAt: {
-        type: Number, default: null
-    },
-    deletedBy: {
-        type: Number, default: null
+export class UserModel extends BaseModel {
+    public model: mongoose.PaginateModel<User & mongoose.Document>
+    constructor() {
+        super(schema)
+        this.model = schema
     }
-}, { versionKey: false });
 
-userSchema.plugin(mongoosePaginate);
+    public getListWithPagination(page: any, limit: any, sort: any) {
+        return this.model.paginate({}, { page: +page || 1, limit: +limit || 20, sort: this.pagination(sort) })
+    }
 
-export default mongoose.model<User & mongoose.Document>('users', userSchema);
+    public getUserById(id: User['id']) {
+        return this.model.findById(id)
+    }
+
+    public getUser(option: string | object) {
+        if (typeof option === 'string') {
+            return this.model.findById(option)
+        } else {
+            return this.model.findOne(option)
+        }
+
+    }
+
+    public createUser(user: User) {
+        return this.model.create(user);
+    }
+
+    public updateUser(id: User['id'], data: User) {
+        return super.update(id, data);
+    }
+
+    public parseModel(user: User) {
+        return {
+            id: user._id,
+            username: user.username,
+            fullName: user.fullName,
+            email: user.email,
+            role: user.role,
+            location: user.location,
+            birthday: user.birthday,
+            phone: user.phone,
+            image: user.image,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+        };
+    }
+
+    public updateUserItem(id, data: object) {
+        return this.model
+            .findByIdAndUpdate(id, { $set: Object.assign(data, { updatedAt: getCurrentTime() }) }, { new: true })
+    }
+
+    public removeUser(id: string) {
+        return this.model.findByIdAndDelete(id);
+    }
+
+    public paginateUser(condition: object, page: number, limit: number) {
+        return this.model.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition });
+    }
+
+
+    public isPassValid(user: User, password: string): Promise<boolean> {
+        return this.getUser(user).then(({ passwordHash }) => compare(password, passwordHash));
+    }
+
+    public createPasswordHash(password): string {
+        return hashSync(password, 10);
+    }
+
+    public checkKeyForUpdating(id, key: string, value) {
+        let obj = {};
+        obj[key] = value;
+        return this.getUser(obj).then((user) => {
+            if (user && user._id != id && user[key] == value) {
+                return false;
+            } else {
+                return true;
+            }
+        });
+    }
+}

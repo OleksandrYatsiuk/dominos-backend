@@ -1,20 +1,16 @@
-export default interface User {
-    id: string,
-    _id?: string,
+import { BaseModelInterface } from "../../interfaces/Base.interface";
+
+export interface User extends BaseModelInterface {
     fullName: string,
     username: string,
     email: string
-    passwordHash: string
-    role: string,
-    birthday?: string,
-    phone: number,
+    passwordHash?: string;
+    role?: string;
+    birthday?: string;
+    phone: string;
     location: {
-        lat: number,
+        lat: number;
         lng: number
-    },
-    image?: string | null,
-    createdAt: number,
-    updatedAt: number,
-    deletedAt: number,
-    deletedBy: number
+    }
+    image?: string | null;
 }

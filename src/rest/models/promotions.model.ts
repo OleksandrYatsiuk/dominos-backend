@@ -1,19 +1,28 @@
 import * as mongoose from 'mongoose';
-import { getCurrentTime } from '../../utils/current-time-UTC';
-import * as  mongoosePaginate from 'mongoose-paginate';
-import { Promotion, PromotionStatuses } from '../interfaces/promotions.interface';
+import { BaseModel } from './base.model';
+import { Pizza, Promotion } from '../interfaces';
+import schema from './schemas/promotion.schema';
 
-const promotionSchema = new mongoose.Schema({
-    id: mongoose.Schema.Types.ObjectId,
-    title: { type: String, unique: true },
-    content: { type: String, required: true },
-    image: { type: String, default: null },
-    status: { type: Number, default: PromotionStatuses.New },
-    startedAt: { type: Date, default: getCurrentTime() },
-    createdAt: { type: Number, default: getCurrentTime() },
-    updatedAt: { type: Number, default: getCurrentTime() },
-}, { versionKey: false });
+export class PromotionModel extends BaseModel {
+    public model: mongoose.PaginateModel<Promotion & mongoose.Document>
+    constructor() {
+        super(schema)
+        this.model = schema
+    }
+    public getListWithPagination(filter: object, page: any, limit: any, sort: any) {
+        return this.model.paginate(filter, { page: +page || 1, limit: +limit || 20, sort: this.pagination(sort) })
+    }
 
-promotionSchema.plugin(mongoosePaginate);
-
-export default mongoose.model<Promotion & mongoose.Document>('promotion', promotionSchema);
+    public parseFields(promotion: Promotion) {
+        return {
+            id: promotion._id,
+            title: promotion.title,
+            content: promotion.content,
+            image: promotion.image,
+            status: promotion.status,
+            startedAt: promotion.startedAt,
+            createdAt: promotion.createdAt,
+            updatedAt: promotion.updatedAt
+        };
+    }
+}

@@ -3,6 +3,7 @@ export default class ErrorList {
 	public BASIC_ERROR = 1000;
 
 	public EMAIL_INVALID = 1010;
+	public EMAIL_VERIFIED = 1005;
 	public REQUIRED_INVALID = 1060;
 
 	public DATE_INVALID = 1020;
@@ -26,13 +27,16 @@ export default class ErrorList {
 
 	public COMPARE_EQUAL = 1110;
 
-	public PHONE_NUMBER_INVALID = 1120
+	public PHONE_NUMBER_INVALID = 1120;
+
+	public PASSWORD_WRONG = 1130;
 
 	public ERRORS = {
 		[this.REQUIRED_INVALID]: '{attr} cannot be blank.',
 
 		[this.UNIQUE_INVALID]: '"{attr}" "{value}" has already been taken.',
-		[this.EMAIL_INVALID]: '"{attr}" is not a valid email address.',
+		[this.EMAIL_INVALID]: 'Email "{attr}" is not a valid email address.',
+		[this.EMAIL_VERIFIED]: 'Email "{attr}" is verified.',
 		[this.DATE_INVALID]: 'The format of "{attr}" is invalid.',
 		[this.DATE_TOO_SMALL]: '"{attr}" must be no less than {min}.',
 		[this.DATE_TOO_BIG]: '"{attr}" must be no greater than {max}.',
@@ -49,6 +53,7 @@ export default class ErrorList {
 		[this.STRING_TOO_LONG]: '"{attr}" should contain at most {max} character(s).',
 		[this.STRING_NOT_EQUAL]: '"{attr}" should contain {length} character(s).',
 		[this.COMPARE_EQUAL]: '"{attr}" must be equal to "{compareValueOrAttr}".',
-		[this.PHONE_NUMBER_INVALID]: '"{value}" is not a valid phone number.'
+		[this.PHONE_NUMBER_INVALID]: '"{value}" is not a valid phone number.',
+		[this.PASSWORD_WRONG]: 'Password should contain at least 8 symbols, one upper case, one lowercase and one number and one special symbol.'
 	};
 }

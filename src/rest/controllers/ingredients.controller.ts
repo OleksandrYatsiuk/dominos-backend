@@ -1,14 +1,12 @@
 import * as express from 'express';
 import Controller from './Controller';
-import ingredientsModel from '../models/ingredients.model';
+import { IngredientClass } from '../models/ingredients.model';
 import { pagination } from '../../validation/Pagination.validator';
-import { setSorting } from '../../utils/sortingHelper';
 import { Ingredient } from '../../interfaces/ingredients.interface';
 
 export class IngredientsController extends Controller {
 	public path = '/ingredients';
-	public router = express.Router();
-	private ingredient = ingredientsModel;
+	private helper = new IngredientClass()
 
 	constructor() {
 		super();
@@ -23,42 +21,31 @@ export class IngredientsController extends Controller {
 
 	private getList = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const { page, limit, sort } = request.query;
-		const condition = setSorting(sort);
-		this.ingredient
-			.paginate({}, { page: +page || 1, limit: +limit || 20, sort: condition })
-			.then(({ docs, total, limit, page, pages }) => {
-				super.send200Data(response, { total, limit, page, pages }, docs.map((item) => {
-					return {
-						id: item._id,
-						name: item.name
-					};
-				}))
-			});
+		this.helper.getListWithPagination(page, limit, sort).then(({ docs, total, limit, page, pages }) => {
+			super.send200Data(response, { total, limit, page, pages }, docs.map((item) => this.helper.parseModel(item)
+			))
+		});
 	};
 
 	private remove = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-		this.ingredient
-			.findByIdAndDelete(request.params.id)
-			.then((result) => {
-				result ? super.send204(response) : next(super.send404('Ingredient'));
-			})
-			.catch((err) => super.send404('Ingredient'));
+		this.helper.remove(request.params.id).then((result) => {
+			result ? super.send204(response) : next(super.send404('Ingredient'));
+		}).catch((err) => super.send404('Ingredient'));
 	};
+
 	private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const data: Ingredient = request.body;
-		this.ingredient.findOne({ name: data.name }).then((res) => {
-			if (!res) {
-				const item = new this.ingredient(data);
-				item.save().then((item) => {
-					super.send200(response, { id: item._id, name: item.name });
-				});
-			} else {
+		this.helper.exists({ name: data.name }).then(exist => {
+			if (exist) {
 				next(
 					super.send422(
 						super.custom('name', this.list.UNIQUE_INVALID, [{ value: 'Name' }, { value: data.name }])
 					)
 				);
+			} else {
+				this.helper.create(data).then(item => super.send201(response, this.helper.parseModel(item)))
 			}
-		});
-	};
+		})
+	}
+
 }

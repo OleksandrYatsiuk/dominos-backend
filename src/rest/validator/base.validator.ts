@@ -1,5 +1,5 @@
 import * as Joi from "@hapi/joi";
-import { SchemaMap } from "@hapi/joi";
+import { SchemaMap, valid, CustomHelpers } from "@hapi/joi";
 import { ErrorMessage } from "../../validation/ErrorMessage";
 import { BaseConfig } from "./validatorConfig/base.config";
 import { RolesMap } from "../interfaces/roles.interface";
@@ -27,6 +27,7 @@ export class BaseValidator extends ErrorMessage {
         { 'phone.invalid': this.PHONE_NUMBER_INVALID },
         { 'date.base': this.DATE_INVALID },
         { 'any.invalid': this.EXIST_INVALID },
+        { 'password.invalid': this.PASSWORD_WRONG }
     ];
 
     public schema(schema: SchemaMap) {
@@ -41,9 +42,15 @@ export class BaseValidator extends ErrorMessage {
         }
     }
 
-    public phoneEqual = (value: string, helpers) => {
-        if (new RegExp(this.conf.phoneRegexExp).test(value)) {
+    public phoneEqual = (value: string, helpers: CustomHelpers) => {
+        if (!new RegExp(this.conf.phoneRegexExp).test(value)) {
             return helpers.error("phone.invalid");
+        }
+    };
+
+    public passwordValid = (password: string, helpers: CustomHelpers) => {
+        if (!new RegExp(this.conf.passwordRegexExp).test(password)) {
+            return helpers.error("password.invalid");
         }
     };
 
@@ -61,8 +68,8 @@ export class BaseValidator extends ErrorMessage {
     }
     public checkRoles = (value: string, helpers?) => {
         if (!Object.values(RolesMap).find((role) => value === role)) {
-          return helpers.error("any.invalid");
+            return helpers.error("any.invalid");
         }
-      };
+    };
 
 }

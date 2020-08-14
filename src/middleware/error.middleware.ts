@@ -9,6 +9,7 @@ export default function errorMiddleware(
 	response: Response,
 	next: NextFunction
 ) {
+
 	const code = error.code || InternalServerError;
 	const message = error.message || 'Internal Server Error';
 	if (error['status'] === BadRequest) {

@@ -16,8 +16,10 @@ export class ConfigController extends Controller {
   }
 
   private config = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-    code200(response, {
-      errors: this.list.ERRORS, params: this.getConfig(), lists: {
+    this.send200(response, {
+      errors: this.list.ERRORS,
+      params: this.getConfig(),
+      lists: {
         'payment': PaymentTypeMap,
         'roles': RolesMap,
         'promotionStatuses': PromotionStatusesMap

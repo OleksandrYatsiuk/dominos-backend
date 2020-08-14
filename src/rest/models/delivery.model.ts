@@ -1,43 +1,34 @@
 import * as mongoose from 'mongoose';
-import { getCurrentTime } from '../../utils/current-time-UTC';
-import * as  mongoosePaginate from 'mongoose-paginate';
-import { Delivery } from '../interfaces/delivery.interface';
+import { BaseModel } from './base.model';
+import { Pizza, Delivery } from '../interfaces';
+import schema from './schemas/delivery.schema';
 
-
-
-const deliverySchema = new mongoose.Schema({
-    id: mongoose.Schema.Types.ObjectId,
-    firstName: { type: String, required: true },
-    phone: { type: Number, required: true },
-    email: { type: String, required: true },
-    userId: { type: String },
-    shopId: { type: String },
-    pizzaIds: { type: Array },
-    address: {
-        street: { type: String },
-        house: { type: Number },
-        flat: { type: Number },
-        entrance: { type: String },
-        code: { type: Number },
-        floor: { type: Number },
-    },
-    comment: { type: String },
-    date: {
-        date: { type: String },
-        time: { type: String },
-    },
-    payment: {
-        coupon: { type: String },
-        remainder: { type: String },
-        type: { type: Number},
-    },
-    amount: { type: Number, required: true },
-    createdAt: { type: Number, default: Math.round(Date.now() / 1000) },
-    updatedAt: { type: Number, default: Math.round(Date.now() / 1000) },
-    deletedAt: { type: Number, default: null },
-    deletedBy: { type: Number, default: null }
-}, { versionKey: false });
-
-deliverySchema.plugin(mongoosePaginate);
-
-export default mongoose.model<Delivery & mongoose.Document>('deliveries', deliverySchema);
+export class DeliveryModel extends BaseModel {
+    public model: mongoose.PaginateModel<Delivery & mongoose.Document>
+    constructor() {
+        super(schema)
+        this.model = schema        
+    }
+    public getListWithPagination(page: any, limit: any, sort: any) {
+		return this.model.paginate({}, { page: +page || 1, limit: +limit || 20, sort: this.pagination(sort) })
+    }
+    
+    public parseFields(delivery: Delivery) {
+		return {
+            id: delivery._id,
+            firstName: delivery.firstName,
+            phone: delivery.phone,
+            email: delivery.email,
+            shopId: delivery.shopId,
+            pizzaIds: delivery.pizzaIds,
+            address: delivery.address,
+            comment: delivery.comment,
+            date: delivery.date,
+            payment: delivery.payment,
+            image: delivery.image,
+            amount: delivery.amount,
+            createdAt: delivery.createdAt,
+            updatedAt: delivery.updatedAt,
+		};
+	}
+}

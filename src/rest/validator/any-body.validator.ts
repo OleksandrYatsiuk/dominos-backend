@@ -21,10 +21,10 @@ export default class AnyBodyValidator extends BaseValidator {
     .max(this.config.fullNameMaxLength)
 
   private email = this.val.string().required().label("Email")
-  private password = this.val.string().required().label("Password")
-  private confirmPassword = this.val.string().required().label("Confirm Password")
+  private password = this.val.required().custom(this.passwordValid).label("Password")
+  private confirmPassword = this.val.string().required().label('Confirm Password')
+
   private currentPassword = this.val.string().required().label("Current Password")
-  private newPassword = this.val.string().required().label("Current Password")
 
 
   public login = this.schema({
@@ -42,7 +42,7 @@ export default class AnyBodyValidator extends BaseValidator {
 
   public changePassword = this.schema({
     currentPassword: this.currentPassword,
-    newPassword: this.newPassword,
+    newPassword: this.password.label("New Password"),
     confirmPassword: this.confirmPassword
   });
 

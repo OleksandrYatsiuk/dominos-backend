@@ -10,16 +10,6 @@
       "type": "integer",
       "example": 1586365947,
       "readOnly": true
-    },
-    "deletedBy": {
-      "type": "string",
-      "example": "5e8b2adb9e2aeb0024bf7627",
-      "readOnly": true
-    },
-    "deletedAt": {
-      "type": "integer",
-      "example": 1586365947,
-      "readOnly": true
     }
   }
 }

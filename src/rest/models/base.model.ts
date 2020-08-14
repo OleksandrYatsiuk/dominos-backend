@@ -1,35 +1,27 @@
 import * as mongoose from 'mongoose';
-
+import { setSorting } from '../../utils/sortingHelper';
+import { BaseModelInterface } from '../../interfaces/Base.interface';
 import { getCurrentTime } from '../../utils/current-time-UTC';
 
-export interface Model extends mongoose.Document {
-    id: any;
-    createdAt: number;
-    updatedAt: number;
-    deletedAt: number | null;
-    deletedBy: number | null;
-}
 
+export abstract class BaseModel {
 
-export class BaseModel {
-    public model: Model;
-    public db = mongoose;
-    constructor() {
-
+    public mongoose = mongoose
+    public model: mongoose.PaginateModel<mongoose.Document>
+    constructor(model: mongoose.PaginateModel<mongoose.Document>) {
+        this.model = model
     }
 
-    public schema(model: mongoose.SchemaDefinition) {
-        return new mongoose.Schema(
-            Object.assign(
-                {
-                    id: mongoose.Schema.Types.ObjectId
-                }, model,
-                {
-                    createdAt: { type: Number, default: getCurrentTime() },
-                    updatedAt: { type: Number, default: getCurrentTime() },
-                    deletedAt: { type: Number, default: null },
-                    deletedBy: { type: String, default: null },
-                }
-            ), { versionKey: false })
+    public pagination(condition: any) {
+        return setSorting(condition);
+    }
+    public isExist(conditions: object): Promise<boolean> {
+        return this.model.exists(conditions)
+    }
+    public remove(id: BaseModelInterface['id']) {
+        return this.model.findByIdAndDelete(id);
+    }
+    public update(id:BaseModelInterface['id'], data: object) {
+        return this.model.findByIdAndUpdate(id, { $set: Object.assign(data, { updatedAt: getCurrentTime() }) }, { new: true })
     }
 }

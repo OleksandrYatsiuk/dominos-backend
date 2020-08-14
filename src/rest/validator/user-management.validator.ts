@@ -22,7 +22,7 @@ export class UserManagementValidator extends BaseValidator {
       .max(this.config.fullNameMaxLength),
     email: this.val.string().optional().empty().label("Email").email(),
     birthday: this.val.string().optional().empty().label("Birthday").isoDate(),
-    phone: this.val.number()
+    phone: this.val.string()
       .optional()
       .empty()
       .custom(this.phoneEqual)

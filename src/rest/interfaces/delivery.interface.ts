@@ -1,5 +1,6 @@
 export interface Delivery {
-	id: string;
+	readonly _id?: string;
+	readonly id: string;
 	firstName: string;
 	phone: number;
 	email: string;
@@ -26,8 +27,6 @@ export interface Delivery {
 	amount: number;
 	createdAt: number;
 	updatedAt: number;
-	deletedAt: number | null;
-	deletedBy: string | null;
 }
 export enum PaymentType {
 	Cash = 1,

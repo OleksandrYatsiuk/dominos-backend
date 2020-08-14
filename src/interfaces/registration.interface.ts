@@ -3,6 +3,7 @@ export interface Registration extends Password {
     username: string,
     email: string
 }
+
 export interface Password {
     password: string,
     confirmPassword: string

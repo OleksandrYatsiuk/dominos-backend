@@ -17,6 +17,4 @@ export interface Pizza {
 	image: string | null;
 	createdAt: number;
 	updatedAt: number;
-	deletedAt: number | null;
-	deletedBy: string | null;
 }

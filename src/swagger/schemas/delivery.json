@@ -15,7 +15,7 @@
     },
     "email": {
       "type": "string",
-      "example": "test@test.com"
+      "example": "test@gmail.com"
     },
     "userId": {
       "type": "string",
@@ -44,9 +44,10 @@
           "example": "250"
         },
         "type": {
-          "type": "string",
-          "example": "card",
-          "enum": ["card", "cash"]
+          "type": "integer",
+          "example": 1,
+          "enum": [1, 2],
+          "description":"1 - Cash, 2 - Card"
         }
       }
     },

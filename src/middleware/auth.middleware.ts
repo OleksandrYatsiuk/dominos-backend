@@ -1,16 +1,15 @@
 import { Request, NextFunction, Response } from 'express';
-import authToken from '../rest/AnyBody/authToken.model';
+import { AccessTokenModel } from '../rest/models/accessToken.model'
 import { code401 } from './base.response';
 import { getCurrentTime } from '../utils/current-time-UTC';
 
 export function checkAuth(request: Request, response: Response, next: NextFunction) {
+	const helper = new AccessTokenModel()
 	if (request.headers.authorization) {
 		const token = request.headers.authorization.split(' ')[1];
-		authToken.findOne({ token: token }).then((token) => {
+		helper.model.findOne({ token }).then((token) => {
 			try {
 				if (token.expiredAt > getCurrentTime()) {
-					console.log(token);
-
 					response.locals = token.userId;
 					next();
 				}

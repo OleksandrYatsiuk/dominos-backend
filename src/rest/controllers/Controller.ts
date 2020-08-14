@@ -7,6 +7,8 @@ import { Roles } from "../interfaces";
 import { checkAuth, checkRoles, validate, code200, code422, code201, code204, code200DataProvider, code401 } from '../../middleware/index';
 import { UnprocessableEntityException, UnprocessableEntity, NotFoundException, HttpException, InternalServerError } from "../../exceptions/index";
 import { Pagination } from "interfaces/pagination.interface";
+import checkFiles from '../../validation/Files.validator';
+
 
 export interface Err {
   field: string,
@@ -42,12 +44,16 @@ export default class Controller implements Controller {
     return checkAuth;
   }
 
+  public checkFiles() {
+    return checkFiles();
+  }
+
   public validate(schema, params?: string) {
     return validate(schema, params);
   }
 
-  public send200(response: express.Response, data) {
-    return code200(response, data);
+  public send200(response: express.Response, data?) {
+    return code200(response, data || null);
   }
 
   public send200Data(response: express.Response, pagination: Pagination, data?) {

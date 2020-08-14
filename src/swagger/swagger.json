@@ -69,6 +69,10 @@
     "/auth/confirm/{token}": {
       "$ref": "./path/any-body/confirm-email.json"
     },
+    "/config": {
+      "$ref": "./path/any-body/config.json"
+    },
+
     "/user/current": {
       "$ref": "./path/user/current-item.json"
     },
