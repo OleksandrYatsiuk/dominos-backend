@@ -1,6 +1,5 @@
 import * as express from 'express';
 import Controller from '../controllers/Controller';
-import { code200 } from '../../middleware/base.response';
 import { UserConfig, DeliveryConfig, PizzaConfig, PromotionConfig, BaseConfig } from '../validator/validatorConfig/index';
 import { PromotionStatusesMap, PaymentTypeMap, RolesMap } from '../interfaces';
 

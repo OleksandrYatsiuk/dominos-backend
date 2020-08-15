@@ -19,7 +19,7 @@ export class DeliveryController extends Controller {
 	private initializeRoutes() {
 		this.router.get(`${this.path}`, super.checkAuth(), super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
 			super.validate(this.customValidator.paginationSchema(), 'query'), this.getList);
-		this.router.post(`${this.path}`, super.checkAuth(), super.validate(this.customValidator.delivery), this.create);
+		this.router.post(`${this.path}`, super.validate(this.customValidator.delivery), this.create);
 		this.router.delete(`${this.path}/:id`, super.checkAuth(), super.checkRoles([this.roles.techadmin]), this.remove);
 	}
 
