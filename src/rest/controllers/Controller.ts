@@ -85,6 +85,6 @@ export default class Controller implements Controller {
   }
 
   public custom(field: string, code: number, params?: Array<Params>) {
-    return this.validator.addCustomError(field, code, params)
+    return [this.validator.addCustomError(field, code, params)]
   }
 }
