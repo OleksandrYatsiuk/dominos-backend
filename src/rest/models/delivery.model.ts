@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { BaseModel } from './base.model';
-import { Pizza, Delivery } from '../interfaces';
+import { Delivery } from '../interfaces';
 import schema from './schemas/delivery.schema';
 
 export class DeliveryModel extends BaseModel {

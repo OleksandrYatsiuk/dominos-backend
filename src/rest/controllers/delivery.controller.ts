@@ -4,6 +4,8 @@ import { DeliveryModel } from '../models/delivery.model';
 import { Delivery } from '../interfaces/delivery.interface';
 import { ShopModel } from '../models/shops.model';
 import DeliveryValidator from '../validator/delivery.validator';
+import { pagination } from '../../validation/Pagination.validator';
+
 
 export class DeliveryController extends Controller {
 	public path = '/delivery';
@@ -18,7 +20,7 @@ export class DeliveryController extends Controller {
 
 	private initializeRoutes() {
 		this.router.get(`${this.path}`, super.checkAuth(), super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
-			super.validate(this.customValidator.paginationSchema(), 'query'), this.getList);
+		super.validate(pagination, 'query'), this.getList);
 		this.router.post(`${this.path}`, super.validate(this.customValidator.delivery), this.create);
 		this.router.delete(`${this.path}/:id`, super.checkAuth(), super.checkRoles([this.roles.techadmin]), this.remove);
 	}
