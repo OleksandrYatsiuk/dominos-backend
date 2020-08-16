@@ -19,9 +19,9 @@ export class ConfigController extends Controller {
       errors: this.list.ERRORS,
       params: this.getConfig(),
       lists: {
-        'payment': PaymentTypeMap,
-        'roles': RolesMap,
-        'promotionStatuses': PromotionStatusesMap
+        'payment': this.convert(PaymentTypeMap),
+        'roles': this.convert(RolesMap),
+        'promotionStatuses': this.convert(PromotionStatusesMap)
       }
     });
   };
@@ -30,7 +30,10 @@ export class ConfigController extends Controller {
     return this.merge([new BaseConfig(), new UserConfig(), new DeliveryConfig(), new PizzaConfig(), new PromotionConfig()]);
   }
 
+private convert(statuses){
+  return Object.keys(statuses).map((item) => ({ label: statuses[item], value: +item }));
 
+}
   private merge(arrays: any) {
     let obj = {};
     arrays.forEach((config) => Object.assign(obj, config));
