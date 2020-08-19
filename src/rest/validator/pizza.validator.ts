@@ -23,6 +23,7 @@ export default class PizzaValidator extends BaseValidator {
 	}).required().label('Price')
 
 	private category = this.val.string().required().label('Category')
+	private image = this.val.string().optional().allow("").label('Image')
 
 
 	public pizza = Joi.object({
@@ -30,7 +31,8 @@ export default class PizzaValidator extends BaseValidator {
 		ingredients: this.ingredients,
 		weight: this.weight,
 		price: this.price,
-		category: this.category
+		category: this.category,
+		image: this.image
 	});
 }
 

@@ -21,10 +21,11 @@ export class UserManagementValidator extends BaseValidator {
       .min(this.config.fullNameMinLength)
       .max(this.config.fullNameMaxLength),
     email: this.val.string().optional().empty().label("Email").email(),
-    birthday: this.val.string().optional().empty().label("Birthday").isoDate(),
+    birthday: this.val.string().optional().empty().allow("").label("Birthday").isoDate(),
     phone: this.val.string()
       .optional()
       .empty()
+      .allow("")
       .custom(this.phoneEqual)
       .label("Phone"),
   });
