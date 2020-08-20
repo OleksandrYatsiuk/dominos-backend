@@ -11,7 +11,7 @@ export default class App {
 	public app: express.Application;
 	public port: number;
 	public version: string;
-	private host: string;
+	public host: string;
 	private hostDb: string;
 
 	constructor(controllers: Controller[], port: number, version: string) {

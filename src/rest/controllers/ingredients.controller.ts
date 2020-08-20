@@ -2,7 +2,7 @@ import * as express from 'express';
 import Controller from './Controller';
 import { IngredientClass } from '../models/ingredients.model';
 import { pagination } from '../../validation/Pagination.validator';
-import { Ingredient } from '../../interfaces/ingredients.interface';
+import { Ingredient } from '../interfaces/ingredients.interface';
 
 export class IngredientsController extends Controller {
 	public path = '/ingredients';

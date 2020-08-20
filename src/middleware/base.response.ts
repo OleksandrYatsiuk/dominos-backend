@@ -1,15 +1,8 @@
 import { Response } from 'express';
 import { Pagination } from '../interfaces/pagination.interface';
 import {
-	UnprocessableEntity,
-	Unauthorized,
-	Forbidden,
-	NotFound,
-	BadRequest,
-	InternalServerError,
-	OK,
-	Created,
-	NoContent
+	UnprocessableEntity, Unauthorized, Forbidden, NotFound, BadRequest,
+	InternalServerError, OK, Created, NoContent
 } from '../exceptions/ErrorCodesList';
 
 export function code422(response: Response, errors: any) {
@@ -21,7 +14,7 @@ export function code422(response: Response, errors: any) {
 	});
 }
 
-export function code200(response: Response, data?: any | null) {
+export function code200(response: Response, data?: object | string | null | any) {
 	response.status(OK).json({
 		code: OK,
 		status: 'Success',
@@ -48,15 +41,13 @@ export function code403(response: Response) {
 	});
 }
 
-export function code200DataProvider(response: Response, pagination: Pagination, data?: any | null) {
+export function code200DataProvider(response: Response, pagination: Pagination, data?: object[]) {
 	response.status(OK).json({
 		code: OK,
 		status: 'Success',
 		message: 'OK',
 		result: data,
-		_meta: {
-			pagination: pagination
-		}
+		_meta: { pagination }
 	});
 }
 export function code201(response: Response, data: any) {
@@ -68,7 +59,7 @@ export function code201(response: Response, data: any) {
 	});
 }
 
-export function code404(response: Response, data: any) {
+export function code404(response: Response, data: string) {
 	response.status(NotFound).json({
 		code: NotFound,
 		status: 'Error',
@@ -76,6 +67,7 @@ export function code404(response: Response, data: any) {
 		result: data
 	});
 }
+
 export function code400(response: Response) {
 	response.status(BadRequest).json({
 		code: BadRequest,
@@ -89,7 +81,7 @@ export function code204(response: Response) {
 	response.status(NoContent).json();
 }
 
-export function code500(response: Response, data?: any | null) {
+export function code500(response: Response, data?: any) {
 	response.status(InternalServerError).json({
 		code: InternalServerError,
 		status: 'Error',

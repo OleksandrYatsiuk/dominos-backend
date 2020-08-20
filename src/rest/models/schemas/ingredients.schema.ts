@@ -1,8 +1,7 @@
 import * as mongoose from 'mongoose';
 import * as mongoosePaginate from 'mongoose-paginate';
-import { Ingredient } from '../../../interfaces/ingredients.interface';
 import { getCurrentTime } from '../../../utils/current-time-UTC';
-
+import { Ingredient } from '../../interfaces/ingredients.interface';
 
 const ingredientsModel = new mongoose.Schema(
     {

@@ -1,6 +1,7 @@
 import { BaseModelInterface } from "../../interfaces/Base.interface";
+import { Model } from "./base.interface";
 
-export interface User extends BaseModelInterface {
+export interface User extends Model {
     fullName: string,
     username: string,
     email: string

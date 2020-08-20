@@ -29,15 +29,5 @@ services:
       DB_PORT: ${DB_PORT}
     volumes:
       - .:/home/db
-  swagger:
-    image: swaggerapi/swagger-ui
-    ports:
-      - ${SWAGGER_PORT}:8080
-    env_file: .env
-    environment: 
-      API_URL: "http://${API_URL}:${PORT}/rest"
-      SWAGGER_PORT: ${SWAGGER_PORT}
-    depends_on:
-      - web
 volumes:
   data-volume:

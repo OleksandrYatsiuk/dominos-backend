@@ -1,6 +1,6 @@
-export interface Pizza {
-	readonly id: string;
-	readonly _id: string;
+import { Model } from "./base.interface";
+
+export interface Pizza extends Model{
 	name: string;
 	ingredients:any;
 	weight: {
@@ -15,6 +15,4 @@ export interface Pizza {
 	};
 	category: string;
 	image: string | null;
-	createdAt: number;
-	updatedAt: number;
 }

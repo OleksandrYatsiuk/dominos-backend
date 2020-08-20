@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
-import { Ingredient } from '../../interfaces/ingredients.interface';
 import { BaseModel } from './base.model';
 import schema from './schemas/ingredients.schema';
+import { Ingredient } from '../interfaces/ingredients.interface';
 
 
 export class IngredientClass extends BaseModel {

@@ -1,6 +1,6 @@
-export interface Delivery {
-	readonly _id?: string;
-	readonly id: string;
+import { Model } from "./base.interface";
+
+export interface Delivery extends Model {
 	firstName: string;
 	phone: number;
 	email: string;
@@ -25,9 +25,8 @@ export interface Delivery {
 	};
 	image: string | null;
 	amount: number;
-	createdAt: number;
-	updatedAt: number;
 }
+
 export enum PaymentType {
 	Cash = 1,
 	Card = 2

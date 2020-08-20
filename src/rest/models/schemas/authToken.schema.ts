@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { getCurrentTime, setTokenLifeTime } from '../../../utils/current-time-UTC';
-import { TokenData } from 'rest/interfaces';
+import { TokenData } from '../../interfaces';
 
 const authTokenSchema = new mongoose.Schema(
 	{

@@ -2,9 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { code422 } from './base.response';
 import { BaseValidator } from '../rest/validator/base.validator';
 
-export function validate<T>(schema:any, config: string = 'body') {
+export function validate(schema: any, config = 'body') {
+	const validator = new BaseValidator();
+
 	return (req: Request, res: Response, next: NextFunction) => {
-		const validator = new BaseValidator();
 		let body = req.body;
 		config === 'body' ? (body = req.body) : (body = req.query);
 		const result = schema.validate(body, { abortEarly: false });
@@ -13,7 +14,7 @@ export function validate<T>(schema:any, config: string = 'body') {
 				const code = validator.findCode(element.type);
 				return validator.addCustomError(element.path[0], code, [
 					{ value: element.context.label || element.context.path[0] },
-					{value:element.context?.limit}
+					{ value: element.context?.limit }
 				]);
 			});
 			code422(res, errors);
