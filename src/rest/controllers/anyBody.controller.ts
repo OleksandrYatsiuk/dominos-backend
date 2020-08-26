@@ -6,7 +6,6 @@ import Controller from "./Controller";
 import AnyBodyValidator from "../validator/any-body.validator";
 import { AccessTokenModel } from "../models/accessToken.model";
 import { UserModel } from "../models/user.model";
-import { AuthTokenModel } from "../models/authToken.model";
 
 export class AnyBodyController extends Controller {
   public path = "/auth";

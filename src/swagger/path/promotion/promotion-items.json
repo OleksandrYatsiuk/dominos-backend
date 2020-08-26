@@ -165,9 +165,32 @@
         },
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "../../schemas/promotion.json"
+                "type": "object",
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "50% на каждую вторую пиццу"
+                  },
+                  "content": {
+                    "type": "string",
+                    "example": "some text"
+                  },
+                  "startedAt": {
+                    "type": "string",
+                    "example": "2020-08-26T04:49:01.000Z"
+                  }
+                },
+                "required": [
+                  "title",
+                  "content",
+                  "startedAt"
+                ]
               }
             }
           }

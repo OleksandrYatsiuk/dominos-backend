@@ -20,7 +20,7 @@ export default function errorMiddleware(
 		} else if (code === UnprocessableEntity) {
 			code422(response, error.result);
 		} else {
-			code500(response, error.result);
+			code500(response, error);
 		}
 	}
 }

@@ -4,10 +4,11 @@ import { BaseValidator } from '../rest/validator/base.validator';
 
 export function validate(schema: any, config = 'body') {
 	const validator = new BaseValidator();
-
 	return (req: Request, res: Response, next: NextFunction) => {
+
 		let body = req.body;
 		config === 'body' ? (body = req.body) : (body = req.query);
+
 		const result = schema.validate(body, { abortEarly: false });
 		if (result.error) {
 			const errors = result.error.details.map((element) => {
