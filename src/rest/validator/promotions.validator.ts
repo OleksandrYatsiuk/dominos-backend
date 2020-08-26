@@ -11,7 +11,7 @@ export default class PromotionValidator extends BaseValidator {
     private title = this.val.string().required().label('Title').max(this.config.titleMaxLength);
     private content = this.val.string().required().label('Content').max(this.config.descriptionMaxLength);
     private image = this.val.allow(null).label('Image')
-    private startedAt = this.val.date().required().label('Started Date');
+    private startedAt = this.val.string().required().label('Started Date');
     private status = this.val.number().label('Status')
         .valid(
             PromotionStatuses.New,
