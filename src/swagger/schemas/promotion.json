@@ -10,7 +10,7 @@
             "type": "string",
             "example": "50% на каждую вторую пиццу"
         },
-        "content": {
+        "description": {
             "type": "string",
             "example": "some text"
         },
@@ -25,7 +25,7 @@
     },
     "required": [
         "title",
-        "content",
+        "description",
         "image"
     ]
 }

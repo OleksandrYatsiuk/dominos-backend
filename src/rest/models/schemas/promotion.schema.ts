@@ -6,7 +6,7 @@ import { getCurrentTime } from '../../../utils/current-time-UTC';
 const promotionSchema = new mongoose.Schema({
     id: mongoose.Schema.Types.ObjectId,
     title: { type: String, unique: true },
-    content: { type: String, required: true },
+    description: { type: String, required: true },
     image: { type: String, default: null },
     status: { type: Number, default: PromotionStatuses.New },
     startedAt: { type: Date, default: getCurrentTime() },

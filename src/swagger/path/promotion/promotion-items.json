@@ -40,8 +40,8 @@
                     "enum": [
                         "title",
                         "-title",
-                        "content",
-                        "-content",
+                        "description",
+                        "-description",
                         "createdAt",
                         "-createdAt"
                     ]
@@ -177,7 +177,7 @@
                     "type": "string",
                     "example": "50% на каждую вторую пиццу"
                   },
-                  "content": {
+                  "description": {
                     "type": "string",
                     "example": "some text"
                   },
@@ -188,7 +188,7 @@
                 },
                 "required": [
                   "title",
-                  "content",
+                  "description",
                   "startedAt"
                 ]
               }

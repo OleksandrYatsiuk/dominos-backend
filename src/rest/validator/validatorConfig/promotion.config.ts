@@ -1,4 +1,4 @@
 export class PromotionConfig {
-  public titleMaxLength = 100;
-  public descriptionMaxLength = 4000;
+  public promoTitleMaxLength = 100;
+  public promoDescriptionMaxLength = 4000;
 }
