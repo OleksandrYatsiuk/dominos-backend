@@ -1,8 +1,8 @@
 import { Model } from "./base.interface";
 
-export interface Pizza extends Model{
+export interface Pizza extends Model {
 	name: string;
-	ingredients:any;
+	ingredients: any;
 	weight: {
 		small: number;
 		middle: number;

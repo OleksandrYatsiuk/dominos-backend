@@ -6,6 +6,7 @@ import { getCurrentTime } from '../utils/current-time-UTC';
 export function checkAuth(request: Request, response: Response, next: NextFunction) {
 	const helper = new AccessTokenModel()
 	if (request.headers.authorization) {
+
 		const token = request.headers.authorization.split(' ')[1];
 		helper.model.findOne({ token }).then((token) => {
 			try {

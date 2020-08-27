@@ -86,7 +86,7 @@ export class PromotionsController extends Controller {
                     })
                     .catch(e => next(this.send500(e)))
             } else {
-                promoData.image = null;
+                typeof promoData.image == 'string' ? promoData.image = null : false;
                 this.helper.model.findByIdAndUpdate(request.params.id, { $set: promoData }, { new: true })
                     .then(promotion => super.send200(response, this.helper.parseFields(promotion)))
                     .catch(err => next(super.send500(err)))
