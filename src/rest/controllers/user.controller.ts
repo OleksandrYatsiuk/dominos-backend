@@ -28,7 +28,7 @@ export class UserController extends Controller {
 		this.router.get(`${this.path}/current`, super.checkAuth(), this.current);
 		this.router.post(`${this.path}/logout`, super.checkAuth(), this.logout);
 		this.router.post(`${this.path}/change-password`, super.checkAuth(), super.validate(this.customValidator.changePassword), this.changePassword);
-		this.router.post(`${this.path}/upload`, super.checkAuth(), upload.single('file'), super.checkFiles(), this.upload);
+		this.router.post(`${this.path}/upload`, super.checkAuth(), this.multer.any(), this.upload);
 	}
 
 	private update = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -112,16 +112,13 @@ export class UserController extends Controller {
 
 	private upload = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const id = response.locals;
-		this.storage
-			.uploadFile(request.file)
-			.then((s3) => {
+		this.storage.uploadFile(request.files[0])
+			.then(s3 => {
 				this.helper
 					.updateUserItem(id, { image: s3['Location'] })
 					.then((user) => super.send200(response, user))
 					.catch((err) => next(super.send500(err)));
 			})
-			.catch((err) => {
-				next(super.send500(err))
-			});
+			.catch(e => next(this.send500(e)))
 	};
 }
