@@ -55,9 +55,9 @@ export class PromotionsController extends Controller {
                 } else {
 
                     if (request.files.length > 0) {
-                        this.storage.uploadFile(request.files[0])
-                            .then(s3 => {
-                                promoData.image = s3['Location']
+                        this.storage.upload(request.files[0])
+                            .then(file => {
+                                promoData.image = file.Location;
                                 this.helper.model.create(promoData)
                                     .then(promotion => super.send201(response, this.helper.parseFields(promotion)))
                                     .catch(err => next(super.send500(err)))
@@ -77,9 +77,9 @@ export class PromotionsController extends Controller {
         const promoData = Object.assign(request.body, { updatedAt: getCurrentTime() })
         this.helper.model.findById(request.params.id).then(promo => {
             if (request.files.length > 0) {
-                this.storage.uploadFile(request.files[0])
-                    .then(s3 => {
-                        promoData.image = s3['Location']
+                this.storage.upload(request.files[0])
+                    .then(file => {
+                        promoData.image = file.Location;
                         this.helper.model.findByIdAndUpdate(request.params.id, { $set: promoData }, { new: true })
                             .then(promo => super.send200(response, this.helper.parseFields(promo)))
                             .catch(err => next(super.send500(err)))

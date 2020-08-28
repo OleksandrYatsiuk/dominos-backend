@@ -72,7 +72,10 @@ export class UserController extends Controller {
 	private current = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		this.helper
 			.getUserById(response.locals)
-			.then((user) => super.send200(response, this.helper.parseModel(user)))
+			.then(user => {
+				// this.storage.removeFile(user.image);
+				return super.send200(response, this.helper.parseModel(user))
+			})
 			.catch((err) => next(super.send404('User')));
 	};
 
@@ -111,14 +114,11 @@ export class UserController extends Controller {
 	};
 
 	private upload = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-		const id = response.locals;
-		this.storage.uploadFile(request.files[0])
-			.then(s3 => {
-				this.helper
-					.updateUserItem(id, { image: s3['Location'] })
-					.then((user) => super.send200(response, user))
-					.catch((err) => next(super.send500(err)));
+		this.storage.upload(request.files[0])
+			.then(file => {
+				this.helper.updateUserItem(response.locals, { image: file.Location })
+					.then(user => super.send200(response, this.helper.parseModel(user)));
 			})
-			.catch(e => next(this.send500(e)))
+			.catch(err => (next(super.send500(err))))
 	};
 }

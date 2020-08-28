@@ -7,6 +7,7 @@ import { Pizza } from '../../rest/interfaces/pizza.interface';
 import PizzaValidator from '../validator/pizza.validator';
 import { IngredientClass } from '../models/ingredients.model';
 import { PizzaModel } from '../models/pizza.model';
+import AmazoneService from '../../services/AmazoneService';
 
 const upload = multer();
 
@@ -15,7 +16,7 @@ export class PizzaController extends Controller {
 	private helper = new PizzaModel();
 	private customValidator = new PizzaValidator();
 	private ingredientHelper = new IngredientClass();
-	private aws = new AWS_S3();
+	private aws = new AmazoneService();
 	constructor() {
 		super();
 		this.initializeRoutes();
@@ -69,9 +70,9 @@ export class PizzaController extends Controller {
 								return { id: el._id, name: el.name };
 							});
 							if (request.files.length > 0) {
-								this.aws.uploadFile(request.files[0])
-									.then(s3 => {
-										data.image = s3['Location']
+								this.aws.upload(request.files[0])
+									.then(file => {
+										data.image = file.Location
 										this.helper.model.create(data)
 											.then(promotion => super.send201(response, this.helper.parseFields(promotion)))
 											.catch(err => next(super.send500(err)))
@@ -114,9 +115,9 @@ export class PizzaController extends Controller {
 								return { id: el._id, name: el.name };
 							});
 							if (request.files.length > 0) {
-								this.aws.uploadFile(request.files[0])
-									.then(s3 => {
-										updatedData.image = s3['Location']
+								this.aws.upload(request.files[0])
+									.then(file => {
+										updatedData.image = file.Location
 										this.helper.model
 											.findByIdAndUpdate(request.params.id, { $set: updatedData }, { new: true })
 											.then((pizza) => super.send200(response, this.helper.parseFields(pizza)))
@@ -152,20 +153,18 @@ export class PizzaController extends Controller {
 
 	private upload = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const { id } = request.params;
-		AWS_S3.prototype
-			.uploadFile(request.file)
-			.then((s3) => {
-				this.helper.model
-					.findByIdAndUpdate(id, { image: s3['Location'] }, { new: true })
-					.then((pizza) => {
-						if (pizza) {
-							super.send200(response, this.helper.parseFields(pizza));
-						} else {
-							next(super.send404('Pizza'))
-						}
-					})
-					.catch((err) => next(super.send500(err)))
-			})
+		this.aws.upload(request.file).then(file => {
+			this.helper.model
+				.findByIdAndUpdate(id, { image: file.Location }, { new: true })
+				.then((pizza) => {
+					if (pizza) {
+						super.send200(response, this.helper.parseFields(pizza));
+					} else {
+						next(super.send404('Pizza'))
+					}
+				})
+				.catch((err) => next(super.send500(err)))
+		})
 			.catch((err) => next(super.send500(err)));
 	};
 }
