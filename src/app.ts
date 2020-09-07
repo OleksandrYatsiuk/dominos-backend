@@ -1,116 +1,129 @@
 import * as express from 'express';
+import * as http from "http";
 import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
 import * as mongoose from 'mongoose';
+import * as socketIo from 'socket.io';
+import { chat } from "./chat";
 import errorMiddleware from './middleware/error.middleware';
-import { code404 } from './middleware/base.response';
-import * as swaggerUi from 'swagger-ui-express';
 import Controller from './rest/controllers/Controller';
+import { code404 } from './middleware';
 const swaggerDocument = require('./swagger/swagger.json');
+import * as swaggerUi from 'swagger-ui-express';
 
-export default class App {
-	public app: express.Application;
-	public port: number;
-	public version: string;
-	public host: string;
-	private hostDb: string;
+export class App {
+    public static readonly PORT: number = 5000;
+    public static readonly VERSION: number = 1;
+    private version: string | number;
+    private app: express.Application;
+    private server: http.Server;
+    private io: SocketIO.Server;
+    private port: string | number;
+    public host: string;
+    private hostDb: string;
 
-	constructor(controllers: Controller[], port: number, version: string) {
-		this.app = express();
-		this.port = port || 5000;
-		this.version = version;
-		this.configureUrl();
-		this.connectToTheDatabase();
-		this.setBodyParser();
-		this.setCors();
-		this.initializeControllers(controllers);
-		this.initializeErrorHandling();
-	}
-	/**
-    * Headers (CORS)
-    */
-	public setCors() {
-		this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-			res.header('Access-Control-Allow-Origin', '*');
-			if (req.method == 'OPTIONS') {
-				res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-				res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, Origin');
-				return res.status(200).json({});
-			}
-			next();
-		});
-	}
+    constructor(controllers: Controller[], port?: string | number, version?: string | number) {
+        this.port = +port | App.PORT;
+        this.version = `/v` + version;
+        this.createApp();
+        this.config();
+        this.createServer();
+        this.sockets();
+        this.listen();
+        this.initializeControllers(controllers);
+        this.initializeErrorHandling();
+        this.connectToTheDatabase();
+    }
 
-	public setBodyParser() {
-		this.app.use(bodyParser.json());
-		this.app.use(bodyParser.urlencoded({ extended: false }));
-	}
+    private createApp(): void {
+        this.app = express();
+        this.app.use(cors());
+        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.urlencoded({ extended: false }));
+    }
 
-	public listen() {
-		this.app.listen(this.port, () => {
-			console.log(`App running on http://${process.env.API_URL}:${this.port || 5000}`);
-		});
-	}
+    private initializeErrorHandling() {
+        this.app.use(errorMiddleware);
+    }
 
-	private initializeErrorHandling() {
-		this.app.use(errorMiddleware);
-	}
-	private setSwagger() {
-		this.app.use(express.static('src/swagger'));
-		this.app.use('/rest', (req: express.Request, res: express.Response) => res.send(swaggerDocument));
-		var options = {
-			swaggerOptions: {
-				urls: [{
-					url: `${this.host}rest`,
-					name: 'Local'
-				}]
-			}
-		};
-		this.app.use('/', (req, res, next) => {
-			swaggerDocument.host = req.get('host');
-			req['swaggerDoc'] = swaggerDocument;
-			next();
-		},
-			swaggerUi.serve,
-			swaggerUi.setup(null, options)
-		);
+    private createServer(): void {
+        this.server = http.createServer(this.app);
+    }
 
-	}
-	private initializeControllers(controllers: Controller[]) {
-		controllers.forEach((controller) => {
-			this.app.use(`/api${this.version}`, controller.router)
+    private config(): void {
+        this.configureUrl();
+    }
 
-		})
-		this.setSwagger();
-		this.app.use((request: express.Request, response: express.Response, next: express.NextFunction) => {
-			next(code404(response, 'Page not found!'));
-		});
-	}
+    private sockets(): void {
+        this.io = socketIo.listen(this.server, { origins: '*:*' });
+    }
 
-	private connectToTheDatabase() {
+    public listen(): void {
+        chat(this.io);
+        this.server.listen(this.port, () => {
+            console.log("Running server on port " + this.host);
+        });
+    }
 
-		mongoose
-			.connect(this.hostDb, {
-				useNewUrlParser: true,
-				useCreateIndex: true,
-				useUnifiedTopology: true,
-				useFindAndModify: false
-			})
-			.then(() => console.info('MongoDB connected successfully!'))
-			.catch((error) => console.error(`MongoDB error:\n ${error}`));
-	}
+    private configureUrl() {
+        switch (process.env.PROD) {
+            case 'false':
+                this.host = `http://${process.env.API_URL}:${this.port}/`
+                this.hostDb = `mongodb://mongo:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+                break;
+            default:
+                this.host = `${process.env.HEROKU_URL}`;
+                this.hostDb = `mongodb+srv://${process.env.MONGO_USER}:${process.env
+                    .MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/${process.env.DB_NAME}`;
+                break;
+        }
+    }
 
-	private configureUrl() {
+    private initializeControllers(controllers: Controller[]) {
+        controllers.forEach((controller) => {
+            this.app.use(`/api${this.version}`, controller.router)
 
-		switch (process.env.PROD) {
-			case 'false':
-				this.host = `http://${process.env.API_URL}:${this.port}/`
-				this.hostDb = `mongodb://mongo:${process.env.DB_PORT}/${process.env.DB_NAME}`;
-				break;
-			default:
-				this.host = `${process.env.HEROKU_URL}`;
-				this.hostDb = `mongodb+srv://${process.env.MONGO_USER}:${process.env
-					.MONGO_PASSWORD}@cluster0-9ab1f.mongodb.net/${process.env.DB_NAME}`;
-				break;
-		}
-	}
+        })
+        this.setSwagger();
+        this.app.use((request: express.Request, response: express.Response, next: express.NextFunction) => {
+            next(code404(response, 'Page not found!'));
+        });
+
+    }
+
+    private setSwagger() {
+        this.app.use(express.static('src/swagger'));
+        this.app.use('/rest', (req: express.Request, res: express.Response) => res.send(swaggerDocument));
+        var options = {
+            swaggerOptions: {
+                urls: [{
+                    url: `${this.host}rest`,
+                    name: 'Local'
+                }]
+            }
+        };
+        this.app.use('/', (req, res, next) => {
+            swaggerDocument.host = req.get('host');
+            req['swaggerDoc'] = swaggerDocument;
+            next();
+        },
+            swaggerUi.serve,
+            swaggerUi.setup(null, options)
+        );
+
+    }
+
+    private connectToTheDatabase() {
+
+        mongoose
+            .connect(this.hostDb, {
+                useNewUrlParser: true,
+                useCreateIndex: true,
+                useUnifiedTopology: true,
+                useFindAndModify: false
+            })
+            .then(() => console.info('MongoDB connected successfully!'))
+            .catch((error) => console.error(`MongoDB error:\n ${error}`));
+    }
+
 }
