@@ -71,7 +71,9 @@
   "delete": {
     "summary": "Remove Promotion",
     "description": "Allowed roles: Administrator",
-    "tags": ["Promotion"],
+    "tags": [
+      "Promotion"
+    ],
     "operationId": "removePromotion",
     "parameters": [
       {
@@ -127,10 +129,12 @@
       }
     }
   },
-  "put": {
+  "patch": {
     "summary": "Edit Promotion",
     "description": "Allowed roles: Administrator, Project Manager",
-    "tags": ["Promotion"],
+    "tags": [
+      "Promotion"
+    ],
     "parameters": [
       {
         "in": "path",
@@ -189,107 +193,32 @@
     },
     "requestBody": {
       "content": {
-        "application/json": {
-          "schema": {
-            "$ref": "../../schemas/promotion.json"
-          }
-        }
-      }
-    }
-  },
-  "post": {
-    "summary": "Upload image for promotion",
-    "description": "Allowed roles: Administrator, Project Manager",
-    "tags": [
-      "Promotion"
-    ],
-    "operationId": "uploadPromotionImage",
-    "parameters": [
-      {
-        "in": "path",
-        "name": "id",
-        "description": "Promotion id",
-        "required": true,
-        "schema": {
-          "$ref": "../../schemas/id.json"
-        }
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "OK",
-        "content": {
-          "application/json": {
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "../../schemas/status200.json"
-                },
-                {
-                  "properties": {
-                    "result": {
-                      "allOf": [
-                        {
-                          "$ref": "../../schemas/promotion.json"
-                        },
-                        {
-                          "$ref": "../../schemas/time.json"
-                        }
-                      ]
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      },
-      "401": {
-        "description": "Unprocessable Entity",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "../../schemas/status401.json"
-            }
-          }
-        }
-      },
-      "403": {
-        "description": "403 Forbidden",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "../../schemas/status403.json"
-            }
-          }
-        }
-      },
-      "422": {
-        "description": "Unprocessable Entity",
-        "content": {
-          "application/json": {
-            "schema": {
-              "allOf": [
-                {
-                  "$ref": "../../schemas/status422.json"
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "requestBody": {
-      "content": {
         "multipart/form-data": {
           "schema": {
             "type": "object",
             "properties": {
-              "file": {
+              "image": {
                 "type": "string",
                 "format": "binary"
+              },
+              "title": {
+                "type": "string",
+                "example": "50% на каждую вторую пиццу"
+              },
+              "content": {
+                "type": "string",
+                "example": "some text"
+              },
+              "startedAt": {
+                "type": "string",
+                "example": "2020-08-26T04:49:01.000Z"
               }
-            }
+            },
+            "required": [
+              "title",
+              "content",
+              "startedAt"
+            ]
           }
         }
       }

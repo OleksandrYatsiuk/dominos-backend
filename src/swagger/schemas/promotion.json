@@ -10,18 +10,22 @@
             "type": "string",
             "example": "50% на каждую вторую пиццу"
         },
-        "content": {
+        "description": {
             "type": "string",
             "example": "some text"
         },
         "image": {
             "type": "string",
             "example": "https://example.com/image.png"
+        },
+        "startedAt":{
+            "type": "string",
+            "example": "Wed Aug 26 2020 07:49:01 GMT+0300 (Eastern European Summer Time)"
         }
     },
     "required": [
         "title",
-        "content",
+        "description",
         "image"
     ]
 }

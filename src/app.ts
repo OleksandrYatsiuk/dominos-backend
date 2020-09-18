@@ -41,8 +41,8 @@ export default class App {
 	}
 
 	public setBodyParser() {
-		this.app.use(bodyParser.urlencoded({ extended: false }));
 		this.app.use(bodyParser.json());
+		this.app.use(bodyParser.urlencoded({ extended: false }));
 	}
 
 	public listen() {
@@ -54,11 +54,7 @@ export default class App {
 	private initializeErrorHandling() {
 		this.app.use(errorMiddleware);
 	}
-
-	private initializeControllers(controllers: Controller[]) {
-		controllers.forEach((controller) => {
-			this.app.use(`/api${this.version}`, controller.router);
-		})
+	private setSwagger() {
 		this.app.use(express.static('src/swagger'));
 		this.app.use('/rest', (req: express.Request, res: express.Response) => res.send(swaggerDocument));
 		var options = {
@@ -77,6 +73,14 @@ export default class App {
 			swaggerUi.serve,
 			swaggerUi.setup(null, options)
 		);
+
+	}
+	private initializeControllers(controllers: Controller[]) {
+		controllers.forEach((controller) => {
+			this.app.use(`/api${this.version}`, controller.router)
+
+		})
+		this.setSwagger();
 		this.app.use((request: express.Request, response: express.Response, next: express.NextFunction) => {
 			next(code404(response, 'Page not found!'));
 		});

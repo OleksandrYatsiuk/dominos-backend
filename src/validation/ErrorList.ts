@@ -10,6 +10,9 @@ export default class ErrorList {
 	public DATE_TOO_SMALL = 1021;
 	public DATE_TOO_BIG = 1022;
 
+	public IMAGE_INVALID = 1040;
+
+
 	public UNIQUE_INVALID = 1150;
 	public CREDENTIALS_INVALID = 1200;
 
@@ -54,6 +57,7 @@ export default class ErrorList {
 		[this.STRING_NOT_EQUAL]: '"{attr}" should contain {length} character(s).',
 		[this.COMPARE_EQUAL]: '"{attr}" must be equal to "{compareValueOrAttr}".',
 		[this.PHONE_NUMBER_INVALID]: '"{value}" is not a valid phone number.',
-		[this.PASSWORD_WRONG]: 'Password should contain at least 8 symbols, one upper case, one lowercase and one number and one special symbol.'
+		[this.PASSWORD_WRONG]: 'Password should contain at least 8 symbols, one upper case, one lowercase and one number and one special symbol.',
+		[this.IMAGE_INVALID]: 'The file "{file}" is not an image.'
 	};
 }

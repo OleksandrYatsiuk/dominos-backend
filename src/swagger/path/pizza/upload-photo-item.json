@@ -6,6 +6,7 @@
       "Pizza"
     ],
     "operationId": "uploadPizzaImage",
+    "deprecated":true,
     "parameters": [
       {
         "in": "path",

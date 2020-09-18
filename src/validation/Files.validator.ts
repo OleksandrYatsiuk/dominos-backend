@@ -4,13 +4,10 @@ const maxFileSize = 10 * 1024 * 1024;
 
 export default function checkFiles() {
     return (request: Request, response: Response, next: NextFunction) => {
-        if (!request.file) {
-            code422(response, {
-                field: "file",
-                message: `File can not be blank.`
-            })
+        if (request.files.length === 0) {
+            next()
         } else {
-            const { mimetype, size, originalname } = request.file;
+            const { mimetype, size, originalname } = request.files[0];
             if (!mimetype.includes('image')) {
                 code422(response, {
                     field: "file",

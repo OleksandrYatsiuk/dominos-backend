@@ -1,11 +1,12 @@
-import { Router, NextFunction } from "express";
+import { Router } from "express";
+import * as multer from 'multer';
 import { ErrorMessage, Params } from "../../validation/ErrorMessage";
 import ErrorList from "../../validation/ErrorList";
 import { BaseValidator } from '../validator/base.validator'
 import * as express from "express";
 import { Roles } from "../interfaces";
-import { checkAuth, checkRoles, validate, code200, code422, code201, code204, code200DataProvider, code401 } from '../../middleware/index';
-import { UnprocessableEntityException, UnprocessableEntity, NotFoundException, HttpException, InternalServerError } from "../../exceptions/index";
+import { checkAuth, checkRoles, validate, code200, code201, code204, code200DataProvider, code401 } from '../../middleware/index';
+import { UnprocessableEntityException, NotFoundException, HttpException, InternalServerError } from "../../exceptions/index";
 import { Pagination } from "interfaces/pagination.interface";
 import checkFiles from '../../validation/Files.validator';
 
@@ -26,6 +27,7 @@ export default interface Controller {
   roles?: typeof Roles
 }
 export default class Controller implements Controller {
+  public multer = multer();
   constructor() {
     this.list = new ErrorList();
     this.path = "/";
@@ -33,13 +35,12 @@ export default class Controller implements Controller {
     this.validator = new ErrorMessage();
     this.baseValidator = new BaseValidator();
     this.roles = Roles;
-
+    this.multer = multer()
   }
 
   public checkRoles(roles: Roles[]) {
     return checkRoles(roles);
   }
-
   public checkAuth() {
     return checkAuth;
   }

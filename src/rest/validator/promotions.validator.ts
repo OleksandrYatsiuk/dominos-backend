@@ -1,4 +1,4 @@
-import { PromotionStatuses, PromotionStatusesMap } from "../interfaces/promotions.interface";
+import { PromotionStatuses } from "../interfaces/promotions.interface";
 import { PromotionConfig } from "./validatorConfig/index";
 import { BaseValidator } from "./base.validator";
 
@@ -8,10 +8,10 @@ export default class PromotionValidator extends BaseValidator {
         super()
     }
 
-    private title = this.val.string().required().label('Title').max(this.config.titleMaxLength);
-    private content = this.val.string().required().label('Content').max(this.config.descriptionMaxLength);
-    private image = this.val.string().optional().allow("").label('Image');
-    private startedAt = this.val.date().required().label('Started Date');
+    private title = this.val.string().required().label('Title').max(this.config.promoTitleMaxLength);
+    private description = this.val.string().required().label('Content').max(this.config.promoDescriptionMaxLength);
+    private image = this.val.allow(null).label('Image')
+    private startedAt = this.val.string().required().label('Started Date');
     private status = this.val.number().label('Status')
         .valid(
             PromotionStatuses.New,
@@ -21,7 +21,7 @@ export default class PromotionValidator extends BaseValidator {
 
     public promotion = this.schema({
         title: this.title,
-        content: this.content,
+        description: this.description,
         image: this.image,
         startedAt: this.startedAt,
         status: this.status

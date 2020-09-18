@@ -7,6 +7,7 @@ import { Pizza } from '../../rest/interfaces/pizza.interface';
 import PizzaValidator from '../validator/pizza.validator';
 import { IngredientClass } from '../models/ingredients.model';
 import { PizzaModel } from '../models/pizza.model';
+import AmazoneService from '../../services/AmazoneService';
 
 const upload = multer();
 
@@ -15,6 +16,7 @@ export class PizzaController extends Controller {
 	private helper = new PizzaModel();
 	private customValidator = new PizzaValidator();
 	private ingredientHelper = new IngredientClass();
+	private aws = new AmazoneService();
 	constructor() {
 		super();
 		this.initializeRoutes();
@@ -23,11 +25,11 @@ export class PizzaController extends Controller {
 	private initializeRoutes() {
 		this.router.get(`${this.path}`, super.validate(this.customValidator.paginationSchema(), 'query'), this.getList);
 		this.router.post(`${this.path}`, this.checkAuth(), super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
-			super.validate(this.customValidator.pizza), this.create);
+			this.multer.any(), super.validate(this.customValidator.pizza), this.create);
 		this.router.get(`${this.path}/:id`, this.overview);
 		this.router.delete(`${this.path}/:id`, super.checkAuth(), super.checkRoles([this.roles.techadmin]), this.remove);
-		this.router.put(`${this.path}/:id`, super.checkAuth(), super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
-			super.validate(this.customValidator.pizza), this.update);
+		this.router.patch(`${this.path}/:id`, super.checkAuth(), super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
+			this.multer.any(), super.validate(this.customValidator.pizza), this.update);
 		this.router.post(`${this.path}/:id/upload`, super.checkAuth(), super.checkRoles([this.roles.techadmin, this.roles.projectManager]),
 			upload.single('file'), super.checkFiles(), this.upload);
 	}
@@ -46,30 +48,42 @@ export class PizzaController extends Controller {
 	};
 
 	private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-		const pizzaData: Pizza = request.body;
-		this.helper.model.findOne({ name: pizzaData.name }).then((pizza) => {
-			if (pizza && pizza.name == pizzaData.name) {
+		const data: Pizza = request.body;
+		this.helper.model.exists({ name: data.name }).then(exist => {
+			if (exist) {
 				next(
 					super.send422(
-						this.custom('name', this.list.UNIQUE_INVALID, [{ value: 'Name' }, { value: pizzaData.name }])
+						this.custom('name', this.list.UNIQUE_INVALID, [{ value: 'Name' }, { value: data.name }])
 					)
 				);
 			} else {
-				this.ingredientHelper.findItemsById(pizzaData.ingredients)
+				this.ingredientHelper.findItemsById(data.ingredients)
 					.then((res) => {
-						if (res.length != pizzaData.ingredients.length) {
+						if (res.length != data.ingredients.length) {
 							next(
 								super.send422(
 									this.custom('ingredient', this.list.EXIST_INVALID, [{ value: 'Ingredient' }])
 								)
 							)
 						} else {
-							pizzaData.ingredients = res.map((el) => {
+							data.ingredients = res.map((el) => {
 								return { id: el._id, name: el.name };
 							});
-							this.helper.model.create(pizzaData)
-								.then(pizza => super.send201(response, this.helper.parseFields(pizza)))
-								.catch(err => super.send500(err));
+							if (request.files.length > 0) {
+								this.aws.upload(request.files[0])
+									.then(file => {
+										data.image = file.Location
+										this.helper.model.create(data)
+											.then(promotion => super.send201(response, this.helper.parseFields(promotion)))
+											.catch(err => next(super.send500(err)))
+									})
+									.catch(e => next(this.send500(e)))
+							} else {
+								data.image = null;
+								this.helper.model.create(data)
+									.then(pizza => super.send201(response, this.helper.parseFields(pizza)))
+									.catch(err => super.send500(err));
+							}
 						}
 					})
 					.catch((err) => {
@@ -84,12 +98,12 @@ export class PizzaController extends Controller {
 	};
 
 	private update = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-		const updatedData = request.body;
+		const data: Pizza = request.body;
 		this.helper.model.findById(request.params.id)
 			.then((res) => {
-				this.ingredientHelper.findItemsById(updatedData.ingredients)
+				this.ingredientHelper.findItemsById(data.ingredients)
 					.then((res) => {
-						if (res.length != updatedData.ingredients.length) {
+						if (res.length != data.ingredients.length) {
 							next(
 								super.send422(
 									super.custom('ingredient', this.list.EXIST_INVALID, [{ value: 'Ingredient Id' }])
@@ -100,10 +114,23 @@ export class PizzaController extends Controller {
 							updatedData.ingredients = res.map((el) => {
 								return { id: el._id, name: el.name };
 							});
-							this.helper.model
-								.findByIdAndUpdate(request.params.id, { $set: updatedData }, { new: true })
-								.then((pizza) => super.send200(response, this.helper.parseFields(pizza)))
-								.catch((err) => super.send404('Pizza'));
+							if (request.files.length > 0) {
+								this.aws.upload(request.files[0])
+									.then(file => {
+										updatedData.image = file.Location
+										this.helper.model
+											.findByIdAndUpdate(request.params.id, { $set: updatedData }, { new: true })
+											.then((pizza) => super.send200(response, this.helper.parseFields(pizza)))
+											.catch((err) => super.send404('Pizza'));
+									})
+									.catch(e => next(this.send500(e)))
+							} else {
+								typeof data.image == 'string' ? data.image = null : false;
+								this.helper.model
+									.findByIdAndUpdate(request.params.id, { $set: updatedData }, { new: true })
+									.then((pizza) => super.send200(response, this.helper.parseFields(pizza)))
+									.catch((err) => super.send404('Pizza'));
+							}
 						}
 					})
 					.catch((e) => {
@@ -126,20 +153,18 @@ export class PizzaController extends Controller {
 
 	private upload = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		const { id } = request.params;
-		AWS_S3.prototype
-			.uploadFile(request.file)
-			.then((s3) => {
-				this.helper.model
-					.findByIdAndUpdate(id, { image: s3['Location'] }, { new: true })
-					.then((pizza) => {
-						if (pizza) {
-							super.send200(response, this.helper.parseFields(pizza));
-						} else {
-							next(super.send404('Pizza'))
-						}
-					})
-					.catch((err) => next(super.send500(err)))
-			})
+		this.aws.upload(request.file).then(file => {
+			this.helper.model
+				.findByIdAndUpdate(id, { image: file.Location }, { new: true })
+				.then((pizza) => {
+					if (pizza) {
+						super.send200(response, this.helper.parseFields(pizza));
+					} else {
+						next(super.send404('Pizza'))
+					}
+				})
+				.catch((err) => next(super.send500(err)))
+		})
 			.catch((err) => next(super.send500(err)));
 	};
 }

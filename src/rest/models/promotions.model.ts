@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import { BaseModel } from './base.model';
-import { Pizza, Promotion } from '../interfaces';
+import { Promotion } from '../interfaces';
 import schema from './schemas/promotion.schema';
 
 export class PromotionModel extends BaseModel {
@@ -17,7 +17,7 @@ export class PromotionModel extends BaseModel {
         return {
             id: promotion._id,
             title: promotion.title,
-            content: promotion.content,
+            description: promotion.description,
             image: promotion.image,
             status: promotion.status,
             startedAt: promotion.startedAt,
