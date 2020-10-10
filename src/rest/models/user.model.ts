@@ -1,7 +1,7 @@
 import { BaseModel } from "./base.model";
 import schema from "./schemas/users.schema";
 import * as crypto from 'crypto';
-import { hash, compare, hashSync } from 'bcrypt';
+import { compare, hashSync } from 'bcryptjs';
 import * as mongoose from 'mongoose';
 import { User } from "../interfaces";
 import { getCurrentTime } from "../../utils/current-time-UTC";
