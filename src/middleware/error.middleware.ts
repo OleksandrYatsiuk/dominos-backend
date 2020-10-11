@@ -9,7 +9,7 @@ export default function errorMiddleware(
 	response: Response,
 	next: NextFunction
 ) {
-
+console.log(error)
 	const code = error.code || InternalServerError;
 	const message = error.message || 'Internal Server Error';
 	if (error['status'] === BadRequest) {
@@ -20,7 +20,7 @@ export default function errorMiddleware(
 		} else if (code === UnprocessableEntity) {
 			code422(response, error.result);
 		} else {
-			code500(response, error);
+			code500(response, error.message);
 		}
 	}
 }

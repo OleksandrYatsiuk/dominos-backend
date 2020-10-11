@@ -8,3 +8,4 @@ export * from './promotions.controller';
 export * from './shops.controller';
 export * from './user.controller';
 export * from './userManagement.controller';
+export * from './payments.controller'

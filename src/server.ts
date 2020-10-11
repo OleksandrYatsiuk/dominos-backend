@@ -9,7 +9,8 @@ import {
 	ShopsController,
 	IngredientsController,
 	PromotionsController,
-	ConfigController
+	ConfigController,
+	PaymentsController
 } from './rest/controllers/index';
 import Controller from './rest/controllers/Controller';
 
@@ -24,7 +25,8 @@ const app = new App(
 		new ShopsController(),
 		new IngredientsController(),
 		new PromotionsController(),
-		new ConfigController()
+		new ConfigController(),
+		new PaymentsController()
 	],
 	+process.env.PORT,
 	'/v1'

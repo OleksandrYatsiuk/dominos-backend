@@ -26,8 +26,8 @@ export default class App {
 		this.initializeErrorHandling();
 	}
 	/**
-    * Headers (CORS)
-    */
+	* Headers (CORS)
+	*/
 	public setCors() {
 		this.app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
 			res.header('Access-Control-Allow-Origin', '*');
