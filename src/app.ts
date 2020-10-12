@@ -4,7 +4,7 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as mongoose from 'mongoose';
 import * as socketIo from 'socket.io';
-import { chat } from "./chat";
+import { ChatSocket } from "./rest/controllers/chat.controller";
 import errorMiddleware from './middleware/error.middleware';
 import Controller from './rest/controllers/Controller';
 import { code404 } from './middleware';
@@ -59,7 +59,7 @@ export class App {
     }
 
     public listen(): void {
-        chat(this.io);
+        new ChatSocket(this.io)
         this.server.listen(this.port, () => {
             console.log("Running server on port " + this.host);
         });

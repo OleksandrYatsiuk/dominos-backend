@@ -5,6 +5,7 @@ import {
     PizzaController, DeliveryController, ShopsController,
     IngredientsController, PromotionsController, ConfigController
 } from './rest/controllers';
+import { RoomsController } from './rest/controllers/rooms.controller';
 
 let app = new App([
     new Controller(),
@@ -16,6 +17,7 @@ let app = new App([
     new ShopsController(),
     new IngredientsController(),
     new PromotionsController(),
-    new ConfigController()
+    new ConfigController(),
+    new RoomsController()
 ], process.env.PORT, 1)
 export { app };

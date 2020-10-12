@@ -7,3 +7,4 @@ export * from './pizza.model';
 export * from './promotions.model';
 export * from './shops.model';
 export * from './user.model';
+export * from './chat.model';

@@ -6,3 +6,4 @@ export * from './pizza.schema';
 export * from './promotion.schema';
 export * from './shop.schema';
 export * from './users.schema';
+export * from './chat.schema';
