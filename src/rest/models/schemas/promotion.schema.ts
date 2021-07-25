@@ -10,6 +10,7 @@ const promotionSchema = new mongoose.Schema({
     image: { type: String, default: null },
     status: { type: Number, default: PromotionStatuses.New },
     startedAt: { type: Date, default: getCurrentTime() },
+    endedAt: { type: Date, default: null },
     createdAt: { type: Number, default: getCurrentTime() },
     updatedAt: { type: Number, default: getCurrentTime() },
 }, { versionKey: false });

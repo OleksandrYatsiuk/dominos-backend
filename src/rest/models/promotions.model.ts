@@ -12,17 +12,4 @@ export class PromotionModel extends BaseModel {
     public getListWithPagination(filter: object, page: any, limit: any, sort: any) {
         return this.model.paginate(filter, { page: +page || 1, limit: +limit || 20, sort: this.pagination(sort) })
     }
-
-    public parseFields(promotion: Promotion) {
-        return {
-            id: promotion._id,
-            title: promotion.title,
-            description: promotion.description,
-            image: promotion.image,
-            status: promotion.status,
-            startedAt: promotion.startedAt,
-            createdAt: promotion.createdAt,
-            updatedAt: promotion.updatedAt
-        };
-    }
 }

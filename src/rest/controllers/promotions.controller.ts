@@ -1,7 +1,7 @@
 import Controller from './Controller';
 import * as express from 'express';
 import { PromotionModel } from '../models/promotions.model';
-import { Promotion } from '../interfaces/promotions.interface';
+import { ModelPromotion, Promotion } from '../interfaces/promotions.interface';
 
 import AmazoneService from '../../services/AmazoneService';
 import { getCurrentTime } from '../../utils/current-time-UTC';
@@ -38,7 +38,7 @@ export class PromotionsController extends Controller {
 
         this.helper.getListWithPagination(filter, page, limit, sort)
             .then(({ docs, total, limit, page, pages }) => {
-                super.send200Data(response, { total, limit, page, pages }, docs.map(promo => this.helper.parseFields(promo)))
+                super.send200Data(response, { total, limit, page, pages }, docs.map(promo => new ModelPromotion(promo)))
             })
     };
     private create = (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -59,14 +59,14 @@ export class PromotionsController extends Controller {
                             .then(file => {
                                 promoData.image = file.Location;
                                 this.helper.model.create(promoData)
-                                    .then(promotion => super.send201(response, this.helper.parseFields(promotion)))
+                                    .then(promotion => super.send201(response, new ModelPromotion(promotion)))
                                     .catch(err => next(super.send500(err)))
                             })
                             .catch(e => next(this.send500(e)))
                     } else {
                         promoData.image = null;
                         this.helper.model.create(promoData)
-                            .then(promotion => super.send201(response, this.helper.parseFields(promotion)))
+                            .then(promotion => super.send201(response, new ModelPromotion(promotion)))
                             .catch(err => next(super.send500(err)))
                     }
                 }
@@ -81,14 +81,14 @@ export class PromotionsController extends Controller {
                     .then(file => {
                         promoData.image = file.Location;
                         this.helper.model.findByIdAndUpdate(request.params.id, { $set: promoData }, { new: true })
-                            .then(promo => super.send200(response, this.helper.parseFields(promo)))
+                            .then(promo => super.send200(response, new ModelPromotion(promo)))
                             .catch(err => next(super.send500(err)))
                     })
                     .catch(e => next(this.send500(e)))
             } else {
                 typeof promoData.image == 'string' ? promoData.image = null : false;
                 this.helper.model.findByIdAndUpdate(request.params.id, { $set: promoData }, { new: true })
-                    .then(promotion => super.send200(response, this.helper.parseFields(promotion)))
+                    .then(promotion => super.send200(response, new ModelPromotion(promotion)))
                     .catch(err => next(super.send500(err)))
             }
         })
@@ -104,7 +104,7 @@ export class PromotionsController extends Controller {
     private overview = (request: express.Request, response: express.Response, next: express.NextFunction) => {
         const { id } = request.params
         this.helper.model.findById(id)
-            .then(promo => super.send200(response, this.helper.parseFields(promo)))
+            .then(promo => super.send200(response, new ModelPromotion(promo)))
             .catch(err => next(super.send404('Promotion')))
     }
 }
