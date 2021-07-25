@@ -1,31 +1,31 @@
 {
-    "type": "object",
-    "properties": {
-        "id": {
-            "type": "string",
-            "example": "5e8b2adb9e2aeb0024bf7627",
-            "readOnly": true
-        },
-        "title": {
-            "type": "string",
-            "example": "50% на каждую вторую пиццу"
-        },
-        "description": {
-            "type": "string",
-            "example": "some text"
-        },
-        "image": {
-            "type": "string",
-            "example": "https://example.com/image.png"
-        },
-        "startedAt":{
-            "type": "string",
-            "example": "Wed Aug 26 2020 07:49:01 GMT+0300 (Eastern European Summer Time)"
-        }
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "example": "5e8b2adb9e2aeb0024bf7627",
+      "readOnly": true
     },
-    "required": [
-        "title",
-        "description",
-        "image"
-    ]
+    "title": {
+      "type": "string",
+      "example": "50% на каждую вторую пиццу"
+    },
+    "description": {
+      "type": "string",
+      "example": "some text"
+    },
+    "image": {
+      "type": "string",
+      "example": "https://example.com/image.png"
+    },
+    "startedAt": {
+      "type": "string",
+      "example": "Wed Aug 26 2020 07:49:01 GMT+0300 (Eastern European Summer Time)"
+    },
+    "endedAt": {
+      "type": "string",
+      "example": "Wed Aug 26 2020 07:49:01 GMT+0300 (Eastern European Summer Time)"
+    }
+  },
+  "required": ["title", "description", "image"]
 }
