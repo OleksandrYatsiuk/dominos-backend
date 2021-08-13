@@ -5,7 +5,7 @@ import { Ingredient } from '../interfaces/ingredients.interface';
 
 
 export class IngredientClass extends BaseModel {
-	public model: mongoose.PaginateModel<Ingredient & mongoose.Document>
+	public model: mongoose.PaginateModel<Ingredient & mongoose.Document> | any;
 	constructor() {
 		super(schema)
 		this.model = schema

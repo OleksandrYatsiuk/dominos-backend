@@ -4,7 +4,7 @@ import { Shop } from '../interfaces';
 import schema from './schemas/shop.schema';
 
 export class ShopModel extends BaseModel {
-    public model: mongoose.PaginateModel<Shop & mongoose.Document>
+    public model: mongoose.PaginateModel<Shop & mongoose.Document> | any;
     constructor() {
         super(schema)
         this.model = schema
@@ -16,12 +16,12 @@ export class ShopModel extends BaseModel {
     public parseFields(shop: Shop) {
         return {
             id: shop._id,
-			address: shop.address,
-			lat: shop.lat,
-			lng: shop.lng,
-			draggable: shop.draggable,
-			createdAt: shop.createdAt,
-			updatedAt: shop.updatedAt,
+            address: shop.address,
+            lat: shop.lat,
+            lng: shop.lng,
+            draggable: shop.draggable,
+            createdAt: shop.createdAt,
+            updatedAt: shop.updatedAt,
         };
     }
 }

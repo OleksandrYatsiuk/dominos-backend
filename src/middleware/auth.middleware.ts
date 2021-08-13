@@ -11,7 +11,7 @@ export function checkAuth(request: Request, response: Response, next: NextFuncti
 		helper.model.findOne({ token }).then((token) => {
 			try {
 				if (token.expiredAt > getCurrentTime()) {
-					response.locals = token.userId;
+					response.locals = { userId: token.userId };
 					next();
 				}
 			} catch (error) {

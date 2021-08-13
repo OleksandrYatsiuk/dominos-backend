@@ -7,7 +7,7 @@ import { User } from "../interfaces";
 import { getCurrentTime } from "../../utils/current-time-UTC";
 
 export class UserModel extends BaseModel {
-    public model: mongoose.PaginateModel<User & mongoose.Document>
+    public model: mongoose.PaginateModel<User & mongoose.Document>|any;
     constructor() {
         super(schema)
         this.model = schema

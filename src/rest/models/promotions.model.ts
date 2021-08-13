@@ -4,7 +4,7 @@ import { Promotion } from '../interfaces';
 import schema from './schemas/promotion.schema';
 
 export class PromotionModel extends BaseModel {
-    public model: mongoose.PaginateModel<Promotion & mongoose.Document>
+    public model: mongoose.PaginateModel<Promotion & mongoose.Document> | any;
     constructor() {
         super(schema)
         this.model = schema

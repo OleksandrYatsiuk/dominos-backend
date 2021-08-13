@@ -9,7 +9,7 @@ import { UserModel } from './user.model';
 
 export class AccessTokenModel extends BaseModel {
 
-    public model: mongoose.PaginateModel<TokenData & mongoose.Document>
+    public model: mongoose.PaginateModel<TokenData & mongoose.Document> | any;
     public user = new UserModel();
 
     constructor() {

@@ -4,7 +4,7 @@ import { Pizza } from '../interfaces';
 import schema from './schemas/pizza.schema';
 
 export class PizzaModel extends BaseModel {
-    public model: mongoose.PaginateModel<Pizza & mongoose.Document>
+    public model: mongoose.PaginateModel<Pizza & mongoose.Document>|any;
     constructor() {
         super(schema)
         this.model = schema        

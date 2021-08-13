@@ -3,14 +3,16 @@
         "moduleResolution": "node",
         "experimentalDecorators": true,
         "resolveJsonModule": true,
-        "esModuleInterop":false,
+        "esModuleInterop": false,
         "sourceMap": true,
         "target": "es2017",
         "outDir": "./dist",
         "baseUrl": "./src",
     },
     "include": [
-        "src/**/**/.ts", "src/rest/controllers/Controller.ts", "src/swagger.json"
+        "src/**/**/.ts",
+        "src/rest/controllers/Controller.ts",
+        "src/swagger.json"
     ],
     "exclude": [
         "node_modules"

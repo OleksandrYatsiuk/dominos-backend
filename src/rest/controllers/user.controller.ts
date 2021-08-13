@@ -43,7 +43,7 @@ export class UserController extends Controller {
 					)
 				);
 			} else {
-				this.helper.checkKeyForUpdating(response.locals, 'email', updatedData.email).then((result) => {
+				this.helper.checkKeyForUpdating(response.locals.userId, 'email', updatedData.email).then((result) => {
 					if (!result) {
 						next(
 							super.send422(
@@ -64,14 +64,14 @@ export class UserController extends Controller {
 	};
 	private updateLocation = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		this.helper
-			.updateUserItem(response.locals, { location: request.body })
+			.updateUserItem(response.locals.userId, { location: request.body })
 			.then((user) => super.send200(response, this.helper.parseModel(user)))
 			.catch((err) => next(super.send500(err)));
 	};
 
 	private current = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		this.helper
-			.getUserById(response.locals)
+			.getUserById(response.locals.userId)
 			.then(user => {
 				// this.storage.removeFile(user.image);
 				return super.send200(response, this.helper.parseModel(user))
@@ -80,7 +80,7 @@ export class UserController extends Controller {
 	};
 
 	private logout = (request: express.Request, response: express.Response, next: express.NextFunction) => {
-		this.access.model.remove({ userId: response.locals })
+		this.access.model.remove({ userId: response.locals.userId })
 			.then(res => super.send204(response))
 			.catch(err => super.send401(response));
 	};
@@ -95,7 +95,7 @@ export class UserController extends Controller {
 					))
 			);
 		} else {
-			this.helper.isPassValid(response.locals, currentPassword).then((result) => {
+			this.helper.isPassValid(response.locals.userId, currentPassword).then((result) => {
 				if (result) {
 					this.helper
 						.updateUserItem(response.locals, { passwordHash: this.helper.createPasswordHash(newPassword) })
@@ -116,7 +116,7 @@ export class UserController extends Controller {
 	private upload = (request: express.Request, response: express.Response, next: express.NextFunction) => {
 		this.storage.upload(request.files[0])
 			.then(file => {
-				this.helper.updateUserItem(response.locals, { image: file.Location })
+				this.helper.updateUserItem(response.locals.userId, { image: file.Location })
 					.then(user => super.send200(response, this.helper.parseModel(user)));
 			})
 			.catch(err => (next(super.send500(err))))

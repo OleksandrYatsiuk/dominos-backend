@@ -1,4 +1,3 @@
-import { BaseModelInterface } from "../../interfaces/Base.interface";
 import { Model } from "./base.interface";
 
 export interface User extends Model {

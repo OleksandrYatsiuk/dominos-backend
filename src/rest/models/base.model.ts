@@ -7,8 +7,8 @@ import { Model } from '../../rest/interfaces/base.interface';
 export abstract class BaseModel {
 
     public mongoose = mongoose
-    public model: mongoose.PaginateModel<mongoose.Document>
-    constructor(model: mongoose.PaginateModel<mongoose.Document>) {
+    public model: mongoose.PaginateModel<mongoose.Document> | any
+    constructor(model: mongoose.PaginateModel<mongoose.Document> | any) {
         this.model = model
     }
 
@@ -21,7 +21,7 @@ export abstract class BaseModel {
     public remove(id: Model['id']) {
         return this.model.findByIdAndDelete(id);
     }
-    public update(id:Model['id'], data: object) {
+    public update(id: Model['id'], data: object) {
         return this.model.findByIdAndUpdate(id, { $set: Object.assign(data, { updatedAt: getCurrentTime() }) }, { new: true })
     }
 }
